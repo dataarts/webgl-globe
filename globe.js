@@ -437,14 +437,11 @@ DAT.globe = function(container, datasource, colors) {
 
   }
 
-  init();
-  animate();
-
   /**
    * Add a loader animated gif overlaid
    */
   function addLoader() {
-    var text = '<img src="data:image/gif;base64,R0lGODlhEAAQAPIAAAAAAP///zw8PLy8vP///5ycnHx8fGxsbCH/C05FVFNDQVBFMi4wAwEAAAAh\n/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklr\nE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAA\nEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUk\nKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9\nHMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYum\nCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzII\nunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAA\nACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJ\nibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFG\nxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdce\nCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" /> Loading Data';
+    var text = '<img src="'+imgDir+'loader.gif" /> Loading Data';
     loader = document.createElement('div');
     loader.innerHTML = text;
     loader.style.position = 'absolute';
@@ -502,9 +499,6 @@ DAT.globe = function(container, datasource, colors) {
     zoomContainer.appendChild(zoomIn);
     zoomContainer.appendChild(zoomOut);
 
-//    zoomIn.style.borderRadius = '4px';
-//    zoomIn.style.backgroundColor = 'rgba(80, 80, 80, 0.75)';
-//    zoomIn.style.margin = padding + 'px';
     container.appendChild(zoomContainer);
     
   }
@@ -529,12 +523,6 @@ DAT.globe = function(container, datasource, colors) {
     xhr.send(null);
   }
 
-  addLoader();
-  addZoomers();
-  addCredits();
-
-  loadData(); // Ready for the automating
-
   /**
    * Append DAT credentials
    */
@@ -544,6 +532,8 @@ DAT.globe = function(container, datasource, colors) {
     text.innerHTML = 'The <strong>WebGL Globe</strong> is a simple, open plat' +
         'form for visualizing geographic data in WebGL-compatible browsers li' +
         'ke Google Chrome.<br />Learn more about the globe and get the code at';
+    text.innerHTML = "The <strong>WebGL Globe</strong> is a simple, open platform for visualizing geographic data in WebGL-compatible browsers like Google Chrome.<br />Learn more about the globe and get the code at ";
+
 
     var link = document.createElement('a');
     link.innerHTML = 'www.chromeexperiments.com/globe';
@@ -562,6 +552,15 @@ DAT.globe = function(container, datasource, colors) {
     container.appendChild(credits);
     credits.style.marginTop = (h - credits.offsetHeight)+'px';
   }
+
+  init();
+
+  addLoader();
+  addZoomers();
+  addCredits();
+
+  animate();
+  loadData();
 
 
 };
