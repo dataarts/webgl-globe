@@ -106,6 +106,9 @@ DAT.globe = function(container, datasource, colors) {
   var camera, scene, sceneAtmosphere, renderer, w, h;
   var vector, mesh, atmosphere, point, points;
 
+  var overRenderer; // boolean, whether or not mouse is over container,
+  // used to active scroll well.
+
   var loader; // div that the loading message goes in
 
   // Just cause this has been moving around a lot ...
@@ -116,7 +119,7 @@ DAT.globe = function(container, datasource, colors) {
 
   var mouse = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
   var rotation = { x: 0, y: 0 },
-      target = { x: Math.PI, y: Math.PI / 5.0 },
+      target = { x: Math.PI*3/2, y: Math.PI / 6.0 },
       targetOnDown = { x: 0, y: 0 };
 
   var distance = 1500, distanceTarget = 1300;
@@ -216,9 +219,19 @@ DAT.globe = function(container, datasource, colors) {
     container.addEventListener('mousedown', onMouseDown, false);
 
     // For now ...
-    //container.addEventListener('mousewheel', onMouseWheel, false);
+    container.addEventListener('mousewheel', onMouseWheel, false);
 
     document.addEventListener('keydown', onDocumentKeyDown, false);
+
+    container.addEventListener('mouseover', function() {
+      overRenderer = true;
+    }, false);
+
+    container.addEventListener('mouseout', function() {
+      overRenderer = false;
+    }, false);
+
+
 
     //window.addEventListener('resize', onWindowResize, false);
 
@@ -363,9 +376,11 @@ DAT.globe = function(container, datasource, colors) {
    * @param event
    */
   function onMouseWheel(event) {
-
-    zoom(event.wheelDeltaY * 0.3);
-
+    event.preventDefault();
+    if (overRenderer) {
+      zoom(event.wheelDeltaY * 0.3);
+    }
+    return false;
   }
 
   /**
@@ -456,42 +471,48 @@ DAT.globe = function(container, datasource, colors) {
   function addZoomers() {
 
     var zoomContainer = document.createElement('div');
-    zoomContainer.style.width = padding+'px';
+    zoomContainer.style.width = padding/2+'px';
     zoomContainer.style.position = 'absolute';
-    zoomContainer.style.marginLeft = (w-padding*2)+'px';
+    zoomContainer.style.marginLeft = (w-padding)+'px';
     zoomContainer.style.marginTop = padding+'px';
 
     var zoomIn = document.createElement('div');
     var zoomOut = document.createElement('div');
 
     var applyButtonStyles = function(elem) {
-      elem.style.width = padding+'px';
-      elem.style.height = padding+'px';
-      elem.style.borderRadius = '4px';
+      elem.style.width = padding/2+'px';
+      elem.style.height = padding/2+'px';
+      elem.style.borderRadius = '3px';
       elem.style.marginBottom = '10px';
       elem.style.position = 'static';
-      elem.style.backgroundColor = '#eee';
       elem.style.cursor = 'pointer';
     }
 
-    zoomIn.style.backgroundImage = 'url('+imgDir+'zoom-in.png)';
-    zoomOut.style.backgroundImage = 'url('+imgDir+'zoom-out.png)';
+    zoomIn.style.background = '#444 url('+imgDir+'zoom-in.png) center center ' +
+        '' +
+        'no-repeat';
+    zoomOut.style.background = '#444 url('+imgDir+'zoom-out.png) center ' +
+        '-11px no-repeat';
 
     applyButtonStyles(zoomIn);
     applyButtonStyles(zoomOut);
 
     var noZoom = function() {
       curZoomSpeed = 0;
+      zoomIn.style.backgroundColor = '#444';
+      zoomOut.style.backgroundColor = '#444';
     };
 
     zoomIn.addEventListener('mousedown', function() {
       curZoomSpeed = zoomSpeed;
+      this.style.backgroundColor = '#666';
     }, false);
 
     zoomIn.addEventListener('mouseup', noZoom, false);
 
     zoomOut.addEventListener('mousedown', function() {
       curZoomSpeed = -zoomSpeed;
+      this.style.backgroundColor = '#666';
     }, false);
 
     zoomOut.addEventListener('mouseup', noZoom, false);
