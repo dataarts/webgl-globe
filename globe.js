@@ -103,15 +103,25 @@ DAT.globe = function(container, datasource, colors) {
 
   };
 
-  var camera, scene, sceneAtmosphere, renderer;
+
+  var camera, scene, sceneAtmosphere, renderer, w, h;
   var vector, mesh, atmosphere, point, points;
+
+  var loader; // div that the loading message goes in
+
+  // Just cause this has been moving around a lot ...
+  var imgDir = 'http://inside-search.googlecode.com/svn/trunk/';
+
+  var curZoomSpeed = 0; // So you can hold down the zoom buttons.
+  var zoomSpeed = 50; // How fast we go when we hold down zoom.
 
   var mouse = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
   var rotation = { x: 0, y: 0 },
-      target = { x: Math.PI, y: Math.PI/5.0 },
+      target = { x: Math.PI, y: Math.PI / 5.0 },
       targetOnDown = { x: 0, y: 0 };
-  var distance = 1500, distanceTarget = 1300;
 
+  var distance = 1500, distanceTarget = 1300;
+  var padding = 40; // for div elements that get appended to container
   var PI_HALF = Math.PI / 2;
 
   /**
@@ -119,9 +129,15 @@ DAT.globe = function(container, datasource, colors) {
    */
   function init() {
 
+    // Setup some default styles so we don't have to go appending
+    // redundant css everywhere
+    container.style.color = '#fff';
+    container.style.font = '13px/20px Arial, sans-serif';
+
     var shader, uniforms, material;
-    var w = container.offsetWidth || window.innerWidth,
+    w = container.offsetWidth || window.innerWidth;
     h = container.offsetHeight || window.innerHeight;
+
 
     camera = new THREE.Camera(
         30, w / h, 1, 10000);
@@ -139,7 +155,8 @@ DAT.globe = function(container, datasource, colors) {
     shader = Shaders['earth'];
     uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-    uniforms['texture'].texture = THREE.ImageUtils.loadTexture('http://inside-search.googlecode.com/svn/trunk/world.jpg');
+    uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+'world' +
+        '.jpg');
 
     material = new THREE.MeshShaderMaterial({
 
@@ -176,7 +193,7 @@ DAT.globe = function(container, datasource, colors) {
     // point
 
 //    geometry = new THREE.Cube(0.75, 0.75, 1);
-    geometry = new THREE.Cube( 0.75, 0.75, 1, 1, 1, 1, null, false, { px: true, nx: true, py: true, ny: true, pz: true, nz: false} );
+    geometry = new THREE.Cube(0.75, 0.75, 1, 1, 1, 1, null, false, { px: true, nx: true, py: true, ny: true, pz: true, nz: false});
 
     for (var i = 0; i < geometry.vertices.length; i++) {
 
@@ -187,20 +204,23 @@ DAT.globe = function(container, datasource, colors) {
 
     point = new THREE.Mesh(geometry);
 
-    //
-
     renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.autoClear = false;
     renderer.setClearColorHex(0x000000, 0.0);
     renderer.setSize(w, h);
 
+    renderer.domElement.style.position = 'absolute';
+
     container.appendChild(renderer.domElement);
 
     container.addEventListener('mousedown', onMouseDown, false);
-    container.addEventListener('mousewheel', onMouseWheel, false);
+
+    // For now ...
+    //container.addEventListener('mousewheel', onMouseWheel, false);
+
     document.addEventListener('keydown', onDocumentKeyDown, false);
 
-    window.addEventListener('resize', onWindowResize, false);
+    //window.addEventListener('resize', onWindowResize, false);
 
   }
 
@@ -219,10 +239,10 @@ DAT.globe = function(container, datasource, colors) {
     for (var lang in data) {
       for (var i = 0, ll = data[lang].length; i < ll; i += 3) {
 
-        lat = data[lang][i+1];
-        lng = data[lang][i+2];
+        lat = data[lang][i + 1];
+        lng = data[lang][i + 2];
         size = data[lang][i];
-        color = new THREE.Color( colors[lang] || 0xffffff );
+        color = new THREE.Color(colors[lang] || 0xffffff);
 
         addPoint(lat, lng, size * 200, color);
 
@@ -302,8 +322,10 @@ DAT.globe = function(container, datasource, colors) {
     mouse.x = - event.clientX;
     mouse.y = event.clientY;
 
-    target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005;
-    target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005;
+    var zoomDamp = distance/1000;
+
+    target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
+    target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
 
     target.y = target.y > PI_HALF ? PI_HALF : target.y;
     target.y = target.y < - PI_HALF ? - PI_HALF : target.y;
@@ -352,7 +374,7 @@ DAT.globe = function(container, datasource, colors) {
    */
   function onDocumentKeyDown(event) {
 
-    switch(event.keyCode) {
+    switch (event.keyCode) {
       case 38:
         zoom(100);
         event.preventDefault();
@@ -379,30 +401,6 @@ DAT.globe = function(container, datasource, colors) {
   }
 
   /**
-   * Handle window resize
-   * @param event
-   */
-  function onWindowResize(event) {
-
-    /*
-    var w = container.offsetWidth || window.innerWidth,
-    h = container.offsetHeight || window.innerHeight;
-    */
-    var w = 960, h = window.innerHeight;
-
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    
-    div = document.getElementById("DAT-info");
-    var t = renderer.domElement.offsetTop + h - (div.offsetHeight + div.style.paddingTop + div.style.paddingBottom);
-    var l = renderer.domElement.offsetLeft;
-    div.style.left = l + "px";
-    div.style.top = t + "px";
-
-    renderer.setSize(w, h);
-  }
-
-  /**
    * Animate the world
    */
   function animate() {
@@ -417,19 +415,21 @@ DAT.globe = function(container, datasource, colors) {
    */
   function render() {
 
-    rotation.x += (target.x - rotation.x) * 0.05;
-    rotation.y += (target.y - rotation.y) * 0.05;
-    distance += (distanceTarget - distance) * 0.05;
+    zoom(curZoomSpeed);
+
+    rotation.x += (target.x - rotation.x) * 0.1;
+    rotation.y += (target.y - rotation.y) * 0.1;
+    distance += (distanceTarget - distance) * 0.3;
 
     camera.position.x = distance * Math.sin(rotation.x) * Math.cos(rotation.y);
     camera.position.y = distance * Math.sin(rotation.y);
     camera.position.z = distance * Math.cos(rotation.x) * Math.cos(rotation.y);
 
     // Do not render if camera hasn't moved.
-    if ( vector.distanceTo( camera.position ) == 0 ) {
+    if (vector.distanceTo(camera.position) == 0) {
       return;
     }
-    vector.copy( camera.position );
+    vector.copy(camera.position);
 
     renderer.clear();
     renderer.render(scene, camera);
@@ -445,20 +445,70 @@ DAT.globe = function(container, datasource, colors) {
    */
   function addLoader() {
     var text = '<img src="data:image/gif;base64,R0lGODlhEAAQAPIAAAAAAP///zw8PLy8vP///5ycnHx8fGxsbCH/C05FVFNDQVBFMi4wAwEAAAAh\n/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklr\nE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAA\nEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUk\nKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9\nHMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYum\nCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzII\nunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAA\nACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJ\nibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFG\nxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdce\nCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" /> Loading Data';
-    div = document.createElement('div');
-    div.setAttribute('id', 'DAT-loader');
-    div.innerHTML = text;
-    container.appendChild(div);
-    var padding = 40;
-    var t = renderer.domElement.offsetTop + padding;
-    var l = renderer.domElement.offsetLeft + padding;
-    div.setAttribute('style', 'z-index: 100; font: 500 13px/17px sans-serif; color: #fff; position: absolute; top: '+t+'px; left: '+l+'px;')
+    loader = document.createElement('div');
+    loader.innerHTML = text;
+    loader.style.position = 'absolute';
+    loader.style.margin = padding+'px';
+    container.appendChild(loader);
   }
 
   function removeLoader() {
-    div = document.getElementById('DAT-loader');
-    container.removeChild(div);
+    container.removeChild(loader);
   }
+
+  function addZoomers() {
+    var zoomContainer = document.createElement('div');
+    zoomContainer.style.width = padding+'px';
+    zoomContainer.style.position = 'absolute';
+    zoomContainer.style.marginLeft = (w-padding*2)+'px';
+    zoomContainer.style.marginTop = padding+'px';
+
+    var zoomIn = document.createElement('div');
+    var zoomOut = document.createElement('div');
+
+    var applyButtonStyles = function(elem) {
+      elem.style.width = padding+'px';
+      elem.style.height = padding+'px';
+      elem.style.borderRadius = '4px';
+      elem.style.marginBottom = '10px';
+      elem.style.position = 'static';
+      elem.style.backgroundColor = '#eee';
+      elem.style.cursor = 'pointer';
+    }
+
+    zoomIn.style.backgroundImage = 'url('+imgDir+'zoom-in.png)';
+    zoomOut.style.backgroundImage = 'url('+imgDir+'zoom-out.png)';
+
+    applyButtonStyles(zoomIn);
+    applyButtonStyles(zoomOut);
+
+    var noZoom = function() {
+      curZoomSpeed = 0;
+    };
+
+    zoomIn.addEventListener('mousedown', function() {
+      curZoomSpeed = zoomSpeed;
+    }, false);
+
+    zoomIn.addEventListener('mouseup', noZoom, false);
+
+
+    zoomOut.addEventListener('mousedown', function() {
+      curZoomSpeed = -zoomSpeed;
+    }, false);
+
+    zoomOut.addEventListener('mouseup', noZoom, false);
+
+
+    zoomContainer.appendChild(zoomIn);
+    zoomContainer.appendChild(zoomOut);
+
+//    zoomIn.style.borderRadius = '4px';
+//    zoomIn.style.backgroundColor = 'rgba(80, 80, 80, 0.75)';
+//    zoomIn.style.margin = padding + 'px';
+    container.appendChild(zoomContainer);
+  }
+
 
   /**
    * Load file
@@ -478,29 +528,39 @@ DAT.globe = function(container, datasource, colors) {
     };
     xhr.send(null);
   }
+
   addLoader();
+  addZoomers();
+  addCredits();
+
   loadData(); // Ready for the automating
 
   /**
    * Append DAT credentials
    */
-   var div;
-   function appendCredits() {
-     var text = "The <strong>WebGL Globe</strong> is a simple, open platform for visualizing geographic data in WebGL-compatible browsers like Google Chrome.<br />Learn more about the globe and get the code at <a href = 'http://chromeexperiments.com/globe/'>www.chromeexperiments.com/globe</a>."
-     div = document.createElement("div");
-     div.setAttribute("id", "DAT-info");
-     div.innerHTML = text;
-     container.appendChild(div);
-     var padding = 40;
-     var t = renderer.domElement.offsetTop + renderer.domElement.offsetHeight - (div.offsetHeight + padding * 2);
-     var l = renderer.domElement.offsetLeft;
-     var styling = "#DAT-info { font: 500 13px/17px sans-serif; color: #fff; position: absolute; left: "+l+"px; top: "+t+"px; width: 880px; padding: "+padding+"px; } #DAT-info a { color: #0080ff; }";
-     var style = document.createElement("style");
-         style.setAttribute("type", "text/css");
-         style.innerHTML = styling;
-     document.getElementsByTagName("head")[0].appendChild(style);
-   }
-   appendCredits();
+
+  function addCredits() {
+    var text = document.createElement('span');
+    text.innerHTML = "The <strong>WebGL Globe</strong> is a simple, open platform for visualizing geographic data in WebGL-compatible browsers like Google Chrome.<br />Learn more about the globe and get the code at ";
+
+    var link = document.createElement('a');
+    link.innerHTML = 'www.chromeexperiments.com/globe';
+    link.setAttribute('href', 'http://chromeexperiments.com/globe/');
+    link.style.color = '#0080ff';
+
+    var credits = document.createElement("div");
+
+    credits.appendChild(text);
+    credits.appendChild(link);
+
+    credits.style.position = 'absolute';
+    credits.style.paddingBottom = padding+'px';
+    credits.style.textAlign = 'center';
+    credits.style.width = w + 'px';
+    container.appendChild(credits);
+    credits.style.marginTop = (h - credits.offsetHeight)+'px';
+  }
+
 
 };
 
