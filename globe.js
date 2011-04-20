@@ -103,7 +103,6 @@ DAT.globe = function(container, datasource, colors) {
 
   };
 
-
   var camera, scene, sceneAtmosphere, renderer, w, h;
   var vector, mesh, atmosphere, point, points;
 
@@ -192,8 +191,9 @@ DAT.globe = function(container, datasource, colors) {
 
     // point
 
-//    geometry = new THREE.Cube(0.75, 0.75, 1);
-    geometry = new THREE.Cube(0.75, 0.75, 1, 1, 1, 1, null, false, { px: true, nx: true, py: true, ny: true, pz: true, nz: false});
+    // geometry = new THREE.Cube(0.75, 0.75, 1);
+    geometry = new THREE.Cube(0.75, 0.75, 1, 1, 1, 1, null, false, { px: true,
+          nx: true, py: true, ny: true, pz: true, nz: false});
 
     for (var i = 0; i < geometry.vertices.length; i++) {
 
@@ -457,6 +457,7 @@ DAT.globe = function(container, datasource, colors) {
   }
 
   function addZoomers() {
+
     var zoomContainer = document.createElement('div');
     zoomContainer.style.width = padding+'px';
     zoomContainer.style.position = 'absolute';
@@ -492,13 +493,11 @@ DAT.globe = function(container, datasource, colors) {
 
     zoomIn.addEventListener('mouseup', noZoom, false);
 
-
     zoomOut.addEventListener('mousedown', function() {
       curZoomSpeed = -zoomSpeed;
     }, false);
 
     zoomOut.addEventListener('mouseup', noZoom, false);
-
 
     zoomContainer.appendChild(zoomIn);
     zoomContainer.appendChild(zoomOut);
@@ -507,6 +506,7 @@ DAT.globe = function(container, datasource, colors) {
 //    zoomIn.style.backgroundColor = 'rgba(80, 80, 80, 0.75)';
 //    zoomIn.style.margin = padding + 'px';
     container.appendChild(zoomContainer);
+    
   }
 
 
@@ -541,7 +541,9 @@ DAT.globe = function(container, datasource, colors) {
 
   function addCredits() {
     var text = document.createElement('span');
-    text.innerHTML = "The <strong>WebGL Globe</strong> is a simple, open platform for visualizing geographic data in WebGL-compatible browsers like Google Chrome.<br />Learn more about the globe and get the code at ";
+    text.innerHTML = 'The <strong>WebGL Globe</strong> is a simple, open plat' +
+        'form for visualizing geographic data in WebGL-compatible browsers li' +
+        'ke Google Chrome.<br />Learn more about the globe and get the code at';
 
     var link = document.createElement('a');
     link.innerHTML = 'www.chromeexperiments.com/globe';
