@@ -249,17 +249,16 @@ DAT.globe = function(container, datasource, colors) {
     points.matrixAutoUpdate = false;
     scene.addObject(points);
 
-    for (var lang in data) {
-      for (var i = 0, ll = data[lang].length; i < ll; i += 3) {
+    for (var i = 0, ll = data.length; i < ll; i += 3) {
 
-        lat = data[lang][i + 1];
-        lng = data[lang][i + 2];
-        size = data[lang][i];
-        color = new THREE.Color(colors[lang] || 0xffffff);
+        lat = data[i + 1];
+        lng = data[i + 2];
+        size = data[i];
+        color = new THREE.Color();
+        color.setHSV( ( 0.6 - ( size * 0.5 ) ), 1.0, 1.0 );
 
         addPoint(lat, lng, size * 200, color);
 
-      }
     }
 
   };
