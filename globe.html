@@ -1,60 +1,55 @@
 <!DOCTYPE HTML>
 <html lang="en">
-	<head>
-		<title>WebGL Globe</title>
-		<meta charset="utf-8">
-		<style type="text/css">
-			body {
-				background-color: #101010;
-				margin: 0px;
-				overflow: hidden;
+  <head>
+    <title>WebGL Globe</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #000000;
+        color: #ffffff;
+        font-family: sans-serif;
+        font-size: 13px;
+        text-align: center;
+      }
+      #info {
+        margin: auto;
+        width: 500px;
+        left: 50%;
+        bottom: 0;
+        margin-left: -250px;
+        position: absolute;
+        padding-bottom: 20px;
+      }
+      #container {
+        margin: auto;
+      }
+      a {
+        color: #0080ff;
+      }
+    </style>
+  </head>
+  <body>
 
-				color: #ffffff;
-				font-family: sans-serif;
-				font-size: 13px;
-			}
+    <div id="container"></div>
 
-			#info {
-				position: absolute;
-				top: 0px;
-				left: 0px;
-				width: 300px;
-				padding: 40px;
-			}
+    <div id="info">
+      <strong><a href="http://www.chromeexperiments.com/globe">WebGL Globe</a></strong><br />
+      Created by the <em>Google Data Arts Team</em>
+      <br />
+      The data on the globe shows the world population in 2005 from <a href="http://sedac.ciesin.columbia.edu/gpw/">SEDAC</a>.
+    </div>
 
-			#more {
-				position: absolute;
-				top: 0px;
-				right: 0px;
-				width: 300px;
-				padding: 40px;
-			}
+    <script type="text/javascript" src="http://inside-search.googlecode.com/svn/trunk/Three.js"></script>
+    <script type="text/javascript" src="globe/globe.js"></script>
+    <script type="text/javascript">
 
-			a {
-				color: #0080ff;
-			}
-		</style>
-	</head>
-	<body>
+      var container = document.getElementById('container');
+      DAT.globe(container,'globe/population.json');
 
-		<div id="container"></div>
-		<div id="info">
-			<strong>WebGL Globe</strong><br />
-			Created by the <em>Google Data Arts Team</em><br />
-			Released under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License</a>
-		</div>
+    </script>
 
-		<div id="more">
-			The data on the globe shows world population in 2005 from <a href="http://sedac.ciesin.columbia.edu/gpw/">sedac</a>.
-		</div>
-
-		<script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
-		<script type="text/javascript" src="js/ThreeWebGL.js"></script>
-		<script type="text/javascript" src="js/ThreeExtras.js"></script>
-
-		<script type="text/javascript" src="data/population.json"></script>
-		<script type="text/javascript" src="globe.js"></script>
-
-	</body>
+  </body>
 
 </html>
