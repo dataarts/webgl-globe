@@ -1,121 +1,63 @@
-// Copyright 2011 Google Inc. All Rights Reserved
-
-/**
- * @fileoverview WebGL Globe
- * @author ricardocabello@google.com (Ricardo Cabello)
- * @author amitp@google.com (Amit Patel)
- */
-
 var DAT = DAT || {};
 
-/**
- * Create a webgl globe with given data and color mapping
- * Requires Three.js version from:
- *  http://inside-search.googlecode.com/svn/trunk/Three.js
- *  originally from:
- *  https://github.com/mrdoob/three.js/
- * @param {Element} container dom element to be attached to
- * @param {Array} data repeat |0-1 float, latitude, longitude, color index|
- * @param {Array.<hex>} colors
- */
-DAT.globe = function(container, datasource, colors) {
+DAT.globe = function(container, datasource, colorFn) {
 
-  colors = colors || [
-    0xd9d9d9, 0xb6b4b5, 0x9966cc, 0x15adff, 0x3e66a3,
-    0x216288, 0xff7e7e, 0xff1f13, 0xc0120b, 0x5a1301, 0xffcc02,
-    0xedb113, 0x9fce66, 0x0c9a39,
-    0xfe9872, 0x7f3f98, 0xf26522, 0x2bb673, 0xd7df23,
-    0xe6b23a, 0x7ed3f7];
-
-  /**
-   * GL Shader functions for glow of earth and atmosphere
-   */
   var Shaders = {
-
     'earth' : {
-
       uniforms: {
-
         'texture': { type: 't', value: 0, texture: null }
-
       },
-
       vertexShader: [
         'varying vec3 vNormal;',
         'varying vec2 vUv;',
-
         'void main() {',
-
-        'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
-
-        'vNormal = normalize( normalMatrix * normal );',
-        'vUv = uv;',
-
+          'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+          'vNormal = normalize( normalMatrix * normal );',
+          'vUv = uv;',
         '}'
       ].join('\n'),
-
       fragmentShader: [
         'uniform sampler2D texture;',
-
         'varying vec3 vNormal;',
         'varying vec2 vUv;',
-
         'void main() {',
-
-        'vec3 diffuse = texture2D( texture, vUv ).xyz;',
-        'float intensity = 1.05 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );',
-        'vec3 atmosphere = vec3( 1.0, 1.0, 1.0 ) * pow( intensity, 3.0 );',
-
-        'gl_FragColor = vec4( diffuse + atmosphere, 1.0 );',
-
+          'vec3 diffuse = texture2D( texture, vUv ).xyz;',
+          'float intensity = 1.05 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );',
+          'vec3 atmosphere = vec3( 1.0, 1.0, 1.0 ) * pow( intensity, 3.0 );',
+          'gl_FragColor = vec4( diffuse + atmosphere, 1.0 );',
         '}'
       ].join('\n')
-
     },
-
     'atmosphere' : {
-
       uniforms: {},
-
       vertexShader: [
         'varying vec3 vNormal;',
-
         'void main() {',
-
-        'vNormal = normalize( normalMatrix * normal );',
-        'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
-
+          'vNormal = normalize( normalMatrix * normal );',
+          'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
         '}'
       ].join('\n'),
-
       fragmentShader: [
         'varying vec3 vNormal;',
-
         'void main() {',
-
-        'float intensity = pow( 0.8 - dot( vNormal, vec3( 0, 0, 1.0 ) ), 12.0 );',
-        'gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 ) * intensity;',
-
+          'float intensity = pow( 0.8 - dot( vNormal, vec3( 0, 0, 1.0 ) ), 12.0 );',
+          'gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 ) * intensity;',
         '}'
       ].join('\n')
-
     }
-
   };
 
   var camera, scene, sceneAtmosphere, renderer, w, h;
   var vector, mesh, atmosphere, point, points;
 
-  var overRenderer; // boolean, whether or not mouse is over container,
-  // used to active scroll well.
+  var overRenderer;
 
-  var loader; // div that the loading message goes in
+  var loader;
 
-  // Just cause this has been moving around a lot ...
   var imgDir = 'http://inside-search.googlecode.com/svn/trunk/';
 
-  var curZoomSpeed = 0; // So you can hold down the zoom buttons.
-  var zoomSpeed = 50; // How fast we go when we hold down zoom.
+  var curZoomSpeed = 0;
+  var zoomSpeed = 50;
 
   var mouse = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
   var rotation = { x: 0, y: 0 },
@@ -123,23 +65,17 @@ DAT.globe = function(container, datasource, colors) {
       targetOnDown = { x: 0, y: 0 };
 
   var distance = 1500, distanceTarget = 1300;
-  var padding = 40; // for div elements that get appended to container
+  var padding = 40;
   var PI_HALF = Math.PI / 2;
 
-  /**
-   * Initialize the webgl earth
-   */
   function init() {
 
-    // Setup some default styles so we don't have to go appending
-    // redundant css everywhere
     container.style.color = '#fff';
     container.style.font = '13px/20px Arial, sans-serif';
 
     var shader, uniforms, material;
     w = container.offsetWidth || window.innerWidth;
     h = container.offsetHeight || window.innerHeight;
-
 
     camera = new THREE.Camera(
         30, w / h, 1, 10000);
@@ -149,8 +85,6 @@ DAT.globe = function(container, datasource, colors) {
 
     scene = new THREE.Scene();
     sceneAtmosphere = new THREE.Scene();
-
-    // earth
 
     var geometry = new THREE.Sphere(200, 40, 30);
 
@@ -172,8 +106,6 @@ DAT.globe = function(container, datasource, colors) {
     mesh.matrixAutoUpdate = false;
     scene.addObject(mesh);
 
-    // atmosphere
-
     shader = Shaders['atmosphere'];
     uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
@@ -192,9 +124,6 @@ DAT.globe = function(container, datasource, colors) {
     mesh.updateMatrix();
     sceneAtmosphere.addObject(mesh);
 
-    // point
-
-    // geometry = new THREE.Cube(0.75, 0.75, 1);
     geometry = new THREE.Cube(0.75, 0.75, 1, 1, 1, 1, null, false, { px: true,
           nx: true, py: true, ny: true, pz: true, nz: false});
 
@@ -218,10 +147,11 @@ DAT.globe = function(container, datasource, colors) {
 
     container.addEventListener('mousedown', onMouseDown, false);
 
-    // For now ...
     container.addEventListener('mousewheel', onMouseWheel, false);
 
     document.addEventListener('keydown', onDocumentKeyDown, false);
+
+    window.addEventListener('resize', onWindowResize, false);
 
     container.addEventListener('mouseover', function() {
       overRenderer = true;
@@ -232,15 +162,8 @@ DAT.globe = function(container, datasource, colors) {
     }, false);
 
 
-
-    //window.addEventListener('resize', onWindowResize, false);
-
   }
 
-  /**
-   * Load additional data
-   * @param  data
-   */
   addData = function(data) {
 
     var lat, lng, size, color, c;
@@ -263,34 +186,19 @@ DAT.globe = function(container, datasource, colors) {
 
   };
 
-  /**
-   * Add a point to points geometry
-   * @param lat
-   * @param lng
-   * @param size
-   * @param color
-   */
   function addPoint(lat, lng, size, color) {
 
     var phi = (90 - lat) * Math.PI / 180;
     var theta = (180 - lng) * Math.PI / 180;
 
-    // position
-
     point.position.x = 200 * Math.sin(phi) * Math.cos(theta);
     point.position.y = 200 * Math.cos(phi);
     point.position.z = 200 * Math.sin(phi) * Math.sin(theta);
 
-    // rotation
-
     point.lookAt(mesh.position);
-
-    // scaling
 
     point.scale.z = size;
     point.updateMatrix();
-
-    // color
 
     var i;
     for (i = 0; i < point.geometry.faces.length; i++) {
@@ -303,10 +211,6 @@ DAT.globe = function(container, datasource, colors) {
 
   }
 
-  /**
-   * Make world draggable.
-   * @param event
-   */
   function onMouseDown(event) {
 
     event.preventDefault();
@@ -325,10 +229,6 @@ DAT.globe = function(container, datasource, colors) {
 
   }
 
-  /**
-   * Drag the world.
-   * @param event
-   */
   function onMouseMove(event) {
 
     mouse.x = - event.clientX;
@@ -344,10 +244,6 @@ DAT.globe = function(container, datasource, colors) {
 
   }
 
-  /**
-   * Stop being draggable.
-   * @param event
-   */
   function onMouseUp(event) {
 
     container.removeEventListener('mousemove', onMouseMove, false);
@@ -358,10 +254,6 @@ DAT.globe = function(container, datasource, colors) {
 
   }
 
-  /**
-   * Remove event listeners when not in focus.
-   * @param event
-   */
   function onMouseOut(event) {
 
     container.removeEventListener('mousemove', onMouseMove, false);
@@ -370,10 +262,6 @@ DAT.globe = function(container, datasource, colors) {
 
   }
 
-  /**
-   * Zoom with mouse wheel
-   * @param event
-   */
   function onMouseWheel(event) {
     event.preventDefault();
     if (overRenderer) {
@@ -382,10 +270,6 @@ DAT.globe = function(container, datasource, colors) {
     return false;
   }
 
-  /**
-   * Zoom with arrow keys
-   * @param event
-   */
   function onDocumentKeyDown(event) {
 
     switch (event.keyCode) {
@@ -401,10 +285,13 @@ DAT.globe = function(container, datasource, colors) {
 
   }
 
-  /**
-   * Zoom to specified distance
-   * @param delta
-   */
+  function onWindowResize( event ) {
+    console.log('resize');
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+  }
+
   function zoom(delta) {
 
     distanceTarget -= delta;
@@ -414,9 +301,6 @@ DAT.globe = function(container, datasource, colors) {
 
   }
 
-  /**
-   * Animate the world
-   */
   function animate() {
 
     requestAnimationFrame(animate);
@@ -424,9 +308,6 @@ DAT.globe = function(container, datasource, colors) {
 
   }
 
-  /**
-   * Render the scene with the supplied camera
-   */
   function render() {
 
     zoom(curZoomSpeed);
@@ -439,7 +320,6 @@ DAT.globe = function(container, datasource, colors) {
     camera.position.y = distance * Math.sin(rotation.y);
     camera.position.z = distance * Math.cos(rotation.x) * Math.cos(rotation.y);
 
-    // Do not render if camera hasn't moved.
     if (vector.distanceTo(camera.position) == 0) {
       return;
     }
@@ -451,9 +331,6 @@ DAT.globe = function(container, datasource, colors) {
 
   }
 
-  /**
-   * Add a loader animated gif overlaid
-   */
   function addLoader() {
     var text = '<img src="'+imgDir+'loader.gif" /> Loading Data';
     loader = document.createElement('div');
@@ -523,11 +400,6 @@ DAT.globe = function(container, datasource, colors) {
     
   }
 
-
-  /**
-   * Load file
-   * then append to DAT.globe
-   */
   function loadData() {
     var xhr;
     xhr = new XMLHttpRequest();
@@ -543,41 +415,10 @@ DAT.globe = function(container, datasource, colors) {
     xhr.send(null);
   }
 
-  /**
-   * Append DAT credentials
-   */
-
-  function addCredits() {
-    var text = document.createElement('span');
-    text.innerHTML = 'The <strong>WebGL Globe</strong> is a simple, open plat' +
-        'form for visualizing geographic data in WebGL-compatible browsers li' +
-        'ke Google Chrome.<br />Learn more about the globe and get the code at';
-    text.innerHTML = "The <strong>WebGL Globe</strong> is a simple, open platform for visualizing geographic data in WebGL-compatible browsers like Google Chrome.<br />Learn more about the globe and get the code at ";
-
-
-    var link = document.createElement('a');
-    link.innerHTML = 'www.chromeexperiments.com/globe';
-    link.setAttribute('href', 'http://chromeexperiments.com/globe/');
-    link.style.color = '#0080ff';
-
-    var credits = document.createElement("div");
-
-    credits.appendChild(text);
-    credits.appendChild(link);
-
-    credits.style.position = 'absolute';
-    credits.style.paddingBottom = padding+'px';
-    credits.style.textAlign = 'center';
-    credits.style.width = w + 'px';
-    container.appendChild(credits);
-    credits.style.marginTop = (h - credits.offsetHeight)+'px';
-  }
-
   init();
 
   addLoader();
-  addZoomers();
-  addCredits();
+//  addZoomers();
 
   animate();
   loadData();
