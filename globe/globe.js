@@ -1,5 +1,5 @@
 /**
- * WebGL Framework
+ * WebGL Globe from Google Data Arts Team
  * Released under Apache 2.0 License - http://www.apache.org/licenses/LICENSE-2.0.html
  */
 
@@ -202,7 +202,7 @@ DAT.globe = function(container, datasource, colorFn) {
 
     point.lookAt(mesh.position);
 
-    point.scale.z = size;
+    point.scale.z = -size;
     point.updateMatrix();
 
     var i;
@@ -349,62 +349,6 @@ DAT.globe = function(container, datasource, colorFn) {
     container.removeChild(loader);
   }
 
-  function addZoomers() {
-
-    var zoomContainer = document.createElement('div');
-    zoomContainer.style.width = padding/2+'px';
-    zoomContainer.style.position = 'absolute';
-    zoomContainer.style.marginLeft = (w-padding)+'px';
-    zoomContainer.style.marginTop = padding+'px';
-
-    var zoomIn = document.createElement('div');
-    var zoomOut = document.createElement('div');
-
-    var applyButtonStyles = function(elem) {
-      elem.style.width = padding/2+'px';
-      elem.style.height = padding/2+'px';
-      elem.style.borderRadius = '3px';
-      elem.style.marginBottom = '10px';
-      elem.style.position = 'static';
-      elem.style.cursor = 'pointer';
-    }
-
-    zoomIn.style.background = '#444 url('+imgDir+'zoom-in.png) center center ' +
-        '' +
-        'no-repeat';
-    zoomOut.style.background = '#444 url('+imgDir+'zoom-out.png) center ' +
-        '-11px no-repeat';
-
-    applyButtonStyles(zoomIn);
-    applyButtonStyles(zoomOut);
-
-    var noZoom = function() {
-      curZoomSpeed = 0;
-      zoomIn.style.backgroundColor = '#444';
-      zoomOut.style.backgroundColor = '#444';
-    };
-
-    zoomIn.addEventListener('mousedown', function() {
-      curZoomSpeed = zoomSpeed;
-      this.style.backgroundColor = '#666';
-    }, false);
-
-    zoomIn.addEventListener('mouseup', noZoom, false);
-
-    zoomOut.addEventListener('mousedown', function() {
-      curZoomSpeed = -zoomSpeed;
-      this.style.backgroundColor = '#666';
-    }, false);
-
-    zoomOut.addEventListener('mouseup', noZoom, false);
-
-    zoomContainer.appendChild(zoomIn);
-    zoomContainer.appendChild(zoomOut);
-
-    container.appendChild(zoomContainer);
-    
-  }
-
   function loadData() {
     var xhr;
     xhr = new XMLHttpRequest();
@@ -423,7 +367,6 @@ DAT.globe = function(container, datasource, colorFn) {
   init();
 
   addLoader();
-//  addZoomers();
 
   animate();
   loadData();

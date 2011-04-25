@@ -41,12 +41,20 @@
       The data on the globe shows the world population in 2005 from <a href="http://sedac.ciesin.columbia.edu/gpw/">SEDAC</a>.
     </div>
 
-    <script type="text/javascript" src="http://inside-search.googlecode.com/svn/trunk/Three.js"></script>
+    <!--<script type="text/javascript" src="http://inside-search.googlecode.com/svn/trunk/Three.js"></script>-->
+    <script type="text/javascript" src="globe/Three/ThreeWebGL.js"></script>
+    <script type="text/javascript" src="globe/Three/ThreeExtras.js"></script>
+    <script type="text/javascript" src="globe/Three/RequestAnimationFrame.js"></script>
+    <script type="text/javascript" src="globe/Three/Detector.js"></script>
     <script type="text/javascript" src="globe/globe.js"></script>
     <script type="text/javascript">
 
-      var container = document.getElementById('container');
-      DAT.globe(container,'globe/population.json');
+      if(!Detector.webgl){
+        Detector.addGetWebGLMessage();
+      } else {
+        var container = document.getElementById('container');
+        DAT.globe(container,'globe/population.json');
+      }
 
     </script>
 
