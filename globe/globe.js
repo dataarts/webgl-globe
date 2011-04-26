@@ -176,18 +176,11 @@ DAT.globe = function(container, datasource, colorFn, compressed) {
 
     var lat, lng, size, color;
 
-    var geometry = new THREE.Geometry();
-    points = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({
-          color: 0xffffff,
-          vertexColors: THREE.FaceColors,
-          morphTargets: true
-        }));
-//    points.matrixAutoUpdate = false;
-    scene.addObject(points);
+    var basegeo = new THREE.Geometry();
     for(var j=0;j<3;j++) {
       var subgeo;
       if (j === 0) {
-        subgeo = points.geometry;
+        subgeo = basegeo;
       } else {
         subgeo = new THREE.Geometry();
       }
@@ -197,24 +190,30 @@ DAT.globe = function(container, datasource, colorFn, compressed) {
         size = data[i];
         color = new THREE.Color();
         color.setHSV( ( 0.6 - ( size * 0.5 ) ), 1.0, 1.0 );
-        if(j === 0) {
-          size = 0.01;
+        if(j === 0 || j === 1) {
+          size = 0.00001;
         } else {
-//          size = ((Math.random()*0.02-0.01)+size)*200;
+//          size = Math.min(1,(Math.max(0.00001,(Math.random()*0.2-0.1)+size)))*200;
+          size = size*200;
         }
         addPoint(lat, lng, size, color, subgeo);
       }
       if(j !== 0) {
-        points.geometry.morphTargets.push({'name': 'target'+(j-1), vertices: subgeo.vertices});
+        basegeo.morphTargets.push({'name': 'morphTarget'+(j-1), vertices: subgeo.vertices});
       }
     }
-
+    points = new THREE.Mesh(basegeo, new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          vertexColors: THREE.FaceColors,
+          morphTargets: true
+        }));
+//    points.matrixAutoUpdate = false;
+    scene.addObject(points);
 
     window.points = points;
-    window.geometry = geometry;
   };
 
-  function addPoint(lat, lng, size, color, geometry) {
+  function addPoint(lat, lng, size, color, subgeo) {
 
     var phi = (90 - lat) * Math.PI / 180;
     var theta = (180 - lng) * Math.PI / 180;
@@ -235,7 +234,7 @@ DAT.globe = function(container, datasource, colorFn, compressed) {
 
     }
 
-    GeometryUtils.merge(geometry, point);
+    GeometryUtils.merge(subgeo, point);
 
   }
 
