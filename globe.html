@@ -25,6 +25,15 @@
       #container {
         margin: auto;
       }
+      #currentInfo {
+        font-size: 18px;
+        padding: 20px;
+      }
+      #year {
+        font-weight: bold;
+        background-color: #222;
+        padding: 4px 5px 2px 5px;
+      }
       a {
         color: #0080ff;
       }
@@ -38,7 +47,11 @@
       <strong><a href="http://www.chromeexperiments.com/globe">WebGL Globe</a></strong><br />
       Created by the <em>Google Data Arts Team</em>
       <br />
-      The data on the globe shows the world population in 2005 from <a href="http://sedac.ciesin.columbia.edu/gpw/">SEDAC</a>.
+      The data displays the world population from 1990 to 2000 extracted from <a href="http://sedac.ciesin.columbia.edu/gpw/">SEDAC</a>.
+    </div>
+
+    <div id="currentInfo">
+      World Population in the year <span id="year">1990</span>.
     </div>
 
     <script type="text/javascript" src="globe/DAT.GUI.min.js"></script>
@@ -46,7 +59,7 @@
     <script type="text/javascript" src="globe/Three/ThreeExtras.js"></script>
     <script type="text/javascript" src="globe/Three/RequestAnimationFrame.js"></script>
     <script type="text/javascript" src="globe/Three/Detector.js"></script>
-    <script type="text/javascript" src="https://github.com/sole/tween.js/raw/master/build/Tween.js"></script>
+    <script type="text/javascript" src="globe/Tween.js"></script>
     <script type="text/javascript" src="globe/globe.js"></script>
     <script type="text/javascript">
 
@@ -70,7 +83,18 @@
                 globe.addData(data[i][1], data[i][0]);
               }
               globe.createPoints();
-              gui.add(globe, 'time', 0, 1);
+              gui.add(globe, 'time', 0, 1).onChange(function(i) {
+                var years = ['1990','1995','2000'];
+                var idx = Math.min(Math.floor(i*years.length), years.length-1);
+                var obj = document.getElementById('year');
+                obj.innerHTML = years[idx];
+              });
+              TWEEN.start();
+              setTimeout(function() {
+                new TWEEN.Tween(0).to(1, 1000).easing(TWEEN.Easing.Bounce.EaseOut).onUpdate(function(i) {
+                  globe.points.morphTargetInfluences[0] = i;
+                }).start();
+              }, 1000);
             }
           }
         };

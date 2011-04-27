@@ -230,8 +230,6 @@ DAT.Globe = function(container, colorFn) {
         console.log(i);
       };
       scene.addObject(this.points);
-      TWEEN.start();
-      var tween = new TWEEN.Tween(this).to({time: 1/8.0}, 1000).easing(TWEEN.Easing.Cubic.EaseIn).start();
     }
   }
 
