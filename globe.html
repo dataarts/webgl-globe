@@ -70,6 +70,12 @@
         var gui = new DAT.GUI();
         var container = document.getElementById('container');
         var globe = new DAT.Globe(container);
+        gui.add(globe, 'time', 0, 1).onChange(function(i) {
+          var years = ['1990','1995','2000'];
+          var idx = Math.min(Math.floor(i*years.length), years.length-1);
+          var obj = document.getElementById('year');
+          obj.innerHTML = years[idx];
+        });
         var xhr;
         xhr = new XMLHttpRequest();
         xhr.open('GET', 'globe/population909500.json', true);
@@ -83,12 +89,6 @@
                 globe.addData(data[i][1], data[i][0]);
               }
               globe.createPoints();
-              gui.add(globe, 'time', 0, 1).onChange(function(i) {
-                var years = ['1990','1995','2000'];
-                var idx = Math.min(Math.floor(i*years.length), years.length-1);
-                var obj = document.getElementById('year');
-                obj.innerHTML = years[idx];
-              });
               TWEEN.start();
               setTimeout(function() {
                 new TWEEN.Tween(0).to(1, 1000).easing(TWEEN.Easing.Bounce.EaseOut).onUpdate(function(i) {
