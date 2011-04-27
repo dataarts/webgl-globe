@@ -41,18 +41,40 @@
       The data on the globe shows the world population in 2005 from <a href="http://sedac.ciesin.columbia.edu/gpw/">SEDAC</a>.
     </div>
 
+    <script type="text/javascript" src="globe/DAT.GUI.min.js"></script>
     <script type="text/javascript" src="globe/Three/ThreeWebGL.js"></script>
     <script type="text/javascript" src="globe/Three/ThreeExtras.js"></script>
     <script type="text/javascript" src="globe/Three/RequestAnimationFrame.js"></script>
     <script type="text/javascript" src="globe/Three/Detector.js"></script>
+    <script type="text/javascript" src="https://github.com/sole/tween.js/raw/master/build/Tween.js"></script>
     <script type="text/javascript" src="globe/globe.js"></script>
     <script type="text/javascript">
 
       if(!Detector.webgl){
         Detector.addGetWebGLMessage();
       } else {
+        var i;
+        var gui = new DAT.GUI();
         var container = document.getElementById('container');
-        DAT.globe(container,'globe/population.json');
+        var globe = new DAT.Globe(container);
+        var xhr;
+        xhr = new XMLHttpRequest();
+        xhr.open('GET', 'globe/population909500.json', true);
+        xhr.onreadystatechange = function(e) {
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              var data = JSON.parse(xhr.responseText);
+              window.data = data;
+              for (i=0;i<data.length;i++) {
+                console.log('data', i);
+                globe.addData(data[i][1], data[i][0]);
+              }
+              globe.createPoints();
+              gui.add(globe, 'time', 0, 1);
+            }
+          }
+        };
+        xhr.send(null);
       }
 
     </script>
