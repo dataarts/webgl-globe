@@ -4,24 +4,28 @@
     <title>WebGL Globe</title>
     <meta charset="utf-8">
     <style type="text/css">
+    html { 
+    height: 100%;
+    }
       body {
         margin: 0;
         padding: 0;
-        background-color: #000000;
+        background: #000000 url(globe/loading.gif) center center no-repeat;
         color: #ffffff;
         font-family: sans-serif;
         font-size: 13px;
         line-height: 20px;
+        height: 100%;
       }
       
       #info { 
       
-        font-size: 12px;
+        font-size: 11px;
       	position: absolute;
-      	bottom: 10px;
+      	bottom: 5px;
       	background-color: rgba(0,0,0,0.8);
       	border-radius: 3px;
-      	left: 10px;
+      	right: 10px;
       	padding: 10px;
       	
       }
@@ -29,11 +33,10 @@
       #currentInfo { 
 width: 270px;
 position: absolute;
-left: 50%;
-top: 20px;
-margin-left: -145px;
+left: 20px;
+top: 63px;
 
-      	background-color: rgba(0,0,0,0.8);
+      	background-color: rgba(0,0,0,0.2);
       	border-radius: 3px;
 
       	padding: 10px;
@@ -41,16 +44,27 @@ margin-left: -145px;
       
       a { 
       	color: #aaa;
+      	text-decoration: none;
+      }
+      a:hover { 
+      	text-decoration: underline;
       }
       
-      #bull { 
+      .bull { 
       	padding: 0px 5px;
+      	color: #555;
       }
       
-      .title {
-
-      display: none;
-      text-align: center;
+      #title {
+position: absolute;
+top: 20px;
+width: 270px;
+left: 20px;
+      	background-color: rgba(0,0,0,0.2);
+      	border-radius: 3px;
+font: 20px Georgia;
+      	padding: 10px;
+      	border-bottom: 1px solid rgba(255,255,255,0.4);
       }
       
       .year { 
@@ -61,17 +75,30 @@ margin-left: -145px;
       	text-align: center;
       	float: left;
       	width: 90px;
-      	color: #666;
+      	color: rgba(255, 255, 255, 0.4);
       	
       	cursor: pointer;
       	-webkit-transition: all 0.1s ease-out;
       }
       
       .year:hover, .year.active { 
-      	font-size: 26px;
+      	font-size: 23px;
       	color: #fff;
 		}
       
+      #ce span { 
+      display: none;
+      }
+      
+      #ce {
+      width: 107px;
+      height: 55px;
+      display: block;
+      position: absolute;
+      bottom: 15px;
+      left: 20px;
+      background: url(globe/ce.png);
+      }
       
       
     </style>
@@ -81,20 +108,23 @@ margin-left: -145px;
     <div id="container"></div>
 
     <div id="info">
-      <strong><a href="http://www.chromeexperiments.com/globe">WebGL Globe</a></strong> <span id="bull">&bull;</span> Created by the <em>Google Data Arts Team</em>
-      <br />
-      The data displays the world population from 1990 to 2000 from <a href="http://sedac.ciesin.columbia.edu/gpw/">SEDAC</a>.
+      <strong><a href="http://www.chromeexperiments.com/globe">WebGL Globe</a></strong> <span class="bull">&bull;</span> Created by the Google Data Arts Team <span class="bull">&bull;</span> Data acquired from <a href="http://sedac.ciesin.columbia.edu/gpw/">SEDAC</a>
     </div>
 
     <div id="currentInfo"> 
-    <span class="title">
-    World Population
-    </span>
       <span id="year1990" class="year">1990</span>
       <span id="year1995" class="year">1995</span>
       <span id="year2000" class="year">2000</span>
     </div>
 
+    <div id="title">
+    World Population
+    </div>
+    
+    <a id="ce" href="http://chromeexperiments.com">
+    <span>This is a Chrome Experiment</span>
+    </a>
+    
     <script type="text/javascript" src="globe/Three/ThreeWebGL.js"></script>
     <script type="text/javascript" src="globe/Three/ThreeExtras.js"></script>
     <script type="text/javascript" src="globe/Three/RequestAnimationFrame.js"></script>
@@ -110,6 +140,7 @@ margin-left: -145px;
         var years = ['1990','1995','2000'];
         var container = document.getElementById('container');
         var globe = new DAT.Globe(container);
+        console.log(globe);
         var i, tweens = [];
         
         var settime = function(globe, t) {
@@ -135,6 +166,7 @@ margin-left: -145px;
         var xhr;
         TWEEN.start();
         
+        
         xhr = new XMLHttpRequest();
         xhr.open('GET', 'globe/population909500.json', true);
         xhr.onreadystatechange = function(e) {
@@ -143,16 +175,11 @@ margin-left: -145px;
               var data = JSON.parse(xhr.responseText);
               window.data = data;
               for (i=0;i<data.length;i++) {
-                console.log('data', i);
                 globe.addData(data[i][1], data[i][0]);
               }
               globe.createPoints();
-              setTimeout(function() {
-                //new TWEEN.Tween(0).to(1, 1000).easing(TWEEN.Easing.Bounce.EaseOut).onUpdate(function(i) {
-                  //globe.points.morphTargetInfluences[0] = i;
-                //}).start();
-                settime(globe,0)();
-              }, 1000);
+              settime(globe,0)();
+              globe.animate();
             }
           }
         };

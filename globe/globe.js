@@ -75,7 +75,7 @@ DAT.Globe = function(container, colorFn) {
       target = { x: Math.PI*3/2, y: Math.PI / 6.0 },
       targetOnDown = { x: 0, y: 0 };
 
-  var distance = 1500, distanceTarget = 1300;
+  var distance = 100000, distanceTarget = 100000;
   var padding = 40;
   var PI_HALF = Math.PI / 2;
 
@@ -335,7 +335,7 @@ DAT.Globe = function(container, colorFn) {
   function animate() {
     requestAnimationFrame(animate);
     render();
-  }
+  };
 
   function render() {
     zoom(curZoomSpeed);
@@ -356,7 +356,8 @@ DAT.Globe = function(container, colorFn) {
   }
 
   init();
-  animate();
+  this.animate = animate;
+
 
   this.__defineGetter__('time', function() {
     return this._time || 0;
