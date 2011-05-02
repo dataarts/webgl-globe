@@ -28,11 +28,34 @@
       #currentInfo {
         font-size: 18px;
         padding: 20px;
+        margin: auto;
+        position: absolute;
+        width: 400px;
+        left: 50%;
+        margin-left: -200px;
       }
-      #year {
+      .year {
         font-weight: bold;
         background-color: #222;
-        padding: 4px 5px 2px 5px;
+        padding: 2px 5px 2px 5px;
+        color: #444;
+        opacity: 0.5;
+        -webkit-transition-property: opacity, color;
+        -webkit-transition-duration: 0.5s;
+        -moz-transition-property: opacity, left;
+        -moz-transition-duration: 0.5s;
+      }
+      .year:hover {
+        color: #fff;
+        cursor: pointer;
+        opacity: 1;
+      }
+      .chosenyear {
+        color: #ddd;
+        opacity: 1;
+      }
+      .chosenyear:hover {
+        cursor: auto;
       }
       a {
         color: #0080ff;
@@ -51,10 +74,9 @@
     </div>
 
     <div id="currentInfo">
-      World Population in the year <span id="year">1990</span>.
+      World Population in the year <span id="year1990" class="year">1990</span><span id="year1995" class="year">1995</span><span id="year2000" class="year">2000</span>.
     </div>
 
-    <script type="text/javascript" src="globe/DAT.GUI.min.js"></script>
     <script type="text/javascript" src="globe/Three/ThreeWebGL.js"></script>
     <script type="text/javascript" src="globe/Three/ThreeExtras.js"></script>
     <script type="text/javascript" src="globe/Three/RequestAnimationFrame.js"></script>
@@ -66,17 +88,42 @@
       if(!Detector.webgl){
         Detector.addGetWebGLMessage();
       } else {
-        var i;
-        var gui = new DAT.GUI();
+        var years = ['1990','1995','2000'];
         var container = document.getElementById('container');
         var globe = new DAT.Globe(container);
-        gui.add(globe, 'time', 0, 1).onChange(function(i) {
-          var years = ['1990','1995','2000'];
-          var idx = Math.min(Math.floor(i*years.length), years.length-1);
-          var obj = document.getElementById('year');
-          obj.innerHTML = years[idx];
-        });
+        var i;
+        var settime = function(globe, t) {
+          return function() {
+            var y = document.getElementById('year'+years[t]);
+            if (y.getAttribute('class') === 'year chosenyear') {
+              return;
+            }
+            var yy = document.getElementsByClassName('year');
+            for(i=0; i<yy.length; i++) {
+              yy[i].setAttribute('class','year');
+            }
+            y.setAttribute('class', 'year chosenyear');
+            new TWEEN.Tween(0).to(1, 1000).easing(TWEEN.Easing.Cubic.EaseInOut).onUpdate(function(i) {
+              for(var j=0; j<globe.points.morphTargetInfluences.length; j++) {
+                if(j === t) {
+                  globe.points.morphTargetInfluences[j] = i;
+                } else {
+                  if (globe.points.morphTargetInfluences[j] > 0) {
+                    globe.points.morphTargetInfluences[j] = 1-i;
+                  } else {
+                    globe.points.morphTargetInfluences[j] = 0;
+                  }
+                }
+              }
+            }).start();
+          };
+        };
+        for(var i = 0; i<years.length; i++) {
+          var y = document.getElementById('year'+years[i]);
+          y.addEventListener('click', settime(globe,i), false);
+        }
         var xhr;
+        TWEEN.start();
         xhr = new XMLHttpRequest();
         xhr.open('GET', 'globe/population909500.json', true);
         xhr.onreadystatechange = function(e) {
@@ -89,11 +136,11 @@
                 globe.addData(data[i][1], data[i][0]);
               }
               globe.createPoints();
-              TWEEN.start();
               setTimeout(function() {
-                new TWEEN.Tween(0).to(1, 1000).easing(TWEEN.Easing.Bounce.EaseOut).onUpdate(function(i) {
-                  globe.points.morphTargetInfluences[0] = i;
-                }).start();
+                //new TWEEN.Tween(0).to(1, 1000).easing(TWEEN.Easing.Bounce.EaseOut).onUpdate(function(i) {
+                  //globe.points.morphTargetInfluences[0] = i;
+                //}).start();
+                settime(globe,0)();
               }, 1000);
             }
           }
