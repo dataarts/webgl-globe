@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <title>WebGL Globe</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #000000;
+      }
+      #container {
+        margin: auto;
+        width: 960px;
+        height: 960px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+
+    <script type="text/javascript" src="http://inside-search.googlecode.com/svn/trunk/Three.js"></script>
+    <script type="text/javascript" src="globe.js"></script>
+    <script type="text/javascript">
+
+      var container = document.getElementById('container');
+      DAT.globe(container,'data.js');
+
+    </script>
+
+  </body>
+
+</html>
