@@ -1,10 +1,45 @@
-The ***WebGL Globe*** is an open platform for visualizing geographic
+The **WebGL Globe** is an open platform for visualizing geographic
 information in
  WebGL enabled browsers. It supports data in JSON format,
  a sample of which you can find [here](https://https://github.com/dataarts/dat.globe/raw/master/globe/population909500.json).
 
-***dat.globe*** makes heavy use of the [Three.js](https://github.com/mrdoob/three.js/)
+**dat.globe** makes heavy use of the [Three.js](https://github.com/mrdoob/three.js/)
 library, and is still in early open development.
+
+
+### Data Format ###
+
+The following illustrates the JSON data format that the globe expects:
+
+```
+
+[
+
+  [
+    'seriesA',
+    [
+      [ lattitude, longitude, magnitude ],
+      [ lattitude, longitude, magnitude ],
+      [ lattitude, longitude, magnitude ],
+      ...
+    ]
+  ],
+
+  [
+    'seriesB',
+    [
+      [ lattitude, longitude, magnitude ],
+      [ lattitude, longitude, magnitude ],
+      [ lattitude, longitude, magnitude ],
+      ...
+    ]
+  ],
+
+  ...
+
+]
+
+```
 
 ### Basic Usage ###
 
@@ -12,7 +47,6 @@ The following code polls a JSON file for geo-data and adds it to an animated,
  interactive WebGL globe.
 
 ```javascript
-<script type="text/javascript">
 // Where to put the globe?
 var container = document.getElementById( 'container' );
 
@@ -36,7 +70,7 @@ xhr.onreadystatechange = function() {
 
       // Tell the globe about your JSON data
       for ( i = 0; i < data.length; i++ ) {
-        globe.addData( data[i][1], "magnitude", data[i][0] );
+        globe.addData( data[i][1], 'magnitude', data[i][0] );
       }
 
       // Create the geometry
@@ -52,6 +86,5 @@ xhr.onreadystatechange = function() {
 };
 
 // Begin request
-xhr.send(null);
-</script>
+xhr.send( null );
 ```
