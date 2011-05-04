@@ -4,7 +4,7 @@
  *
  * Copyright 2011 Data Arts Team, Google Creative Lab
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,6 +14,12 @@
 var DAT = DAT || {};
 
 DAT.Globe = function(container, colorFn) {
+
+  colorFn = colorFn || function(x) {
+    var c = new THREE.Color();
+    c.setHSV( ( 0.6 - ( x * 0.5 ) ), 1.0, 1.0 );
+    return c;
+  };
 
   var Shaders = {
     'earth' : {
@@ -173,17 +179,27 @@ DAT.Globe = function(container, colorFn) {
     }, false);
   }
 
-  addData = function(data, opt_name) {
-    var lat, lng, size, color, i;
+  addData = function(data, opt_format, opt_name) {
+    var lat, lng, size, color, i, step, colorFnWrapper;
+
+    opt_format = opt_format || 'magnitude'; // other option is 'legend'
+    if (opt_format === 'magnitude') {
+      step = 3;
+      colorFnWrapper = function(data, i) { return colorFn(data[i+2]); }
+    } else if (opt_format === 'legend') {
+      step = 4;
+      colorFnWrapper = function(data, i) { return colorFn(data[i+3]); }
+    } else {
+      throw('error: format not supported: '+opt_format);
+    }
 
     if (this._baseGeometry === undefined) {
       this._baseGeometry = new THREE.Geometry();
-      for (i = 0; i < data.length; i += 3) {
-        lat = data[i + 1];
-        lng = data[i + 2];
-        size = data[i];
-        color = new THREE.Color();
-        color.setHSV( ( 0.6 - ( size * 0.5 ) ), 1.0, 1.0 );
+      for (i = 0; i < data.length; i += step) {
+        lat = data[i];
+        lng = data[i + 1];
+//        size = data[i + 2];
+        color = colorFnWrapper(data,i);
         size = 0;
         addPoint(lat, lng, size, color, this._baseGeometry);
       }
@@ -195,12 +211,11 @@ DAT.Globe = function(container, colorFn) {
     }
     opt_name = opt_name || 'morphTarget'+this._morphTargetId;
     var subgeo = new THREE.Geometry();
-    for (i = 0; i < data.length; i += 3) {
-      lat = data[i + 1];
-      lng = data[i + 2];
-      size = data[i];
-      color = new THREE.Color();
-      color.setHSV( ( 0.6 - ( size * 0.5 ) ), 1.0, 1.0 );
+    for (i = 0; i < data.length; i += step) {
+      lat = data[i];
+      lng = data[i + 1];
+      color = colorFnWrapper(data,i);
+      size = data[i + 2];
       size = size*200;
       addPoint(lat, lng, size, color, subgeo);
     }
@@ -335,7 +350,7 @@ DAT.Globe = function(container, colorFn) {
   function animate() {
     requestAnimationFrame(animate);
     render();
-  };
+  }
 
   function render() {
     zoom(curZoomSpeed);
