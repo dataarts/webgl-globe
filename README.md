@@ -11,34 +11,25 @@ library, and is still in early open development.
 
 The following illustrates the JSON data format that the globe expects:
 
-```
-
+```javascript
 [
-
   [
     'seriesA',
     [
       [ lattitude, longitude, magnitude ],
       [ lattitude, longitude, magnitude ],
-      [ lattitude, longitude, magnitude ],
-      ...
+      [ lattitude, longitude, magnitude ]
     ]
   ],
-
   [
     'seriesB',
     [
       [ lattitude, longitude, magnitude ],
       [ lattitude, longitude, magnitude ],
       [ lattitude, longitude, magnitude ],
-      ...
     ]
-  ],
-
-  ...
-
+  ]
 ]
-
 ```
 
 ### Basic Usage ###
