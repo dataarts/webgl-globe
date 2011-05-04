@@ -12,7 +12,7 @@ library, and is still in early open development.
 The following illustrates the JSON data format that the globe expects:
 
 ```javascript
-[
+var data = [
   [
     'seriesA',
     [
@@ -29,7 +29,7 @@ The following illustrates the JSON data format that the globe expects:
       [ lattitude, longitude, magnitude ],
     ]
   ]
-]
+];
 ```
 
 ### Basic Usage ###
