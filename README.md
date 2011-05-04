@@ -33,8 +33,8 @@ var data = [
 
 ### Basic Usage ###
 
-The following code polls a JSON file for geo-data and adds it to an animated,
- interactive WebGL globe.
+The following code polls a JSON file (formatted like the one above)
+for geo-data and adds it to an animated, interactive WebGL globe.
 
 ```javascript
 // Where to put the globe?
