@@ -116,7 +116,6 @@
 <script type="text/javascript" src="/globe/Three/ThreeExtras.js"></script>
 <script type="text/javascript" src="/globe/Three/RequestAnimationFrame.js"></script>
 <script type="text/javascript" src="/globe/Three/Detector.js"></script>
-<script type="text/javascript" src="/globe/Tween.js"></script>
 <script type="text/javascript" src="/globe/globe.js"></script>
 <script type="text/javascript">
 
@@ -136,19 +135,9 @@
       if (xhr.status === 200) {
         var data = JSON.parse(xhr.responseText);
         window.data = data;
-        var emptydata = [];
-        for(var i=0;i<data.length;i+=4) {
-          emptydata.push(data[i]);
-          emptydata.push(data[i+1]);
-          emptydata.push(0);
-          emptydata.push(data[i+3]);
-        }
-        globe.addData(emptydata, "legend");
-        globe.addData(data, "legend");
+        globe.addData(data, {format: 'legend'});
         globe.createPoints();
         globe.animate();
-        TWEEN.start();
-        new TWEEN.Tween(globe).to({time: 1},1500).easing(TWEEN.Easing.Bounce.EaseOut).start();
       }
     }
   };

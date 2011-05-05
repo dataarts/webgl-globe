@@ -179,37 +179,42 @@ DAT.Globe = function(container, colorFn) {
     }, false);
   }
 
-  addData = function(data, opt_format, opt_name) {
+  addData = function(data, opts) {
     var lat, lng, size, color, i, step, colorFnWrapper;
 
-    opt_format = opt_format || 'magnitude'; // other option is 'legend'
-    if (opt_format === 'magnitude') {
+    opts.animated = opts.animated || false;
+    this.is_animated = opts.animated;
+    opts.format = opts.format || 'magnitude'; // other option is 'legend'
+    console.log(opts.format);
+    if (opts.format === 'magnitude') {
       step = 3;
       colorFnWrapper = function(data, i) { return colorFn(data[i+2]); }
-    } else if (opt_format === 'legend') {
+    } else if (opts.format === 'legend') {
       step = 4;
       colorFnWrapper = function(data, i) { return colorFn(data[i+3]); }
     } else {
-      throw('error: format not supported: '+opt_format);
+      throw('error: format not supported: '+opts.format);
     }
 
-    if (this._baseGeometry === undefined) {
-      this._baseGeometry = new THREE.Geometry();
-      for (i = 0; i < data.length; i += step) {
-        lat = data[i];
-        lng = data[i + 1];
+    if (opts.animated) {
+      if (this._baseGeometry === undefined) {
+        this._baseGeometry = new THREE.Geometry();
+        for (i = 0; i < data.length; i += step) {
+          lat = data[i];
+          lng = data[i + 1];
 //        size = data[i + 2];
-        color = colorFnWrapper(data,i);
-        size = 0;
-        addPoint(lat, lng, size, color, this._baseGeometry);
+          color = colorFnWrapper(data,i);
+          size = 0;
+          addPoint(lat, lng, size, color, this._baseGeometry);
+        }
       }
+      if(this._morphTargetId === undefined) {
+        this._morphTargetId = 0;
+      } else {
+        this._morphTargetId += 1;
+      }
+      opts.name = opts.name || 'morphTarget'+this._morphTargetId;
     }
-    if(this._morphTargetId === undefined) {
-      this._morphTargetId = 0;
-    } else {
-      this._morphTargetId += 1;
-    }
-    opt_name = opt_name || 'morphTarget'+this._morphTargetId;
     var subgeo = new THREE.Geometry();
     for (i = 0; i < data.length; i += step) {
       lat = data[i];
@@ -219,31 +224,38 @@ DAT.Globe = function(container, colorFn) {
       size = size*200;
       addPoint(lat, lng, size, color, subgeo);
     }
-    this._baseGeometry.morphTargets.push({'name': opt_name, vertices: subgeo.vertices});
+    if (opts.animated) {
+      this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
+    } else {
+      this._baseGeometry = subgeo;
+    }
 
   };
 
   function createPoints() {
     if (this._baseGeometry !== undefined) {
-      if (this._baseGeometry.morphTargets.length < 8) {
-        console.log('t l',this._baseGeometry.morphTargets.length);
-        var padding = 8-this._baseGeometry.morphTargets.length;
-        console.log('padding', padding);
-        for(var i=0; i<=padding; i++) {
-          console.log('padding',i);
-          this._baseGeometry.morphTargets.push({'name': 'morphPadding'+i, vertices: this._baseGeometry.vertices});
+      if (this.is_animated === false) {
+        this.points = new THREE.Mesh(this._baseGeometry, new THREE.MeshBasicMaterial({
+              color: 0xffffff,
+              vertexColors: THREE.FaceColors,
+              morphTargets: false
+            }));
+      } else {
+        if (this._baseGeometry.morphTargets.length < 8) {
+          console.log('t l',this._baseGeometry.morphTargets.length);
+          var padding = 8-this._baseGeometry.morphTargets.length;
+          console.log('padding', padding);
+          for(var i=0; i<=padding; i++) {
+            console.log('padding',i);
+            this._baseGeometry.morphTargets.push({'name': 'morphPadding'+i, vertices: this._baseGeometry.vertices});
+          }
         }
+        this.points = new THREE.Mesh(this._baseGeometry, new THREE.MeshBasicMaterial({
+              color: 0xffffff,
+              vertexColors: THREE.FaceColors,
+              morphTargets: true
+            }));
       }
-      this.points = new THREE.Mesh(this._baseGeometry, new THREE.MeshBasicMaterial({
-            color: 0xffffff,
-            vertexColors: THREE.FaceColors,
-            morphTargets: true
-          }));
-
-      var update = function(i) {
-        console.log('update');
-        console.log(i);
-      };
       scene.addObject(this.points);
     }
   }
