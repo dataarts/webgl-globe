@@ -12,20 +12,10 @@ The following illustrates the JSON data format that the globe expects:
 ```javascript
 var data = [
   [
-    'seriesA',
-    [
-      [ lattitude, longitude, magnitude ],
-      [ lattitude, longitude, magnitude ],
-      [ lattitude, longitude, magnitude ]
-    ]
+    'seriesA', [ latitude, longitude, magnitude, latitude, longitude, magnitude, ... ]
   ],
   [
-    'seriesB',
-    [
-      [ lattitude, longitude, magnitude ],
-      [ lattitude, longitude, magnitude ],
-      [ lattitude, longitude, magnitude ],
-    ]
+    'seriesB', [ latitude, longitude, magnitude, latitude, longitude, magnitude, ... ]
   ]
 ];
 ```
