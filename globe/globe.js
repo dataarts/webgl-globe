@@ -162,9 +162,9 @@ DAT.Globe = function(container, colorFn) {
 
     container.appendChild(renderer.domElement);
 
-    container.addEventListener('mousedown', onMouseDown, false);
+    // container.addEventListener('mousedown', onMouseDown, false);
 
-    container.addEventListener('mousewheel', onMouseWheel, false);
+    // container.addEventListener('mousewheel', onMouseWheel, false);
 
     document.addEventListener('keydown', onDocumentKeyDown, false);
 
@@ -185,7 +185,7 @@ DAT.Globe = function(container, colorFn) {
     opts.animated = opts.animated || false;
     this.is_animated = opts.animated;
     opts.format = opts.format || 'magnitude'; // other option is 'legend'
-    console.log(opts.format);
+    (opts.format);
     if (opts.format === 'magnitude') {
       step = 3;
       colorFnWrapper = function(data, i) { return colorFn(data[i+2]); }
@@ -242,11 +242,11 @@ DAT.Globe = function(container, colorFn) {
             }));
       } else {
         if (this._baseGeometry.morphTargets.length < 8) {
-          console.log('t l',this._baseGeometry.morphTargets.length);
+          ('t l',this._baseGeometry.morphTargets.length);
           var padding = 8-this._baseGeometry.morphTargets.length;
-          console.log('padding', padding);
+          ('padding', padding);
           for(var i=0; i<=padding; i++) {
-            console.log('padding',i);
+            ('padding',i);
             this._baseGeometry.morphTargets.push({'name': 'morphPadding'+i, vertices: this._baseGeometry.vertices});
           }
         }
@@ -300,8 +300,9 @@ DAT.Globe = function(container, colorFn) {
   }
 
   function onMouseMove(event) {
-    mouse.x = - event.clientX;
-    mouse.y = event.clientY;
+    // mouse.x = - event.clientX;
+    // mouse.y = event.clientY;
+    mouse.x--;
 
     var zoomDamp = distance/1000;
 
@@ -347,7 +348,6 @@ DAT.Globe = function(container, colorFn) {
   }
 
   function onWindowResize( event ) {
-    console.log('resize');
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -361,6 +361,7 @@ DAT.Globe = function(container, colorFn) {
 
   function animate() {
     requestAnimationFrame(animate);
+    onMouseMove();
     render();
   }
 
