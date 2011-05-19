@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>WebGL Globe</title>
+  <meta charset="utf-8">
+  <style type="text/css">
+    html {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000000 url(/globe/loading.gif) center center no-repeat;
+      color: #ffffff;
+      font-family: sans-serif;
+      font-size: 13px;
+      line-height: 20px;
+      height: 100%;
+    }
+
+    #info {
+
+      font-size: 11px;
+      position: absolute;
+      bottom: 5px;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 3px;
+      right: 10px;
+      padding: 10px;
+
+    }
+
+    a {
+      color: #aaa;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .bull {
+      padding: 0px 5px;
+      color: #555;
+    }
+
+    #title {
+      position: absolute;
+      top: 20px;
+      width: 320px;
+      left: 20px;
+      background-color: rgba(0, 0, 0, 0.2);
+      font: 20px/20px Georgia;
+      padding: 15px;
+    }
+
+    .year {
+
+      font: 16px Georgia;
+      line-height: 26px;
+      height: 30px;
+      text-align: center;
+      float: left;
+      width: 90px;
+      color: rgba(255, 255, 255, 0.4);
+
+      cursor: pointer;
+      -webkit-transition: all 0.1s ease-out;
+    }
+
+    .year:hover, .year.active {
+      font-size: 23px;
+      color: #fff;
+    }
+
+    #ce span {
+      display: none;
+    }
+
+    #ce {
+      width: 107px;
+      height: 55px;
+      display: block;
+      position: absolute;
+      bottom: 15px;
+      left: 20px;
+      background: url(/globe/ce.png);
+    }
+
+
+  </style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<div id="info">
+  <!-- The <a href="http://www.chromeexperiments.com/globe">WebGL Globe</a> is an
+  open platform for visualizing geographic data. <span
+    class="bull">&bull;</span> <a href="http://code.google.com/p/webgl-globe/">Get
+  the code</a> <span class="bull">&bull;</span>  -->Created by the Google Data Arts Team.</a>
+</div>
+
+<div id="title">
+  Google Search Volume by Language
+</div>
+
+<a id="ce" href="http://www.chromeexperiments.com/globe">
+  <span>This is a Chrome Experiment</span>
+</a>
+
+
+<script type="text/javascript" src="/globe/third-party/Three/ThreeWebGL.js"></script>
+<script type="text/javascript" src="/globe/third-party/Three/ThreeExtras.js"></script>
+<script type="text/javascript" src="/globe/third-party/Three/RequestAnimationFrame.js"></script>
+<script type="text/javascript" src="/globe/third-party/Three/Detector.js"></script>
+<script type="text/javascript" src="/globe-demo/globe.js"></script>
+<script type="text/javascript">
+
+  var globe = DAT.Globe(document.getElementById('container'), function(label) {
+    return new THREE.Color([
+      0xd9d9d9, 0xb6b4b5, 0x9966cc, 0x15adff, 0x3e66a3,
+      0x216288, 0xff7e7e, 0xff1f13, 0xc0120b, 0x5a1301, 0xffcc02,
+      0xedb113, 0x9fce66, 0x0c9a39,
+      0xfe9872, 0x7f3f98, 0xf26522, 0x2bb673, 0xd7df23,
+      0xe6b23a, 0x7ed3f7][label]);
+  });
+
+  xhr = new XMLHttpRequest();
+  xhr.open('GET', '/globe-search/search.json', true);
+  xhr.onreadystatechange = function(e) {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        var data = JSON.parse(xhr.responseText);
+        window.data = data;
+        globe.addData(data, {format: 'legend'});
+        globe.createPoints();
+        globe.animate();
+      }
+    }
+  };
+  xhr.send(null);
+
+</script>
+
+
+</body>
+
+</html>
