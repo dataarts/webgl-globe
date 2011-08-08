@@ -72,6 +72,7 @@ DAT.Globe = function(container, colorFn) {
   var overRenderer;
 
   var imgDir = '/globe/';
+  var dragged = false;
 
   var curZoomSpeed = 0;
   var zoomSpeed = 50;
@@ -297,12 +298,16 @@ DAT.Globe = function(container, colorFn) {
     targetOnDown.y = target.y;
 
     container.style.cursor = 'move';
+    dragged = true;
   }
 
   function onMouseMove(event) {
-    // mouse.x = - event.clientX;
-    // mouse.y = event.clientY;
-    mouse.x--;
+    if(dragged) {
+      mouse.x = -event.clientX;
+      mouse.y = event.clientY;
+    } else {
+      mouse.x-=.0625;
+    }
 
     var zoomDamp = distance/1000;
 
@@ -318,6 +323,7 @@ DAT.Globe = function(container, colorFn) {
     container.removeEventListener('mouseup', onMouseUp, false);
     container.removeEventListener('mouseout', onMouseOut, false);
     container.style.cursor = 'auto';
+    dragged = false;
   }
 
   function onMouseOut(event) {
