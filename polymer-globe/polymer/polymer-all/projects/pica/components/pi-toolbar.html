@@ -1,0 +1,38 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<link rel="import" href="../../../toolkit-ui/elements/g-toolbar.html"/>
+<link rel="import" href="../../../toolkit-ui/elements/g-icon-button.html"/>
+<polymer-element name="pi-toolbar" attributes="label nav hideActionbar">
+  <template>
+    <link rel="stylesheet" href="css/pi-toolbar.css" />
+    <g-toolbar>
+      <g-icon-button src="{{navIconSrc}}" on-tap="navAction"></g-icon-button>
+      <div class="toolbar-label flex">{{label}}</div>
+      <g-toolbar id="actionbar" hidden?="{{hideActionbar}}" responsive="true">
+        <content></content>
+      </g-toolbar>
+    </g-toolbar>
+  </template>
+  <script>
+    Polymer('pi-toolbar', {
+      nav: 'menu',
+      ready: function() {
+        this.navChanged();
+      },
+      navAction: function(event) {
+        this.fire('nav-action');
+        event.cancelBubble = true;
+      },
+      navChanged: function() {
+        if (this.nav) {
+          this.navIconSrc = this.resolvePath('../images/' + this.nav + '.png');
+        }
+      }
+    });
+  </script>
+</polymer-element>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<html>
+<head>
+  <title>accounts</title>
+  <script src="https://www.google.com/jsapi"></script>
+  <script src="../../../polymer/polymer.js"></script>
+  <link rel="import" href="../components/pi-accounts-model.html"/>
+  <link rel="import" href="../components/pi-accounts.html"/>
+  <style>
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, 'open sans', sans-serif;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <pi-accounts-model></pi-accounts-model>
+  <pi-accounts></pi-accounts>
+  
+  <script>
+    document.addEventListener('WebComponentsReady', function() {
+      var accounts = document.querySelector('pi-accounts');
+      var model = document.querySelector('pi-accounts-model');
+      accounts.accounts = model;
+    });
+  </script>
+</body>
+</html>

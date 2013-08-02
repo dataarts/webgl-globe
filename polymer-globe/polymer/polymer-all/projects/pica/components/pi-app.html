@@ -1,0 +1,158 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<link rel="import" href="../../../toolkit-ui/elements/g-app.html"/>
+<link rel="import" href="../../../toolkit-ui/elements/g-panels.html"/>
+<link rel="import" href="../../../toolkit-ui/elements/g-menu-item.html"/>
+<link rel="import" href="../../../toolkit-ui/elements/g-ribbon.html"/>
+<link rel="import" href="../../../polymer-elements/polymer-animation/web-animations.html">
+<link rel="import" href="pi-toolbar.html"/>
+<link rel="import" href="pi-toolbar-buttons.html"/>
+<link rel="import" href="pi-feed-viewer.html"/>
+<link rel="import" href="pi-explore.html"/>
+<link rel="import" href="pi-home.html"/>
+<link rel="import" href="pi-accounts.html"/>
+<link rel="import" href="pi-accounts-model.html"/>
+<polymer-element name="pi-app" extends="g-app" on-keyup="keyupHandler">
+  <template>
+    <link rel="stylesheet" href="css/pi-app.css" />
+    <g-panels id="panels" selected="{{selectedPanel}}" transition="flow" autoselect on-select="panelSelectHandler">
+      <g-ribbon id="ribbon" class="custom-panel" label="Pica" selected="{{ribbonSelected}}" valueattr="label" on-activate="showMain">
+        <g-menu-item label="Home" src="../images/ribbon_home_lightreg.png" iconsize="32"></g-menu-item>
+        <g-menu-item label="Topics" src="../images/ribbon_topics_lightreg.png" iconsize="32"></g-menu-item>
+        <g-menu-item label="Explore" src="../images/ribbon_explore_lightreg.png" iconsize="32"></g-menu-item>
+        <g-menu-item label="Accounts" src="../images/ribbon_accounts_lightreg.png" iconsize="32"></g-menu-item>
+      </g-ribbon>
+      <div id="main" on-tap="showMain">
+        <pi-toolbar label="{{toolbarLabel}}" nav="{{nav}}" hideActionbar="{{hideActionbar}}" on-nav-action="navAction">
+          <pi-link-button id="linkButton" link="{{story.link}}" hidden?="{{hideLinkButton}}"></pi-link-button>
+          <pi-view-button id="viewButton" layout="{{selectedLayout}}" hidden?="{{hideViewButton}}"></pi-view-button>
+          <pi-action-button></pi-action-button>
+          <g-icon-button src="../images/refresh.png" on-tap="reloadAction"></g-icon-button>
+        </pi-toolbar>
+        <g-panels id="contentPanels" selected="{{ribbonSelected}}" transition="none" hideActionbar="{{hideActionbar}}">
+          <div id="Home" on-ready="homeReadyHandler">
+            <div class="panel-loading"></div>
+            <template dehydrated>
+              <pi-home stocks="{{$.accountsModel.stocks}}"></pi-home>
+            </template>
+          </div>
+          <pi-feed-viewer id="Topics" topics="{{$.accountsModel.topics}}" panel="{{selectedViewPanel}}" 
+              layout="{{layout}}" topicsLayout="grid" story="{{story}}"></pi-feed-viewer>
+          <pi-explore id="Explore" panel="{{selectedViewPanel}}"></pi-explore>
+          <div id="Accounts" on-ready="accountsReadyHandler">
+            <div class="panel-loading"></div>
+            <template dehydrated>
+              <pi-accounts accounts="{{$.accountsModel}}"></pi-accounts>
+            </template>
+          </div>
+        </g-panels>
+      </div>
+    </g-panels>
+    <pi-accounts-model id="accountsModel"></pi-accounts-model>
+  </template>
+  <script>
+    (function() {
+      var ESCAPE_KEY = 27;
+      
+      Polymer('pi-app', {
+        ribbonSelected: 'Topics',
+        selectedPanel: 'main',
+        selectedViewPanel: '',
+        selectedLayout: null,
+        ready: function() {
+          this.super();
+          // hydrate
+          if (location.search.indexOf('hydrate') >= 0) {
+            this.hydrate(this.$.Home);
+            this.hydrate(this.$.Accounts);
+          }
+          // listen for screen size change
+          var mq = window.matchMedia('(max-width: 800px)');
+          mq.addListener(this.screenSizeChange.bind(this));
+          this.screenSizeChange(mq);
+          // initialization
+          this.selectedLayout = this.layout;
+          this.selectedViewPanel = 'topics';
+        },
+        screenSizeChange: function(query) {
+          if (query.matches && this.selectedLayout === 'quilt') {
+            // use stream layout if user select quilt and screen size is small
+            this.layout = 'stream';
+          } else {
+            this.layout = this.selectedLayout ||
+                (query.matches ? 'stream' : 'quilt');
+          }
+        },
+        selectedLayoutChanged: function() {
+          this.layout = this.selectedLayout;
+        },
+        getSelectedContentPanel: function() {
+          return this.$.contentPanels.getSelectedPanel();
+        },
+        navAction: function() {
+          var p = this.getSelectedContentPanel();
+          if (!(p.previous && p.previous())) {
+            this.$.panels.toggleBetween('ribbon', 'main');
+          }
+        },
+        showMain: function() {
+          this.selectedPanel = 'main';
+        },
+        reloadAction: function() {
+          var p = this.getSelectedContentPanel();
+          p.reload && p.reload();
+        },
+        ribbonSelectedChanged: function() {
+          this.updateToolbar();
+        },
+        selectedViewPanelChanged: function() {
+          this.updateToolbar();
+        },
+        updateToolbar: function() {
+          var p = this.getSelectedContentPanel();
+          this.toolbarLabel = p && p.canPrevious && p.topic ?
+              p.topic.title : this.ribbonSelected;
+          this.nav = p && p.canPrevious ? 'back' : 'menu';
+          this.hideActionbar = this.ribbonSelected !== 'Topics';
+          this.hideViewButton = this.selectedViewPanel !== 'stories';
+          this.hideLinkButton = this.selectedViewPanel !== 'story';
+        },
+        keyupHandler: function(e) {
+          if (e.keyCode === ESCAPE_KEY) {
+            this.navAction();
+          }
+        },
+        // instantiate lazy content
+        panelSelectHandler: function(e) {
+          if (e.target === this.$.panels) {
+            this.hydrate(this.getSelectedContentPanel());
+          }
+        },
+        // instantiate dehydrated templates inside this nodes
+        hydrate: function(node) {
+          if (!node.hydrated) {
+            node.hydrated = true;
+            var t = node.querySelector('[dehydrated]');
+            if (t) {
+               t.bind('bind', this);
+               dirtyCheck();
+            }
+          }
+        },
+        // TODO(sorvell): since we cannot do proper property bindings dynamically
+        // we assign data to dynamic components as they become ready.
+        accountsReadyHandler: function(e) {
+          this.$.Accounts.classList.add('ready');
+        },
+        homeReadyHandler: function(e) {
+          this.$.Home.classList.add('ready');
+        }
+      });
+    })();
+  </script>
+</polymer-element>

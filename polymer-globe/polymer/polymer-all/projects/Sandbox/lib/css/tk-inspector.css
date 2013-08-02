@@ -1,0 +1,57 @@
+/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+@host {
+  * {
+    border: 1px solid silver;
+  }
+}
+
+#header {
+  background-color: #E0E0E0;
+  border-bottom: 1px solid silver;
+  padding: 4px;
+  height: 44px;
+  white-space: nowrap;
+}
+
+#crumbList {
+  display: inline-block;
+  width: 80%;
+  vertical-align: middle;
+  overflow: hidden;
+  float: left;
+}
+
+#deleteIcon {
+  float: right;
+}
+
+#interior {
+  position: absolute;
+  top: 62px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+g-icon-button {
+  vertical-align: middle;
+}
+
+tk-property-inspector[hidden=true] {
+  display: none !important;
+}
+
+g-icon-button[hidden=true] {
+  width: 0 !important;
+  padding: 0 !important;
+  visibility: hidden !important;
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../mdv.js"></script>
+    <script src="../../third_party/ChangeSummary/util/array_reduction.js"></script>
+  </head>
+  <body>
+    <h1>Reduction</h1>
+
+    <form>
+    <template id="reduction" bind>
+      <template repeat="{{ items }}">
+        <div>{{ name }}: <input type="checkbox" checked="{{ selected }}"><input type="number" value="{{ amount }}"></div>
+      </template>
+      Sum: <input disabled value="{{ sum }}"><button disabled?="{{ noneSelected }}">Only Enable If Any Selected</button>
+    </template>
+    </form>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var model = {
+        items: [
+          { name: 'One', amount: 1, selected: false },
+          { name: 'Two', amount: 2, selected: false },
+          { name: 'Three', amount: 3, selected: false }
+        ]
+      };
+
+      // reduction1 must be close()'d if Object.observe is not implemented otherwise
+      // => memory leak.
+      var reduction1 = ArrayReduction.defineProperty(model, 'noneSelected', {
+        array: model.items,
+        path: 'selected',
+        initial: true,
+        reduce: function(prev, current) {
+          return prev && !current;
+        }
+      });
+
+      // reduction2 must be close()'d if Object.observe is not implemented otherwise
+      // => memory leak.
+      var reduction2 = ArrayReduction.defineProperty(model, 'sum', {
+        array: model.items,
+        path: 'amount',
+        reduce: function(prev, current) {
+          return Number(prev) + Number(current);
+        }
+      });
+
+      document.getElementById('reduction').model = model;
+
+      // Needed to detect model changes if Object.observe
+      // is not available in the JS VM.
+      Platform.performMicrotaskCheckpoint();
+    });
+    </script>
+  </body>
+</html>

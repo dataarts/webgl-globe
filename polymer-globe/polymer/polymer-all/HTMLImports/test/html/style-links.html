@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Style Links Test</title>
+    <script src="../../tools/test/htmltest.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <script src="../../html-imports.js"></script>
+    <link rel="import" href="imports/style-links.html">
+  </head>
+  <body>
+    <script>
+      addEventListener('HTMLImportsLoaded', function() {
+        
+        function checkLinksForContent(root) {
+          var links = root.querySelectorAll('link');
+          Array.prototype.forEach.call(links, function(link) {
+            chai.assert.ok(link.__resource, 'style link loaded', link);
+          })
+        }
+        
+        setTimeout(function() {
+          checkLinksForContent(document.body);
+          var template = document.body.querySelector('element template');
+          
+          var imp = document.head.querySelector('link[rel=import]');
+          chai.assert.ok(imp.content, 'import has content');
+          
+          var styleLink = document.querySelector('link[rel=stylesheet]');
+          chai.assert.isUndefined(styleLink.__resource);
+          
+          checkLinksForContent(imp.content.querySelector('element'));
+          
+          var expectedSheetCount = window.HTMLTemplateElement ? 2 : 4;
+          chai.assert.equal(document.styleSheets.length, expectedSheetCount);
+          
+          // TODO(sorvell): fail due to
+          // https://code.google.com/p/chromium/issues/detail?id=249381
+          //checkLinksForContent(template.content);
+          //checkLinksForContent(imp.content.querySelector('element template'));
+          
+          done();
+        }, 50);
+        
+        
+        
+      });
+    </script>
+    
+    <element>
+      <!-- note: this will be added to document.styleSheets -->
+      <link rel="stylesheet" href="imports/sheet1.css">
+      <template>
+        <link rel="stylesheet" href="imports/sheet2.css">
+      </template>
+    </element>
+  </body>
+</html>

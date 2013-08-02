@@ -1,0 +1,33 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<link rel="import" href="../../../more-elements/CoolClock/coolclock.html"/>
+<link rel="import" href="../../../more-elements/Stock/stock.html"/>
+<link rel="import" href="../../../more-elements/Weather/wu-weather.html"/>
+<polymer-element name="pi-home" attributes="stocks">
+  <template>
+    <link rel="stylesheet" href="css/pi-home.css" />
+    <div class="widgets">
+      <div class="center">
+        <x-coolclock></x-coolclock>
+      </div>
+      <div class="center">
+        <wu-weather autoupdate="false"></wu-weather>
+      </div>
+      <template repeat="{{stocks}}">
+        <x-stock symbol="{{}}" autoupdate="false"></x-stock>
+      </template>
+    </div>
+  </template>
+  <script>
+    Polymer('pi-home', {
+      ready: function() {
+        this.asyncFire('ready');
+      }
+    });
+  </script>
+</polymer-element>

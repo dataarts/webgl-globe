@@ -1,0 +1,67 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<link rel="import" href="../../../toolkit-ui/elements/g-menu-button.html"/>
+<link rel="import" href="../../../toolkit-ui/elements/g-menu-item.html"/>
+<polymer-element name="pi-view-button" attributes="layout">
+  <template>
+    <style>
+      g-menu-item.hidden-wide {
+        display: none;
+      }
+        
+      @media screen and (max-width: 800px) {
+        g-menu-item.hidden-narrow {
+          display: none;
+        }
+        
+        g-menu-item.hidden-wide {
+          display: block;
+        }
+      }
+    </style>
+    <g-menu-button id="viewButton" responsive="true" src="../images/view_quilt.png" selected="{{layout}}">
+      <g-menu-item name="quilt" label="Quilt" class="hidden-narrow" src="../images/view_quilt.png"></g-menu-item>
+      <g-menu-item name="quilt-horiz" label="Quilt (Horizontal)" class="hidden-narrow" src="../images/view_quilt.png"></g-menu-item>
+      <g-menu-item name="grid" label="Grid" src="../images/view_module.png"></g-menu-item>
+      <g-menu-item name="list" label="List" class="hidden-wide" src="../images/view_list.png"></g-menu-item>
+      <g-menu-item name="stream" label="Stream" src="../images/view_stream.png"></g-menu-item>
+      <g-menu-item name="column" label="Column" src="../images/view_column.png"></g-menu-item>
+    </g-menu-button>
+  </template>
+  <script>
+    Polymer('pi-view-button');
+  </script>
+</polymer-element>
+
+<link rel="import" href="../../../toolkit-ui/elements/g-menu-button.html"/>
+<link rel="import" href="../../../toolkit-ui/elements/g-menu-item.html"/>
+<polymer-element name="pi-action-button">
+  <template>
+    <g-menu-button src="../images/plus.png" responsive="true" valign="right">
+      <g-menu-item src="../images/comment.png">Post a Comment</g-menu-item>
+      <g-menu-item src="../images/hangout.png">Share Link</g-menu-item>
+      <g-menu-item src="../images/mail.png">Email Link</g-menu-item>
+      <g-menu-item src="../images/favorite.png">Add to Favorites</g-menu-item>
+    </g-menu-button>
+  </template>
+  <script>
+    Polymer('pi-action-button');
+  </script>
+</polymer-element>
+
+<link rel="import" href="../../../toolkit-ui/elements/g-icon-button.html"/>
+<polymer-element name="pi-link-button" attributes="link">
+  <template>
+    <a href="{{link}}" target="_blank">
+      <g-icon-button src="../images/web.png"></g-icon-button>
+    </a>
+  </template>
+  <script>
+    Polymer('pi-link-button');
+  </script>
+</polymer-element>

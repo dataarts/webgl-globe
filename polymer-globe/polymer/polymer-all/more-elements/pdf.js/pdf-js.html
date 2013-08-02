@@ -1,0 +1,93 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+<script src="pdf.min.js"></script>
+<script type="text/javascript">
+  PDFJS.disableWorker = true;
+  // Specify the main script used to create a new PDF.JS web worker.
+  // In production, change this to point to the combined `pdf.js` file.
+  //PDFJS.workerSrc = 'pdf.min.js';
+</script>
+
+<polymer-element name="pdf-js" attributes="src scale page">
+  <template>
+    <style>
+      @host {
+         * {
+           background-color: #444;
+           padding: 2px;
+           border: 1px solid black;
+         }
+      }
+      #pdfLabel {
+        color: white;
+        padding: 4px;
+        font-weight: bold;
+      }
+    </style>
+    <span id="pdfLabel">{{label}}</span><button on-click="prev">Prev</button><button on-click="next">Next</button>
+    <br/>
+    <canvas id="pdfCanvas" style="border:1px solid gray; background-color: white;"/>
+  </template>
+  <script>
+    Polymer('pdf-js', {
+      scale: 1,
+      page: 1,
+      src: '',
+      label: '',
+      ready: function() {
+      },
+      prev: function() {
+        if (this.page > 0) {
+          this.page--;
+        }
+      },
+      next: function() {
+        this.page++;
+      },
+      srcChanged: function() {
+        this.pdf = null;
+        this.page = 1;
+        this.label = (this.src || '(no src)').split('/').pop();
+        PDFJS.getDocument(this.src).then(function(pdf) {
+          this.pdf = pdf;
+          this.render();
+        }.bind(this));      
+      },
+      scaleChanged: function() {
+        this.render();
+      },
+      pageChanged: function() {
+        this.render();
+      },
+      render: function() {
+        if (!this.pdf) {
+          return;
+        }
+        var canvas = this.$.pdfCanvas;
+        var scale = this.scale;
+        // Using promise to fetch the page
+        this.pdf.getPage(this.page).then(function(page) {
+          var viewport = page.getViewport(scale);
+          //
+          // Prepare canvas using PDF page dimensions
+          //
+          var context = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          //
+          // Render PDF page into canvas context
+          //
+          var renderContext = {
+            canvasContext: context,
+            viewport: viewport
+          };
+          page.render(renderContext);
+        });
+      }
+    });
+  </script>
+</polymer-element>

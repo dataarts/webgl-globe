@@ -1,0 +1,99 @@
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+@host {
+  * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+.item {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  height: 60px;
+  padding: 0 20px;
+  border-bottom: 1px solid #ddd;
+  font-size: 15px;
+}
+
+.item.no-border {
+  border-bottom: 0;
+}
+
+.item > .item-input-label {
+  min-width: 80px;
+  color: #888;
+  font-weight: bold;
+}
+
+.item > input {
+  height: 32px;
+  width: 100px;
+  vertical-align: middle;
+  margin-right: 10px;
+  font-size: 15px;
+}
+
+.item > .flex {
+  display: -webkit-box;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+}
+
+.header {
+  background-color: #4D4D4D;
+  color: #eee;
+  font-size: 20px;
+}
+
+.accounts-title {
+  background-color: #eee;
+  color: #888;
+  font-weight: bold;
+}
+
+.accounts-title-icon {
+  margin-left: -8px;
+  padding-right: 6px;
+}
+
+.category-select-value {
+  padding: 0 4px 0 4px;
+}
+
+.button {
+  -webkit-appearance: none;
+  padding: 8px 14px 8px;
+  background-color: #e6e6e6;
+  background-repeat: no-repeat;
+  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  border: 1px solid #ccc;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  font-size: 14px;
+  color: #333;
+}
+
+.button:hover {
+  background-position: 0 -15px;
+}
+
+.button:active {
+  box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: #555;
+}

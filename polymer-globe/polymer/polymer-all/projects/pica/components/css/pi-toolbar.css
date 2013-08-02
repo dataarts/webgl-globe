@@ -1,0 +1,14 @@
+.toolbar-label {
+  font-size: 21px;
+  margin: 0;
+}
+
+@media screen and (max-width: 800px) {
+  /*@polyfill #actionbar > .toolbar > *:not(:last-child):not([hidden]) */
+  #actionbar content::-webkit-distributed(*:not(:last-child):not([hidden])) {
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+  }
+}

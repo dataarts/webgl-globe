@@ -1,0 +1,100 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<script src="reflection.js"></script>
+
+<polymer-element name="tk-inspector" attributes="sourceElement">
+  <template>
+    <link rel="stylesheet" href="css/tk-inspector.css" />
+    <div id="header">
+      <div id="crumbList">
+        <template repeat="{{crumbs}}">
+          <g-icon-button src="assets/ic_chevron_left_darkreg.png" on-click="selectParentElement" hidden="{{top}}"></g-icon-button>
+          <b>{{name}}</b>
+        </template>
+      </div>
+      <g-icon-button id="deleteIcon" src="assets/ic_delete_darkreg.png" on-click="deleteElement"></g-icon-button>
+    </div>
+    <div id="interior">
+      <template repeat="{{properties}}">
+        <tk-property-inspector property="{{}}" hidden="{{meta.hidden}}"></tk-property-inspector>
+      </template>
+      <tk-style-inspector sourceElement="{{sourceElement}}"></tk-style-inspector>
+    </div>
+    <tk-meta id="meta"></tk-meta>
+  </template>
+  <script>
+    Polymer('tk-inspector', {
+      sourceElement: null,
+      properties: null,
+      crumbs: [],
+      sourceElementChanged: function() {
+        // meta-data attached here
+        if (this.sourceElement) {
+          this.properties = Reflection.properties(this.sourceElement);
+          this.crumbs = this.listCrumbs();
+        } else {
+          this.name = '';
+          this.properties = [];
+          this.crumbs = [];
+        }
+        // right-align crumbs
+        this.asyncMethod(function() {
+          this.$.crumbList.scrollLeft = 9999;
+        });
+      },
+      listCrumbs: function() {
+        var crumbs = [];
+        var elt = this.sourceElement;
+        if (elt.id === 'designElement') {
+          return [{
+            name: 'component',
+            top: true
+          }]
+        }
+        var crumb = {};
+        while (elt && elt.id !== 'designElement') {
+          crumb = {
+            name: elt.localName
+          };
+          crumbs.unshift(crumb);
+          elt = elt.parentNode;
+        }
+        return crumbs;
+      },
+      deleteElement: function() {
+        this.fire('delete-element');
+      },
+      selectParentElement: function() {
+        this.fire('parent-element');
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-style-inspector" attributes="sourceElement">
+  <template>
+    <template repeat="{{properties}}">
+      <tk-property-inspector property="{{}}" nobind></tk-property-inspector>
+    </template>
+    <tk-meta id="meta">
+      <property name="backgroundColor" kind="color"></property>
+      <property name="opacity" kind="range" min="0" max="1" step="0.1" defaultvalue="1"></property>
+      <property name="border"></property>
+      <property name="width"></property>
+      <property name="height"></property>
+      <!-- <property name="test" kind="tk-compound-editor"></property> -->
+    </tk-meta>
+  </template>
+  <script>
+    Polymer('tk-style-inspector', {
+      properties: null,
+      sourceElementChanged: function() {
+        this.properties = Reflection.styles(this.sourceElement, 
+            this.$.meta.properties);
+      }
+    });
+  </script>
+</polymer-element>

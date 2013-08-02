@@ -1,0 +1,54 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="import" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-sidebar-menu/polymer-ui-sidebar-menu.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html">
+    
+<polymer-element name="simple-app">
+  <template>
+    <style>
+      polymer-ui-sidebar-menu {
+        width: 240px;
+      }
+      
+      .main {
+        padding: 30px;
+        font-size: 30px;
+      }
+    </style>
+    
+    <polymer-flex-layout></polymer-flex-layout>
+    
+    <polymer-ui-sidebar-menu selected="{{selected}}" valueattr="label" label="Polymer" theme="polymer-ui-dark-theme">
+      <polymer-ui-menu-item icon="settings" label="Home"></polymer-ui-menu-item>
+      <polymer-ui-menu-item icon="settings" label="Explore"></polymer-ui-menu-item>
+      <polymer-ui-menu-item icon="settings" label="Favorites"></polymer-ui-menu-item>
+    </polymer-ui-sidebar-menu>
+    
+    <div fit>
+      <polymer-flex-layout vertical></polymer-flex-layout>
+      
+      <polymer-ui-toolbar>
+        <polymer-ui-icon-button icon="menu" active></polymer-ui-icon-button>
+        <div fit>Toolbar</div>
+        <polymer-ui-icon-button icon="refresh"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="add"></polymer-ui-icon-button>
+      </polymer-ui-toolbar>
+      
+      <div fit class="main">
+        {{selected}} content...
+      </div>
+      
+    </div>
+  </template>
+  <script>
+    Polymer('simple-app', {
+      selected: 'Home'
+    });
+  </script>
+</polymer-element>

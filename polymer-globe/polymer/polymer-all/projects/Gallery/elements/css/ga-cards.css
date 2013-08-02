@@ -1,0 +1,127 @@
+/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+@host {
+  * {
+    display: block;
+    background-color: #f2f2ef;
+    padding: 10px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+  }
+}
+
+.inner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 10px;
+  padding: 20px;
+  border: 1px solid #d8d8d8;
+  background-color: #fff;
+  font-size: 14px;
+  color: #333;
+  overflow: hidden;
+}
+
+.title {
+  padding-bottom: 6px;
+  font-size: 26px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.author {
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.image {
+  height: 70%;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  margin-bottom: 20px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+/* 
+  grid layout 
+  each card has min-width: 256px and height: 300px
+*/
+/* 4 columns */
+.card {
+  position: relative;
+  float: left;
+  height: 300px;
+  width: 25%;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+/* 5 columns */
+@media all and (min-width: 1280px) {
+  .card {
+    width: 20%;
+  }
+}
+
+/* 6 columns */
+@media all and (min-width: 1536px) {
+  .card {
+    width: 16.66%;
+    Xwidth: -webkit-calc(100% / 6);
+  }
+}
+
+/* 7 columns ... */
+@media all and (min-width: 1792px) {
+  .card {
+    width: 14.28%;
+    Xwidth: -webkit-calc(100% / 7);
+  }
+}
+
+/* 3 columns */
+@media all and (max-width: 1023px) {
+  .card {
+    width: 33.33%;
+    Xwidth: -webkit-calc(100% / 3);
+  }
+}
+
+/* 2 columns */
+@media all and (max-width: 767px) {
+  .card {
+    width: 50%;
+  }
+}
+
+/* 1 column */
+@media all and (max-width: 511px) {
+  .card {
+    width: 100%;
+    height: auto;
+  }
+  
+  .inner {
+    position: relative;
+  }
+  
+  .image {
+    float: left;
+    width: 60px;
+    height: 60px;
+    margin: 0 20px 0 0;
+  }
+}

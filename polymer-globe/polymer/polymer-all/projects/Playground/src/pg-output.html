@@ -1,0 +1,66 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<polymer-element name="pg-output" attributes="html launchWindow">
+  <template>
+    <link rel="stylesheet" href="css/pg-output.css">
+  </template>
+  <script>
+    Polymer('pg-output', {
+      launchWindow: false,
+      htmlChanged: function() {
+        if (this.launchWindow) {
+          this.outputToWindow();
+        } else {
+          this.outputToIframe();
+        }
+      },
+      outputToIframe: function() {
+        if (!this.iframe) {
+          this.iframe = document.createElement('iframe');
+          this.webkitShadowRoot.appendChild(this.iframe);
+        }
+        this.iframe.src = '';
+        this.asyncMethod(function() {
+          var doc = this.iframe.contentDocument;
+          this.writeToDoc(doc);
+        }, null, 500);
+      },
+      outputToWindow: function() {
+        if (this.outputWindow) {
+          this.outputWindow.close();
+        }
+        this.outputWindow = window.open('', '', null, false);
+        this.writeToDoc(this.outputWindow.document);
+      },
+      writeToDoc: function(doc) {
+        if (!doc) {
+          return;
+        }
+        doc.open('text/html', '');
+        doc.write(this.makeOutputHTML('', this.html));
+        doc.close();
+      },
+      makeOutputHTML: function(head, body) {
+        var html = '<!DOCTYPE html>\n';
+        html += '<head>\n';
+        html += head || '';
+        // include base scripts and css
+        html += '<script src="../../polymer/polymer.js"></s' + 'cript>\n';
+        html += '<link rel="stylesheet" href="../../polymer-ui-elements/basic.css">\n';
+        // import elements
+        html += '<link rel="import" href="elements.html">\n';
+        html += '</head>\n';
+        // include content
+        html += '<body class="polymer-ui-body-text">\n';
+        html += body || '';
+        html += '\n</body>\n</html>';
+        return html;
+      }
+    });
+  </script>
+</polymer-element>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>Native CustomElements with MDV</title>
+    <meta charset="UTF-8">
+    <script src="../../MDV/mdv.js"></script>
+  </head>
+  <body>
+    <template>
+      <x-foo>XFoo</x-foo>
+    </template>
+    
+    <script>
+      document.webkitRegister('x-foo', {
+        prototype: Object.create(HTMLElement.prototype, {
+          isXFoo: {
+            value: true
+          }
+        })
+      });
+      document.addEventListener('DOMContentLoaded', function() {
+        var t = document.querySelector('template');
+        document.body.appendChild(t.content.cloneNode(true));
+        
+        var xfoo = document.querySelector('x-foo');
+        console.log('upgraded', xfoo.isXFoo);
+      });
+    </script>
+  </body>
+</html>

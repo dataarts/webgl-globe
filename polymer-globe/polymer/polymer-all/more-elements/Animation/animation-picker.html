@@ -1,0 +1,108 @@
+<link rel="import" href="../../toolkit-ui/elements/animation/all.html">
+<polymer-element name="animation-picker" on-click="clickHandler">
+  <link rel="stylesheet" href="../../toolkit-ui/elements/css/g-flex-layout.css">
+  <template>
+    <style>
+      @host {
+        * {
+          display: block;
+        }
+      }
+      .animationType {
+        background-color: darkgrey;
+        color: white;
+        padding: 8px;
+      }
+      .flexbox {
+        margin-left: 8px;
+      }
+      content::-webkit-distributed(*) {
+        text-align: right;
+        padding: 0 8px;
+        min-width: 35px;
+      }
+    </style>
+    <div class="flexbox align-center">
+      <div class="animationType">{{animationType}}</div>
+      <content flex></content>
+    </div>
+  </template>
+  <script>
+    (function() {
+      var ANIMATIONS = {
+        blink: 'g-blink',
+        bounce: 'g-bounce',
+        fadein: 'g-fadein',
+        fadeout: 'g-fadeout',
+        flip: 'g-flip',
+        shake: 'g-shake'
+      };
+      Polymer('animation-picker', {
+        publish: {
+          animationType: 'shake',
+          client: null,
+          target: null,
+          targetLabel: 'no target',
+          // proxied animation properties
+          targetSelector: ''
+        },
+        ready: function() {
+          this.super();
+          this.animationTypeChanged();
+        },
+        targetChanged: function() {
+          this.client && (this.client.target = this.target);
+          this.targetLabel = this.target ? this.target.id : 'no target';
+        },
+        animationTypeChanged: function() {
+          var animation = this.createAnimation();
+          var target;
+          if (this.client) {
+            this.client.cancel();
+            this.client.remove();
+            target || (target = this.client.target);
+          };
+          animation.target = target;
+          this.appendChild(animation);
+          this.client = animation;
+        },
+        createAnimation: function() {
+          var tag = ANIMATIONS[this.animationType]
+          var animation = document.createElement(tag);
+          animation.textContent = '({{targetLabel}})';
+          HTMLTemplateElement.bindAllMustachesFrom_(animation, this);
+          animation.classList.add('animation');
+          animation.addEventListener('animationchange', this.animationchangeHandler.bind(this));
+          animation.addEventListener('click', this.clientClickHandler.bind(this));
+          return animation;
+        },
+        targetSelectorChanged: function() {
+          this.client && (this.client.targetSelector = this.targetSelector);
+        },
+        apply: function() {
+          this.client && this.client.apply();
+        },
+        completeApply: function() {
+          this.client && this.client.completeApply();
+        },
+        animationchangeHandler: function() {
+          this.targetLabel = (this.client && this.client.target) ? this.client.target.id : 'no target';
+        },
+        clientClickHandler: function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        },
+        clickHandler: function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (this.parentNode && !this.parentNode.apply && this.client) {
+            setTimeout(this.client.play.bind(this.client));
+          }
+        },
+        get animation() {
+          return this.client && this.client.animation;
+        }
+      });
+    })();
+  </script>
+</polymer-element>

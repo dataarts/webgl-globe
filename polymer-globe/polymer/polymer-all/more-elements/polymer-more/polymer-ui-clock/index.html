@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>Polymer UI Clock</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- load polymer -->
+    <script src="../../../polymer/polymer.js"></script>
+    <!-- import element-->
+    <link rel="import" href="polymer-ui-clock.html">
+    <!-- -->
+    <style>
+      body {
+        background-color: #333;
+      }
+      polymer-ui-clock {
+        width: 320px;
+        height: 320px;
+        display: inline-block;
+        background: url("../assets/glass.png") no-repeat;
+        background-size: cover;
+        border: 4px solid rgba(32, 32, 32, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <polymer-ui-clock></polymer-ui-clock>
+  </body>
+</html>

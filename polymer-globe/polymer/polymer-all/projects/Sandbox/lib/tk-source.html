@@ -1,0 +1,45 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-source" attributes="sourceElement fontSize">
+  <template>
+    <ajaxorg-ace id="editor" mode="html" theme="chrome" tabSize="2"
+        fontSize="{{fontSize}}" on-editor-change="editorChange"></ajaxorg-ace>
+    <tk-element-dumper id="dumper"></tk-element-dumper>
+  </template>
+  <script>
+    Polymer('tk-source', {
+      update: function(positionCursor) {
+        // force components to update before dumping source
+        Platform.flush();
+        // given async effects a chance to apply to dom.
+        this.asyncMethod('updateImmediate', [positionCursor]);
+      },
+      updateImmediate: function(positionCursor) {
+        this.value = this.$.dumper.dumpElement(this.sourceElement.firstElementChild,
+          '');
+        this.$.editor.value = this.value;
+        Platform.flush();
+        if (positionCursor) {
+          this.positionCursor();
+        }
+      },
+      editorChange: function(event, detail) {
+        this.fire('source-changed', detail);
+      },
+      positionCursor: function() {
+        this.$.editor.focus();
+        this.$.editor.foldTag('style');
+        var pos = this.$.editor.find('</style>', {start: 0});
+        if (pos) {
+          this.$.editor.gotoLine(pos.end.row + 2);
+        }
+      },
+      shown: function() {
+        this.positionCursor();
+      }
+    });
+  </script>
+</polymer-element>

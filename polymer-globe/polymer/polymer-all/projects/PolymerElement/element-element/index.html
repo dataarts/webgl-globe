@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script src="../../../polymer/platform/platform.min.js"></script>
+</head>
+<body>
+  <x-foo></x-foo>
+  <hr>
+  <x-bar></x-bar>
+  
+  <element-element name="x-foo">
+    <template>
+      Hello Light World
+    </template>
+  </element-element>
+  
+  <element-element name="x-bar" extends="x-foo">
+    <template>
+      Hello Lighter World [<shadow></shadow>]
+    </template>
+  </element-element>
+  
+  <script>
+    document.extendHTMLPrototype(tag) {
+      var base = tag ? 
+          Object.getPrototypeOf(document.createElement(tag)) :
+              HTMLElement.prototype;
+      return Object.create(base);
+    }
+    document.register('element-element', {
+      prototype: Object.create(HTMLElement.prototype, {
+        register: {
+          value: function(api) {
+            var extnds = this.getAttribute('extends');
+            var prototype = document.extendHTMLPrototype(extnds);
+            // insert boilerplate api in inheritance chain (if needed)
+            if (!prototype.parseElements) {
+              mixin(prototype, boiler);
+              prototype = Object.create(prototype);
+            }
+            // silently override readyCallback
+            if (api && api.readyCallback) {
+              api.apiReadyCallback = api.readyCallback;
+              api.readyCallback = boiler.readyCallback;
+            }
+            // combine base api, custom api, and element property
+            Platform.mixin(prototype, api, {element: this});
+            // register the custom type
+            var ctor = document.register(this.attributes.name.value, {
+              prototype: prototype
+            });
+            // constructor shenanigans
+            prototype.constructor = ctor;
+            // cache useful stuff
+            this.ctor = ctor;
+            this.prototype = prototype;
+          }          
+        }
+      })
+    });
+    var boiler = {
+      apiReadyCallback: function() {
+      },
+      readyCallback: function() {
+        this.parseElements(this.__proto__);
+        this.apiReadyCallback();
+      },
+      parseElements: function(p) {
+        if (p && p.element) {
+          this.parseElements(p.__proto__);
+          p.parseElement.call(this, p.element);
+        }
+      },
+      parseElement: function(elementElement) {
+        this.createShadowRootFromTemplate(elementElement.firstElementChild); 
+      },
+      createShadowRootFromTemplate: function(template) {
+        this.webkitCreateShadowRoot().appendChild(template.createInstance());
+      }
+    };
+    CustomElements.upgradeDocument(document);    
+  </script>
+  
+  <script>
+    document.querySelector('element-element[name=x-foo]').register({
+      readyCallback: function() {
+        this.style.color = 'lightblue';
+      }
+    });
+    document.querySelector('element-element[name=x-bar]').register({
+      readyCallback: function() {
+        this.style.color = 'orange';
+      },
+      parseElement: function() {
+        this.webkitCreateShadowRoot().appendChild(document.createElement('content'));
+        this.textContent = 'blarg';
+      }
+    });
+  </script>
+</body>
+</html>

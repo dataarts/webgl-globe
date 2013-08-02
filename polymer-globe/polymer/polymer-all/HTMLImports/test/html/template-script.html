@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <title>template script test</title>
+    <script src="../../tools/test/htmltest.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <script src="../../html-imports.js"></script>
+    <link rel="import" href="imports/template-import.html">
+  </head>
+  <body>
+    <script>
+      addEventListener('HTMLImportsLoaded', function() {
+        var link = document.querySelector('link');
+        var template = link.import.content.querySelector('template');
+        chai.assert.ok(template, 'found import template');
+        var content = template.content || template;
+        document.body.appendChild(content.cloneNode(true));
+        chai.assert.ok(window.executedTemplateScript, 'executedTemplateScript');
+        done();
+      });
+    </script>
+  </body>
+</html>

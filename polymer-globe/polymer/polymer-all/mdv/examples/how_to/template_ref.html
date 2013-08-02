@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../mdv.js"></script>
+  </head>
+  <body>
+    <h1>Re-using templates</h1>
+
+    <template id="user">
+      <div>{{ name }}</div>
+    </template>
+
+    <h2>Usage one: </h2>
+    User: <template id="example1" ref="user" bind></template>
+
+    <h2> Usage two: </h2>
+    More users:
+    <ul>
+      <template id="example2" repeat>
+        <li><template ref="user" bind></template></li>
+      </template>
+    </ul>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var t1 = document.getElementById('example1');
+      t1.model = { name: 'Sam' };
+
+      var t2 = document.getElementById('example2');
+      t2.model = [{ name: 'Amy' }, { name: 'Lin' }, { name: 'Peter' }];
+
+      // Needed to detect model changes if Object.observe
+      // is not available in the JS VM.
+      Platform.performMicrotaskCheckpoint();
+    });
+    </script>
+  </body>
+</html>

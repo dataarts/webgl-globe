@@ -1,0 +1,87 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<script src="Chart.min.js"></script>
+<polymer-element name="chart-js" attributes="data dataString kind color options">
+  <template>
+    <style>
+      @host {
+        * {
+            display: block;
+            width: 300px;
+            height: 260px;
+        }
+      }
+    </style>  
+    <canvas id="chart" width="100" height="100"></canvas> 
+  </template>
+  <script>
+    Polymer('chart-js', {
+      kind: '',
+      data: null,
+      options: null,
+      color: '#AABBDD',
+      dataString: '28,48,40,19,96,27,100',
+      inserted: function() {
+        this.$.chart.width = Math.max(this.offsetWidth, 100);
+        this.$.chart.height = Math.max(this.offsetHeight, 100);
+        //Get the context of the canvas element we want to select
+        this.ctx = this.$.chart.getContext('2d');
+        if (!this.kind) {
+          this.kind = ['Radar', 'Line', 'Bar'][Math.floor(Math.random()*3)];
+          this.dataStringChanged(); 
+        }
+      },
+      hexToRgb: function(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? [
+            parseInt(result[1], 16),
+            parseInt(result[2], 16),
+            parseInt(result[3], 16)
+        ] : [0, 0, 0];
+      },
+      updateChart: function() {
+        if (this.data) {
+          console.log(this.data);
+          var chart = new Chart(this.ctx);
+          var kind = this.kind;
+          if (!chart[kind]) {
+            kind = 'Line';
+          }        
+          this.chart = chart[kind](this.data, this.options);
+        }
+      },
+      dataStringChanged: function() {
+        var dataPts = this.dataString.split(',').reduce(
+          function(previousValue, currentValue, i, a) {
+            previousValue.push(parseFloat(currentValue));
+            return previousValue;
+          }, []);
+        var rgbColor = this.hexToRgb(this.color).join(',');
+        this.data = {
+          labels: ['January','February','March','April','May','June','July'],
+          datasets: [
+            {
+              fillColor : 'rgba(' + rgbColor + ', 0.5)',
+              strokeColor : 'rgba(' + rgbColor + ', 1)',
+              pointColor : 'rgba(' + rgbColor + ', 1)',
+              pointStrokeColor: '#fff',
+              data: dataPts
+            }
+          ]
+        };
+      },
+      colorChanged: function() {
+        this.dataStringChanged();
+      },
+      dataChanged: function() {
+        this.updateChart();
+      },
+      kindChanged: function() {
+        this.updateChart();
+      }
+    });
+  </script>  
+</polymer-element>

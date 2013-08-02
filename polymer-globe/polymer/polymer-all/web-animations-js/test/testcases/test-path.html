@@ -1,0 +1,119 @@
+<!--
+Copyright 2012 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE html>
+<style>
+.animation {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  top: 0px;
+  left: 0px;
+  background: lightsteelblue;
+}
+.expectation {
+  background: red;
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  top: 0px;
+  left: 0px;
+}
+#e1 {
+  -webkit-transform: translate(87.5px, 87.5px);
+  transform: translate(87.5px, 87.5px);
+}
+#e2 {
+  -webkit-transform: translate(387.5px, 87.5px);
+  transform: translate(387.5px, 87.5px);
+}
+#e3 {
+  -webkit-transform: translate(87.5px, 287.5px);
+  transform: translate(87.5px, 287.5px);
+}
+#e4, #anim4 {
+  -webkit-transform: translate(387.5px, 287.5px);
+  transform: translate(387.5px, 287.5px);
+}
+svg {
+position:absolute;
+top: 0px;
+left: 0px;
+width: 800px;
+height: 600px;
+}
+</style>
+
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <path id=path1 d="M 100,100 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0 " />
+  <path d="M 100,100 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0 "
+      stroke="black" stroke-width="1" fill="none" />
+  <path id=path2 d="M400,100l0,0l0,-50l100,0l86.3325,122.665z" />
+  <path d="M400,100l0,0l0,-50l100,0l86.3325,122.665z" stroke="black"
+      stroke-width="1" fill="none" />
+  <path id=path3 d="M100,300l0,0l0,-50l100,0l86.3325,122.665z" />
+  <path d="M100,300l0,0l0,-50l100,0l86.3325,122.665z" stroke="black"
+      stroke-width="1" fill="none" />
+  <path id=path4 d="M400,300l0,0l0,-50l100,0l86.3325,122.665z" />
+  <path d="M400,300l0,0l0,-50l100,0l86.3325,122.665z" stroke="black"
+      stroke-width="1" fill="none" />
+</svg>
+
+<div id="e1" class="expectation"></div>
+<div id="anim1" class="animation">&rarr;</div>
+<div id="e2" class="expectation"></div>
+<div id="anim2" class="animation">&rarr;</div>
+<div id="e3" class="expectation"></div>
+<div id="anim3" class="animation">&rarr;</div>
+<div id="e4" class="expectation"></div>
+<div id="anim4" class="animation">&rarr;</div>
+
+
+<script src="../bootstrap.js"></script>
+<script>
+"use strict";
+
+var animFunc1 = new PathAnimationEffect(
+    document.querySelector('#path1').pathSegList, 'auto-rotate');
+document.timeline.play(new Animation(document.querySelector("#anim1"),
+    animFunc1, {iterationDuration: 10, iterationCount: 2}));
+
+var animFunc2 = new PathAnimationEffect(
+    document.querySelector('#path2').pathSegList, 'auto-rotate');
+document.timeline.play(new Animation(document.querySelector("#anim2"),
+    animFunc2, {iterationDuration: 10, iterationCount: 2}));
+
+var animFunc3 = new PathAnimationEffect(
+    document.querySelector('#path3').pathSegList, 'auto-rotate');
+document.timeline.play(new Animation(
+    document.querySelector("#anim3"), animFunc3,
+    {iterationDuration: 10, iterationCount: 2, timingFunction: "paced"}));
+
+var animFunc4KeyFrames = new KeyframeAnimationEffect(
+    [{transform: "translate(387.5px, 287.5px) rotate(180deg)"}], "replace");
+var animFunc4Path = new PathAnimationEffect(
+    document.querySelector('#path4').pathSegList, 'auto-rotate');
+var anim4 = new Animation(document.querySelector("#anim4"), animFunc4Path,
+    {iterationDuration: 10, iterationCount: 2, timingFunction: "paced"});
+document.timeline.play(anim4);
+
+testharness_timeline.schedule(function() {
+    anim4.effect = animFunc4KeyFrames;
+}, 3000);
+testharness_timeline.schedule(function() {
+    anim4.effect = animFunc4Path;
+}, 6000);
+</script>

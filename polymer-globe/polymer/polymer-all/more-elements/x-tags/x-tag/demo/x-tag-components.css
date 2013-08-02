@@ -1,0 +1,285 @@
+/*   demo styles   */
+
+x-switch {
+  -webkit-transition: background-color 0.25s ease, border-color 0.25s ease;
+  -moz-transition: background-color 0.25s ease, border-color 0.25s ease;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+  background-color: #E6E6E6;
+  border-color: #C2C2C2;
+  border-radius: 24px;
+  color: #fff;
+  font-size: 16px;
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  margin: 10px 0;
+}
+
+x-switch[checked] {
+  border-color: rgb(0, 172, 206);
+  background-color: #00C3EA;
+}
+
+x-switch .x-switch-background {
+  background: -moz-linear-gradient(left, #00C3EA 50%, #E6E6E6 50%);
+}
+
+x-switch .x-switch-text {
+  padding: 1px 6px;
+}
+
+x-switch .x-switch-knob {
+  border-radius: 24px;
+  background: -webkit-linear-gradient(top, #f0f0f0, #aaa);
+  background: -moz-linear-gradient(top, #f0f0f0, #aaa);
+  background: -ms-linear-gradient(top, #f0f0f0, #aaa);
+  background: -o-linear-gradient(top, #f0f0f0, #aaa);
+  background: linear-gradient(top, #f0f0f0, #aaa);
+  box-shadow: 0 1px 2px 0px rgba(0,0,0,0.7);
+}
+
+
+/*  default component styles  */
+
+x-spinner, x-spinner b, x-spinner img {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+x-spinner {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  line-height: 100%;
+  font-family: sans-serif;
+  color: #000;
+  overflow: hidden;
+}
+x-spinner b {
+  display: block;
+  font-size: inherit;
+  height: 100%;
+  left: 0;
+  font-size: .20em;
+  overflow: hidden;
+  padding: 0 15%;
+  position: absolute;
+  text-align: center;
+  text-overflow: ellipsis;
+  top: 0;
+  white-space: nowrap;
+  width: 100%;
+  word-wrap: break-word;
+  z-index: 1;
+}
+x-spinner img {
+  -webkit-animation: 1s spin infinite linear;
+  -moz-animation: 1s spin infinite linear;
+  -ms-animation: 1s spin infinite linear;
+  animation: 1s spin infinite linear;
+  height: auto;
+  width: 100%;
+}
+x-spinner:not([src]) img {
+  border-radius: 100%;
+  border: solid transparent;
+  border-top-color: inherit;
+}
+
+@-webkit-keyframes spin { to { -webkit-transform: rotate(360deg); } }
+@-moz-keyframes spin { to { -moz-transform: rotate(360deg); } }
+@-ms-keyframes spin { to { -ms-transform: rotate(360deg); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+x-switch {
+	display: inline-block;
+	position: relative;
+	border: 1px solid;
+	text-align: center;
+	font-family: monospace;
+	overflow: hidden;
+	cursor: pointer;
+}
+
+x-switch input[type="checkbox"] {
+	position: absolute;
+	border: none;
+	width: 100%;
+    height: 100%;
+	top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    z-index: 1;
+	cursor: pointer;
+}
+
+x-switch > div {
+	display: table;
+	overflow: hidden;
+}
+
+x-switch > div > div {
+	display: table-cell;
+	width: 0;
+	vertical-align: middle;
+}
+
+x-switch > div > div:not(.x-switch-knob) {
+	visibility: hidden;
+}
+
+.x-switch-text {
+	padding: 2px 4px;
+	white-space: nowrap;
+}
+
+.x-switch-text:before,
+x-switch > div > .x-switch-knob:last-child .x-switch-text:last-child:after {
+	display: block;
+	content: attr(ontext);
+}
+
+.x-switch-text:after,
+x-switch > div > .x-switch-knob:last-child .x-switch-text:last-child:before {
+	display: block;
+	content: attr(offtext);
+}
+
+.x-switch-text:after {
+	height: 0 !important;
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	border-top: 0 !important;
+	border-bottom: 0 !important;
+	overflow: hidden !important;
+	visibility: hidden !important;
+}
+
+.x-switch-knob {
+	display: table;
+	width: 20px;
+	height: 100%;
+	background: black;
+}
+
+x-switch > div > .x-switch-knob:last-child {
+	position: absolute;
+	top: 0;
+	left: 0;
+	-webkit-transition: -webkit-transform 0.3s ease, left 0.3s ease;
+	-moz-transition: -moz-transform 0.3s ease, left 0.3s ease;
+	-ms-transition: -ms-transform 0.3s ease, left 0.3s ease;
+	-o-transition: -o-transform 0.3s ease, left 0.3s ease;
+	transition: transform 0.3s ease, left 0.3s ease;
+}
+
+x-switch > div > .x-switch-knob:last-child > div {
+	display: table;
+	position: absolute;
+	height: 100%;
+	left: 50%;
+	-webkit-transform: translate(-50%);
+	-moz-transform: translate(-50%);
+	-ms-transform: translate(-50%);
+	-o-transform: translate(-50%);
+	transform: translate(-50%);
+}
+
+x-switch > div > .x-switch-knob:last-child > div > div {
+	display: table-cell;
+	height: 100%;
+	vertical-align: middle;
+}
+
+x-switch input:checked + div > .x-switch-knob:last-child {
+	left: 100%;
+	-webkit-transform: translate(-100%);
+	-moz-transform: translate(-100%);
+	-ms-transform: translate(-100%);
+	-o-transform: translate(-100%);
+	transform: translate(-100%);
+}
+
+.x-switch-background {
+	background: -webkit-linear-gradient(left, limegreen 50%, tomato 50%);
+	background: -moz-linear-gradient(left, limegreen 50%, tomato 50%);
+	background: -ms-linear-gradient(left, limegreen 50%, tomato 50%);
+	background: -o-linear-gradient(left, limegreen 50%, tomato 50%);
+	background: linear-gradient(left, limegreen 50%, tomato 50%);
+}
+
+/*** WEBKIT HACK
+Background color state switching workaround for overflow clipping render bug in WebKit: https://bugs.webkit.org/show_bug.cgi?id=77572 - http://code.google.com/p/chromium/issues/detail?id=157218
+This was coded in such a way that it will gracefully upgrade to the better behavior when WebKit gets its shit together
+***/
+
+.x-switch-background {
+	background: -webkit-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,0));
+}
+
+x-switch {
+	background: tomato;
+	-webkit-transition: background-color 0.25s ease;
+}
+
+x-switch[checked] {
+	background: limegreen;
+}
+
+/*** END WEBKIT HACK ***/
+
+x-toggle {
+	display: inline-block;
+	position: relative;
+	cursor: pointer;
+}
+
+x-toggle input {
+	display: block !important;
+	position: absolute !important;
+	top: 0 !important;
+	left: 0 !important;
+	height: 100% !important;
+	width: 100% !important;
+	margin: 0 !important;
+	opacity: 0.0001 !important;
+	cursor: pointer;
+}
+
+x-toggle:after {
+	content: attr(label);
+	vertical-align: middle;
+}
+
+.x-toggle-check {
+	display: inline-block;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	width: 16px;
+	height: 16px;
+	margin-right: 3px;
+	color: #000;
+	vertical-align: middle;
+	border: 2px solid;
+	-webkit-transition: border 0.15s 0s ease-in-out;
+	-moz-transition: border 0.15s 0s ease-in-out;
+	-ms-transition: border 0.15s 0s ease-in-out;
+	transition: border 0.15s 0s ease-in-out;
+}
+
+input[type="radio"] + .x-toggle-check {
+	border-radius: 50%;
+}
+
+input:checked + .x-toggle-check {
+	border-width: 8px;
+}
+
+input:focus + .x-toggle-check {
+	-webkit-box-shadow: 0 0 2px 1px rgba(0, 100, 155, 0.8);
+	-moz-box-shadow: 0 0 2px 1px rgba(0, 100, 155, 0.8);
+	-ms-box-shadow: 0 0 2px 1px rgba(0, 100, 155, 0.8);
+	box-shadow: 0 0 2px 1px rgba(0, 100, 155, 0.8);
+}

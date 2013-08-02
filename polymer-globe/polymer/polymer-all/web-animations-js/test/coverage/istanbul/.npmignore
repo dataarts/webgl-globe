@@ -1,0 +1,14 @@
+.npmignore
+.gitignore
+generate-pages.sh
+.travis.yml
+*.tar
+*.tgz
+*.log
+misc/
+build/
+public/
+yuidoc.json
+.idea/
+html-report/
+

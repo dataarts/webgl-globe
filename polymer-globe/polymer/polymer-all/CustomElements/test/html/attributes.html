@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <title>HTML Imports Test</title>
+    <script src="../../tools/test/htmltest.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <script src="../../custom-elements.js"></script>
+  </head>
+  <body>
+    <element name="x-foo">
+      <script>
+        (this !== window) && this.register({
+          prototype: {
+            removeAttributeOk: false,
+            setAttributeOk: false,
+            attributeChangedOk: false,
+            removeAttribute: function(name) {
+              this.removeAttributeOk = true;
+              return HTMLElement.prototype.removeAttribute.call(this, name);
+            },
+            setAttribute: function(name, value) {
+              this.setAttributeOk = true;
+              HTMLElement.prototype.setAttribute.call(this, name, value);
+            },
+            attributeChangedCallback: function(name) {
+              this.attributeChangedOk = (name == 'squid');
+            }
+          }
+        });
+      </script>
+    </element>
+    <script>
+      addEventListener('WebComponentsReady', function() {
+        var xfoo = document.createElement('x-foo');
+        chai.assert.isFalse(xfoo.removeAttributeOk);
+        chai.assert.isFalse(xfoo.setAttributeOk);
+        chai.assert.isFalse(xfoo.attributeChangedOk);
+        xfoo.setAttribute('squid', 'tentacles');
+        chai.assert.isTrue(xfoo.setAttributeOk);
+        chai.assert.isTrue(xfoo.attributeChangedOk);
+        xfoo.attributeChangedOk = false;
+        xfoo.removeAttribute('squid');
+        chai.assert.isTrue(xfoo.removeAttributeOk);
+        chai.assert.isTrue(xfoo.setAttributeOk);
+        done();
+      });
+    </script>
+  </body>
+</html>

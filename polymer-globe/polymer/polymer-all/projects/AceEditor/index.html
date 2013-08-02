@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="../../polymer/polymer.js"></script>
+    <link rel="import" href="../../toolkit-ui/elements/g-app.html">
+    <link rel="import" href="../../toolkit-ui/elements/g-toolbar.html">
+    <link rel="import" href="../../toolkit-ui/elements/g-panels.html">
+    <link rel="import" href="../../toolkit-ui/elements/g-menu-item.html">
+    <link rel="import" href="../../toolkit-ui/elements/g-ribbon.html">
+    <link rel="import" href="../../toolkit-ui/elements/g-icon-button.html">
+    <link rel="import" href="../../more-elements/Ace/Ace.html">
+  </head>
+  <body>
+    <ace-app>function foo(items) {
+  var x = "All this is syntax highlighted";
+  return x;
+  }
+ </ace-app>
+    
+    
+    <polymer-element name="ace-app" extends="g-app">
+      <template> 
+        <style>
+          ajaxorg-ace {
+            top: 60px !important;
+          }
+          g-panels > g-ribbon {
+            width: 300px;
+          }
+        </style>
+        <g-panels id="panels" class="flex" index="1" transition="flow">
+          <g-ribbon name="ribbon" label="Ace" selected="home">
+            <g-menu-item name="home" on-tap="toggle">Home</g-menu-item>
+          </g-ribbon>
+          <div name="content">
+            <g-toolbar>
+              <g-icon-button src="images/menu.png" on-tap="toggle"></g-icon-button>
+              ace.ajax.org
+            </g-toolbar>
+            <ajaxorg-ace theme="github" id="ace"></ajaxorg-ace>
+          </div>
+        </g-panels>
+      </template>
+      <script>
+        Polymer('ace-app', {
+          ready: function() {
+            this.super();
+            this.$.ace.value = this.textContent;
+          },
+          toggle: function() {
+            this.$.panels.toggleBetween('ribbon', 'content');
+          }
+        });
+      </script>
+    </polymer-element>
+  </body>
+</html>

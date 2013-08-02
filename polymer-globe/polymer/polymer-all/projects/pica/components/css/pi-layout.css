@@ -1,0 +1,189 @@
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+/* list layout */
+.list > .item {
+  display: block;
+}
+
+/* stream layout */
+.stream > .item {
+  display: block;
+}
+
+/*
+  column layout
+  each column has width: 320px and height: 100%
+*/
+.column {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  white-space: nowrap;
+}
+
+.column > .item {
+  display: inline-block;
+  width: 320px;
+  height: 100%;
+  vertical-align: top;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  white-space: normal;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 
+  grid layout 
+  each cell has min-width: 256px and height: 380px
+*/
+.grid > * {
+  float: left;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  height: 380px;
+  width: 25%;
+}
+
+/* 5 columns */
+@media all and (min-width: 1280px) {
+  .grid > * {
+    width: 20%;
+  }
+}
+
+/* 6 columns */
+@media all and (min-width: 1536px) {
+  .grid > * {
+    width: 16.66%;
+    width: -webkit-calc(100% / 6);
+  }
+}
+
+/* 7 columns ... */
+@media all and (min-width: 1792px) {
+  .grid > * {
+    width: 14.28%;
+    width: -webkit-calc(100% / 7);
+  }
+}
+
+/* 3 columns */
+@media all and (max-width: 1023px) {
+  .grid > * {
+    width: 33.33%;
+    width: -webkit-calc(100% / 3);
+  }
+}
+
+/* 2 columns */
+@media all and (max-width: 767px) {
+  .grid > * {
+    width: 50%;
+  }
+}
+
+/* 1 column */
+@media all and (max-width: 511px) {
+  .grid > * {
+    width: 100%;
+  }
+}
+
+/* quilt layout */
+.quilt > * {
+  float: left;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  min-height: 350px;
+}
+
+.quilt > .item:nth-of-type(8n+1) {
+  width: 50%;
+  height: 700px;
+}
+
+.quilt > .item:nth-of-type(8n+2), .quilt > .item:nth-of-type(8n+3), .quilt > .item:nth-of-type(8n+4), .quilt > .item:nth-of-type(8n+5) {
+  width: 25%;
+}
+
+.quilt > .item:nth-of-type(8n+6), .quilt > .item:nth-of-type(8n+7), .quilt > .item:nth-of-type(8n+8) {
+  width: 33.33%;
+  width: -webkit-calc(100% / 3);
+}
+
+@media all and (max-width: 1200px) {
+  .quilt > .item:nth-of-type(5n+1) {
+    width: 60%;
+    height: 700px;
+  }
+
+  .quilt > .item:nth-of-type(5n+2), .quilt > .item:nth-of-type(5n+3) {
+    width: 40%;
+    height: auto;
+  }
+
+  .quilt > .item:nth-of-type(5n+4), .quilt > .item:nth-of-type(5n+5) {
+    width: 50%;
+    height: auto;
+  }
+}
+
+/* quilt (horiz) layout */
+.quilt-horiz {
+  -webkit-writing-mode: vertical-lr;
+  -moz-writing-mode: vertical-lr;
+  -ms-writing-mode: tb-lr;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.quilt-horiz > * {
+  float: left;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  overflow: hidden;
+  min-width: 350px;
+}
+
+.quilt-horiz > * > * {
+  -webkit-writing-mode: horizontal-tb;
+  -moz-writing-mode: horizontal-tb;
+  -ms-writing-mode: lr-tb;
+}
+
+.quilt-horiz > .item:nth-of-type(8n+1) {
+  width: 700px;
+  height: 50%;
+}
+
+.quilt-horiz > .item:nth-of-type(8n+2), .quilt-horiz > .item:nth-of-type(8n+3), .quilt-horiz > .item:nth-of-type(8n+4), .quilt-horiz > .item:nth-of-type(8n+5) {
+  height: 25%;
+}
+
+.quilt-horiz > .item:nth-of-type(8n+6), .quilt-horiz > .item:nth-of-type(8n+7), .quilt-horiz > .item:nth-of-type(8n+8) {
+  height: 33.33%;
+  height: -webkit-calc(100% / 3);
+}
+
+@media all and (max-height: 1400px) {
+  .quilt-horiz > .item:nth-of-type(5n+1) {
+    width: 700px;
+    height: 60%;
+  }
+
+  .quilt-horiz > .item:nth-of-type(5n+2), .quilt-horiz > .item:nth-of-type(5n+3) {
+    width: auto;
+    height: 40%;
+  }
+
+  .quilt-horiz > .item:nth-of-type(5n+4), .quilt-horiz > .item:nth-of-type(5n+5) {
+    width: auto;
+    height: 50%;
+  }
+}

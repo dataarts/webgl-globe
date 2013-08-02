@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../mdv.js"></script>
+  </head>
+  <body>
+    <h1>Bind To Text</h1>
+
+    <ul>
+    <template id="text" repeat="{{ text }}">
+      <li>Text is bound here: {{ value }}</li>
+    </template>
+    </ul>
+
+    <button id="rotateText">Rotate</button>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var t = document.getElementById('text');
+      t.model = {
+        text: [
+          { value: 'Fee' },
+          { value: 'Fi' },
+          { value: 'Fo' },
+          { value: 'Fum' }
+        ]
+      };
+
+      // Needed to detect model changes if Object.observe
+      // is not available in the JS VM.
+      Platform.performMicrotaskCheckpoint();
+
+      var b = document.getElementById('rotateText');
+      b.addEventListener('click', function() {
+        t.model.text.push(t.model.text.shift());
+
+        Platform.performMicrotaskCheckpoint();
+      });
+    });
+    </script>
+  </body>
+</html>

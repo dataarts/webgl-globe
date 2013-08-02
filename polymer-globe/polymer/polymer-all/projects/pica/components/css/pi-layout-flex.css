@@ -1,0 +1,15 @@
+/*
+  grid layout
+  each cell has min-width: 256px and height: 380px
+*/
+.flex.grid {
+  display: -webkit-flex;
+  -webkit-flex-wrap: wrap;
+}
+
+.flex.grid > * {
+  -webkit-flex: auto;
+  box-sizing: border-box;
+  min-width: 256px;
+  height: 380px;
+}

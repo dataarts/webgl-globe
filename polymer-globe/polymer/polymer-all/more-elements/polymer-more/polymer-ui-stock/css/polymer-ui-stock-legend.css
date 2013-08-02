@@ -1,0 +1,40 @@
+@host {
+  * {
+  }
+}
+
+.stock-item {
+  overflow:hidden;
+}
+
+.stock-change {
+  color: #5BDB00;
+}
+
+.stock-change.down {
+  color: #dd4b39;
+}
+
+.stock-price {
+  xcolor: rgba(0, 0, 0, 0.4);
+  margin-right: 10px;
+}
+
+.stock-label {
+  float:left;
+  position: relative;
+  display:block;
+}
+
+.stock-color {
+  display:inline-block;
+  width:16px;
+  height:16px;
+  margin-right:10px;
+  margin-top:1px;
+  border-radius: 3px;
+}
+
+.stock-data {
+  float:right;
+}

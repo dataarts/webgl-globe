@@ -1,0 +1,132 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<link rel="import" href="../../../toolkit-ui/elements/g-icon.html"/>
+<polymer-element name="pi-items-view" attributes="layout view items selected">
+  <template>
+    <link rel="stylesheet" href="css/pi-items-view.css" />
+    <link rel="stylesheet" href="css/pi-layout-flex.css" />
+    <link rel="stylesheet" href="css/pi-layout.css" />
+    <div id="container" loaded="{{loaded}}" class="{{layout}} {{view}}">
+      <template repeat="{{viewItems}}">
+        <div class="item">
+          <div class="card" on-tap="selectItem">
+            <div class="image" style="background-image: url({{imgSrc}});" showing="{{imageShowing}}"></div>
+            <div class="info">
+              <div class="title">{{title}}
+                <span class="unread-count">{{unread}}</span>
+              </div>
+              <div class="description">{{desc}}</div>
+              <div class="content">{{dummyText}}</div>
+              <div class="source">
+                <span class="source-icon" style="background-image: url({{sourceIcon}});"></span>
+                <span class="source-title">{{source}}
+                  <span class="source-time">{{since}}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <div id="more" on-tap="loadMore">
+        <g-icon src="../images/refresh_lightreg.png"></g-icon>
+          Load more articles
+      </div>
+    </div>
+  </template>
+  <script>
+    (function() {
+      function toNumber(s) {
+        return Number(s.substring(0, s.length - 2));
+      }
+    
+      function calcMaxX() {
+        var maxX = 0;
+        for (var i = 0; i < cards.length; i++) {
+          if (maxX < cards[i].offsetLeft) { maxX = cards[i].offsetLeft; }
+        }
+        return maxX;
+      }
+      
+      Polymer('pi-items-view', {
+        layout: 'grid',
+        loaded: true,
+        pageSize: 24,
+        ready: function() {
+          this.setAttribute('touch-action', 'scroll');
+          this.updateMoreShowing();
+        },
+        loadedChanged: function() {
+          if (this.loaded && this.layout === 'grid') {
+            this.animateCascade();
+          }
+        },
+        itemsChanged: function() {
+          if (this.items && this.pageSize > 0) {
+            this.viewItems = this.items.slice(0, this.pageSize);
+          }
+          this.updateMoreShowing();
+          this.scrollToTop();
+        },
+        scrollToTop: function() {
+          requestAnimationFrame(function() {
+            this.scrollTop = 0;
+          }.bind(this));
+        },
+        updateMoreShowing: function() {
+          this.$.more.style.display = 
+              (this.viewItems && this.viewItems.length < 
+                  (this.items && this.items.length)) ? null : 'none';
+        },
+        loadMore: function() {
+          var l = this.viewItems.length;
+          var more = this.items.slice(l, l + this.pageSize);
+          this.viewItems.push.apply(this.viewItems, more);
+          this.updateMoreShowing();
+        },
+        selectItem: function(event, detail, sender) {
+          this.selected = sender.templateInstance.model;
+          this.fire('select', {item: this.selected});
+        },
+        animateCascade: function() {
+          var container = this.$.container;
+          var cards = container.querySelectorAll('.item');
+          
+          var width = toNumber(window.getComputedStyle(cards[0]).width);
+          var height = toNumber(window.getComputedStyle(cards[0]).height);
+  
+          var containerWidth = toNumber(window.getComputedStyle(container).width);
+          var containerHeight = document.documentElement.clientHeight;
+          
+          var scaledMiddleX = containerWidth / width / 2;
+          var scaledMiddleY = containerHeight / height / 2;
+  
+          var parGroup = new ParGroup();
+  
+          for (var i = 0; i < cards.length; i++) {
+            var y = cards[i].offsetTop / height;
+            var x = cards[i].offsetLeft / width;
+            var yDist = scaledMiddleY - y + 0.5;
+            var xDist = scaledMiddleX - x + 0.5;
+            var dist = Math.sqrt(yDist * yDist + xDist * xDist);
+            var yTrans = yDist * 10 / dist;
+            var xTrans = xDist * 10 / dist;
+            var d = x + y;
+            parGroup.add(
+              new Animation(cards[i], {
+                opacity: ["0", "1"],
+                "-webkit-transform": [
+                  "translate(" + xTrans + "px, " + yTrans + "px) translateZ(0)", 
+                  "translate(0px, 0px) translateZ(0)"]},
+                {duration: 0.5, startDelay: 0.03 * d, fillMode: "backwards"}));
+          }
+          document.timeline.play(parGroup);
+        }
+      });
+    })();
+  </script>
+</polymer-element>

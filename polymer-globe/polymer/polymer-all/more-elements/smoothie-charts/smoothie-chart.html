@@ -1,0 +1,55 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<script src="smoothie.min.js"></script>
+<polymer-element name="smoothie-chart">
+  <template>
+    <canvas id="canvas" width="300" height="100"></canvas>
+  </template>
+  <script>
+    Polymer('smoothie-chart', {
+      grid: {
+        strokeStyle:'rgb(128, 128, 64)', 
+        fillStyle:'rgb(0, 0, 0)',
+        lineWidth: 1, 
+        millisPerLine: 250, 
+        verticalSections: 6
+      },
+      labels: {
+        fillStyle:'rgb(250, 200, 200)' 
+      },
+      ready: function() {
+        this.series = [];
+        this.smoothie = new SmoothieChart({
+          grid: this.grid,
+          labels: this.labels
+        });
+        this.smoothie.streamTo(this.$.canvas, 1000);
+        this.addSeries({
+          strokeStyle:'rgb(0, 255, 0)',
+          fillStyle:'rgba(0, 255, 0, 0.4)',
+          lineWidth:3 
+        });
+        this.addSeries({
+          strokeStyle:'rgb(255, 0, 255)', 
+          fillStyle:'rgba(255, 0, 255, 0.3)', 
+          lineWidth:3 
+        });
+        setInterval(this.interval.bind(this), 1000);
+      },
+      addSeries: function(inOptions) {
+        var series = new TimeSeries();
+        this.smoothie.addTimeSeries(series, inOptions);
+        return this.series.push(series);
+      },
+      interval: function() {
+        this.series.forEach(function(s) {
+           s.append(new Date().getTime(), Math.random());    
+        });
+      }
+    });
+  </script>
+</polymer-element>
+

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.4, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="32px" height="32px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">
+<g>
+	<g>
+		<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="16.7998" y1="-1.7002" x2="33.6777" y2="15.1777">
+			<stop  offset="0" style="stop-color:#F1BE44"/>
+			<stop  offset="1" style="stop-color:#D79F2A"/>
+		</linearGradient>
+		<polygon fill="url(#SVGID_1_)" points="20,5 27,5 27,12 		"/>
+		<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="-0.6436" y1="17.8564" x2="14.1248" y2="32.6248">
+			<stop  offset="0" style="stop-color:#F1BE44"/>
+			<stop  offset="1" style="stop-color:#D79F2A"/>
+		</linearGradient>
+		<polygon fill="url(#SVGID_2_)" points="12,27 5,27 5,20 		"/>
+		<polygon fill="#FBE18D" points="12,5 5,5 5,12 		"/>
+		<polygon fill="#EFB424" points="20,27 27,27 27,20 		"/>
+		<polygon fill="#EFB424" points="31,16 25,22 25,10 		"/>
+		<polygon fill="#F1B123" points="1,16 7,22 7,10 		"/>
+		<polygon fill="#EFB424" points="16,31 22,25 10,25 		"/>
+		<g>
+			<polygon fill="#B3B3B3" points="20,27 27,27 27,20 			"/>
+			<polygon fill="#B3B3B3" points="31,16 25,22 25,10 			"/>
+			<polygon fill="#B3B3B3" points="16,31 22,25 10,25 			"/>
+		</g>
+		<polygon fill="#F1B123" points="16,1 22,7 10,7 		"/>
+		<radialGradient id="SVGID_3_" cx="8.207" cy="7.207" r="23.7011" gradientUnits="userSpaceOnUse">
+			<stop  offset="0" style="stop-color:#FAD257"/>
+			<stop  offset="1" style="stop-color:#F1C344"/>
+		</radialGradient>
+		<circle fill="url(#SVGID_3_)" cx="16" cy="16" r="12"/>
+	</g>
+</g>
+</svg>

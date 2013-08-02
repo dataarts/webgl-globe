@@ -1,0 +1,18 @@
+<polymer-element name="polymer-ui-stock-legend-item" attributes="label data color">
+  <template>
+    <link rel="stylesheet" href="css/polymer-ui-stock-legend.css">
+    <div class="stock-item">
+      <span class="stock-label">
+        <span class="stock-color" style="background-color: {{color}}"></span>
+        <span class="stock-symbol">{{label}}</span>
+      </span>
+      <div class="stock-data">
+        <span class="stock-price">{{data.l}}</span>
+        <span class="stock-change {{data.change}}">{{data.c}} ({{data.cp}}%)</span>
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer('polymer-ui-stock-legend-item');
+  </script>
+</polymer-element>

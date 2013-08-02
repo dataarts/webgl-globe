@@ -1,0 +1,40 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="simple-primary-tray">
+  <template>
+    <link rel="stylesheet" href="../../../polymer-ui-elements/basic.css">
+    <style>
+      @host {
+        * {
+          display: block;
+        }
+      }
+      #logo {
+        padding: 17px 14px;
+        color: #eaeaea;
+        font-size: 21px;
+      }
+      #content {
+        color: #7f7f7f;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 14px;
+      }
+    </style>
+    <div id="logo" class="polymer-ui-gradient">
+        Logo
+    </div> 
+    <div fit id="content" class="polymer-ui-gradient">
+        <content></content>
+    </div> 
+    <!-- use polymer-layout for simple tesselation -->
+    <polymer-layout vertical></polymer-layout>
+  </template>
+  <script>
+    Polymer('simple-primary-tray', {
+    });
+  </script>
+</polymer-element>

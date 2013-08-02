@@ -1,0 +1,41 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-toolbar" attributes="theme">
+  <template>
+    <link rel="stylesheet" href="css/tk-fakebar.css">
+    <style>
+      @host {
+        * {
+          box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          height: 60px;
+          line-height: 60px;
+          background-color: whitesmoke;
+          box-shadow: inset 0px 0px 3px rgba(255, 255, 255, 1);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.28);   
+          position: relative;     
+        }
+      }
+      .fit {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+    </style>
+    <div id='themeable' class='fit'><content></content></div>
+  </template>
+  <script>
+    Polymer('tk-toolbar', {
+      theme: '',
+      themeChanged: function(old) {
+        old && this.$.themeable.classList.remove(old);
+        this.theme && this.$.themeable.classList.add(this.theme);
+      }
+    });
+  </script>
+</polymer-element>

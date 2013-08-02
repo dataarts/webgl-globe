@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Track sample</title>
+  <script src="../../pointergestures.js"></script>
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+    }
+    .container {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+    }
+    .container > * {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1 auto;
+      -ms-flex: 1 auto;
+      flex: 1 auto;
+    }
+    .row {
+      -webkit-box-orient: horizontal;
+      -webkit-flex-direction: row;
+      -ms-flex-direction: row;
+      flex-direction: row;
+    }
+    .column {
+      -webkit-box-orient: vertical;
+      -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+      flex-direction: column;
+    }
+    #host {
+      height: 100%;
+      width: 100%;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    #upleft {
+      background: #4285f4;
+    }
+    #upright {
+      background: #db4437;
+    }
+    #downleft {
+      background: #f4b400;
+    }
+    #downright {
+      background: #0f9d58;
+    }
+  </style>
+</head>
+<body>
+  <div id="host" class="container column" touch-action="none">
+    <div id="up" class="container row">
+      <div id="upleft"></div>
+      <div id="upright"></div>
+    </div>
+    <div id="down" class="container row">
+      <div id="downleft"></div>
+      <div id="downright"></div>
+    </div>
+  </div>
+  <script>
+    function log(e) {
+      console.log(e.type, e);
+    }
+    var host = document.querySelector('#host');
+    host.addEventListener('trackstart', function(e){ e.trackInfo.foo = 1 });
+    [ 'trackstart', 'track', 'trackend' ].forEach(function(t) {
+      host.addEventListener(t, log);
+    });
+  </script>
+</body>
+</html>

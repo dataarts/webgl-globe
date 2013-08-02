@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<html>
+<head>
+  <title>items view (topics)</title>
+  <script src="https://www.google.com/jsapi"></script>
+  <script src="../../../polymer/polymer.js"></script>
+  <link rel="import" href="../components/pi-feed-aggregator.html"/>
+  <link rel="import" href="../components/pi-items-view.html"/>
+  <style>
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, 'open sans', sans-serif;
+      margin: 0;
+    }
+    
+    pi-items-view {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <pi-items-view view="topics" layout="grid"></pi-items-view>
+  
+  <script>
+    document.addEventListener('WebComponentsReady', function() {
+      var itemsView = document.querySelector('pi-items-view');
+      itemsView.items = [
+        {title: 'Technology', feed: [
+         {title: 'The Verge', feed: 'http://www.theverge.com/rss/index.xml'},
+         {title: 'Engadget', feed: 'http://feeds.engadget.com/weblogsinc/engadget'}]},
+       {title: 'Sports', feed: [
+         {title: 'Deadspin', feed: 'http://feeds.gawker.com/deadspin/full'}]},
+       {title: 'Music', feed: [
+         {title: 'Indie Shuffle', feed: 'http://feeds.feedburner.com/indieshuffle'},
+         {title: 'Create Digital Music', feed: 'http://createdigitalmusic.com/feed/'}]},
+       {title: 'Art', feed: [
+         {title: 'Wooster Collective', feed: 'http://feeds.feedburner.com/wooster'},
+         {title: 'Doodlers Anonymous', feed: 'http://feeds.feedburner.com/DoodlersAnonymous'},
+         {title: 'but does it float', feed: 'http://feeds2.feedburner.com/ButDoesItFloat?format=xml'}]},
+       {title: 'Fashion', feed: [
+         {title: 'Hybebeast', feed: 'http://feeds.feedburner.com/hypebeast/feed'}]},
+       {title: 'Architecture', feed: [
+         {title: 'Dezeen', feed: 'http://feeds.feedburner.com/dezeen'},
+         {title: 'Design Milk Architecutre', feed: 'http://feeds.feedburner.com/DesignMilkArchitecture'}]},
+       {title: 'Design', feed: [
+         {title: 'Design Milk', feed: 'http://feeds.feedburner.com/design-milk'},
+         {title: 'Yummy Fresh grain', feed: 'http://feeds.feedburner.com/GrainEdit'},
+         {title: 'Designspiration', feed: 'http://feeds.feedburner.com/dspn'}]},
+       {title: 'Food', feed: [
+         {title: 'The Kitchn', feed: 'http://feeds.thekitchn.com/apartmenttherapy/thekitchn'},
+         {title: 'Scanwiches', feed: 'http://scanwiches.com/rss'}]}
+      ];
+      fetchImageForTopics(itemsView.items);
+    });
+    
+    function fetchImageForTopics(inTopics) {
+      inTopics.forEach(function(t) {
+        t.imgSrc = '';
+        var fa = document.createElement('pi-feed-aggregator');
+        fa.cancelUnbindAll();
+        fa.count = 4;
+        fa.addEventListener('response', function(e) {
+          var ns = e.detail && e.detail.entries || [];
+          for (var i = 0, n; n = ns[i]; i++) {
+            if (n.imgSrc) {
+              t.imgSrc = n.imgSrc;
+              t.unread = 200;
+              return;
+            }
+          }
+          fa.unbindAll();
+        });
+        fa.feed = t.feed;
+      });
+    }
+  </script>
+</body>
+</html>

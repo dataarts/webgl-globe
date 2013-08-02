@@ -1,0 +1,83 @@
+﻿@host {
+  * {
+    display: inline-block;
+	  padding: 20px;
+	  max-width: 340px;
+    white-space: nowrap;
+    background-image: url(../assets/glass.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    vertical-align: top;
+    overflow: hidden;
+  }
+}
+
+#widget-title { 
+  font-size: 21px;
+  line-height: 15px;
+}
+
+#time {
+	display: none;
+}
+
+#clock {
+	position: relative;
+	width: 200px;
+	height: 200px;
+	border-radius: 100px;
+	background-color: #f2f2f2;
+	border: 1px solid #d9d9d9;
+	box-sizing: border-box;
+	margin: 40px auto;
+}
+
+#hour {
+	position: absolute;
+	top: 0;
+	left: 0;
+	-webkit-transform-origin: 50% 50%;
+	background: #4c4c4c;
+	height: 82px;
+	width: 6px;
+	border-radius: 3px;
+	box-sizing: border-box;
+}
+
+#minute {
+	position: absolute;
+	top: 0;
+	left: 0;
+	-webkit-transform-origin: 50% 50%;
+	background: #4c4c4c;
+	height: 92px;
+	width: 4px;
+	border-radius: 2px;
+	box-sizing: border-box;
+}
+
+#second {
+	position: absolute;
+	top: 0;
+	left: 0;
+	-webkit-transform-origin: 50% 50%;
+	background: #4385fb;
+	height: 100px;
+	width: 2px;
+	border-radius: 1px;
+	box-sizing: border-box;
+}
+
+#dot {
+	box-sizing: border-box;
+	width:2px;
+	height:2px;
+	border-radius: 1px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -1px;
+	background-color: red;
+}

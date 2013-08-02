@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <title>polymer-meta</title>
+    <script src="../../../polymer/polymer.js"></script>
+    <script src="../../../polymer/tools/test/htmltest.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <link rel="import" href="../../polymer-meta/polymer-meta.html">
+  </head>
+  <body>
+    <polymer-meta id="x-foo" label="foo"></polymer-meta>
+    <polymer-meta id="x-bar" label="bar"></polymer-meta>
+    <polymer-meta id="x-zot" label="zot"></polymer-meta>
+    
+    <script>
+      var assert = chai.assert;
+      document.addEventListener('WebComponentsReady', function() {
+        var meta = document.createElement('polymer-meta');
+        assert.equal(meta.list.length, 3);
+        assert.equal(meta.byId('x-foo').label, 'foo');
+        done();
+      });
+    </script>
+  </body>
+</html>

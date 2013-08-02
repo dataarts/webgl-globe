@@ -1,0 +1,45 @@
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+@host {
+  * {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+  }
+}
+
+.feed-viewer-panels {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  position: relative;
+}
+
+.feed-viewer-panels > * {
+  background: white;
+  font-size: 15px;
+}
+
+.feed-viewer-panels pi-items-view {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#loading {
+  display: none;
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  width: 160px;
+  height: 160px;
+  margin: -80px;
+  background: url(../../images/loading.png);
+  z-index: 1;
+}
+
+#loading[loading=true] {
+  display: block;
+}

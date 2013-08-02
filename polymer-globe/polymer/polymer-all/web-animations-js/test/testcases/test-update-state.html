@@ -1,0 +1,91 @@
+<!--
+Copyright 2013 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!DOCTYPE html>
+<script src="../bootstrap.js" nochecks></script>
+<script>
+"use strict";
+
+var element = document.createElement('span');
+document.body.appendChild(element);
+
+var anim = element.animate([{left: '0px'}, {left: '1000px'}], 10);
+timing_test(function() {
+  at(1, function() {
+    assert_styles(element, {left: '100px'});
+
+    anim.player.currentTime += 1;
+    assert_styles(element, {left: '200px'});
+  });
+}, 'Updated style should be visible after player seek');
+
+var anim2 = element.animate([{top: '0px'}, {top: '1000px'}], 10);
+timing_test(function() {
+  at(1, function() {
+    assert_styles(element, {top: '100px'});
+
+    anim2.specified.startDelay = -1;
+    assert_styles(element, {top: '200px'});
+  });
+}, 'Updated style should be visible after change to specified timing');
+
+var group = new SeqGroup([
+  new Animation(element, {}, 1),
+  new Animation(element, [{right: '0px'}, {right: '1000px'}], 10),
+]);
+document.timeline.play(group);
+timing_test(function() {
+  at(2, function() {
+    assert_styles(element, {right: '100px'});
+
+    group.children[0].specified.iterationDuration = 0.5;
+    assert_styles(element, {right: '150px'});
+
+    group.children[0].remove();
+    assert_styles(element, {right: '200px'});
+  });
+}, 'Updated style should be visible after change to animation tree');
+
+timing_test(function() {
+  at(3, function() {
+    var anim = element.animate([{color: 'red'}, {color: 'green'}, {color: 'red'}], 1);
+    // TODO: Really this should already be in effect, since the start
+    //       time == lastTick. But if that is fixed it's unclear how
+    //       to start an animation after the last tick (in this
+    //       harness).
+    assert_equals(anim.player.startTime, 3);
+    assert_styles(element, {color: 'inherit'});
+
+    anim.player.startTime -= 0.5;
+    assert_styles(element, {color: 'green'});
+  });
+}, 'Changing the start time of a new player to before the current time should cause it to take effect');
+
+var anim3 = element.animate([{bottom: '0px'}, {bottom: '1000px'}], 10);
+// Run this last, since if it fails it's likely to corrupt the other tests.
+timing_test(function() {
+  at(5, function() {
+    assert_styles(element, {bottom: '500px'});
+
+    try {
+      var group = new ParGroup();
+      group.append(group);
+    } catch (e) {
+    }
+    anim3.specified.startDelay = -1;
+    assert_styles(element, {bottom: '600px'});
+  });
+}, 'Updated style should be visible despite unrelated errors');
+</script>

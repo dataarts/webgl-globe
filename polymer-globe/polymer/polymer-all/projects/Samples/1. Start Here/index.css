@@ -1,0 +1,16 @@
+﻿body {
+  background-color: #fff;
+  color: #111;
+  font: 24px Arial, Helvetica Neue, sans-serif;
+}
+
+section {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 12px solid orange;
+  padding: 32px;
+  overflow-y: auto;
+}

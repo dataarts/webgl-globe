@@ -1,0 +1,73 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+<link rel="import" href="../../../polymer-elements/polymer-layout/polymer-layout.html">
+<link rel="import" href="../../../polymer-elements/polymer-layout/polymer-slide.html">
+
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
+<link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
+
+<link rel="import" href="simple-main.html">
+<link rel="import" href="simple-primary-tray.html">
+
+<polymer-element name="simple-app">
+  <template>
+    <link rel="stylesheet" href="../../../polymer-ui-elements/basic.css">
+
+    <style>
+      @host {
+        * {
+          display: block;
+        }
+      }
+      #left, #right {
+        width: 240px;
+      }
+      #left, #right, #main {
+        -webkit-transition: inherit;
+      }
+    </style>
+
+    <simple-primary-tray id="left">Primary Tray</simple-primary-tray>
+    <!-- use polymer-slide for simple dynamics -->
+    <polymer-slide id="primaryTraySlider" targetid="left"></polymer-slide>
+
+    <!-- fit attribute makes this element elastic under polymer-layout -->
+    <div id="main" fit class="polymer-ui-bg-gray">
+      <polymer-ui-toolbar theme="polymer-ui-light-theme">       
+        <polymer-ui-icon-button on-tap="primaryTrayAction" src="assets/ic_drawer_darkreg.png" active="{{$.primaryTraySlider.open}}"></polymer-ui-icon-button>
+        <polymer-ui-icon-button src="assets/ic_refresh_darkreg.png"></polymer-ui-icon-button>
+        <polymer-ui-icon-button src="assets/ic_mail_darkreg.png"></polymer-ui-icon-button>
+        <span fit></span>
+        <polymer-ui-icon-button on-tap="secondaryTrayAction" src="assets/ic_settings_lg_darkreg.png" active="{{$.secondaryTraySlider.open}}"></polymer-ui-icon-button>
+      </polymer-ui-toolbar> 
+      <simple-main fit>Contentful</simple-main>
+      <!-- use polymer-layout for simple tesselation -->
+      <polymer-layout vertical></polymer-layout>
+    </div>
+
+    <div id="right" class="polymer-ui-header-gray"></div>
+    <polymer-slide id="secondaryTraySlider" targetid="right" closed></polymer-slide>
+
+    <polymer-layout></polymer-layout>
+
+  </template>
+  <script>
+    Polymer('simple-app', {
+      ready: function() {
+        this.asyncMethod(function() {
+          this.style.webkitTransition = 'all 0.3s';
+        });
+      },
+      primaryTrayAction: function() {
+        this.$.primaryTraySlider.toggle();
+      },
+      secondaryTrayAction: function() {
+        this.$.secondaryTraySlider.toggle();
+      }
+    });
+  </script>
+</polymer-element>

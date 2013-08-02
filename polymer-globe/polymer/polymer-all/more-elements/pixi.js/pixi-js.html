@@ -1,0 +1,103 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<script src="pixi.js"></script>
+<polymer-element name="pixi-js" attributes="count speed">
+  <template>
+    <style>
+      @host {
+        * {
+          background-color: white;
+        }
+      }
+    </style>
+  </template>
+  <script>
+    Polymer('pixi-js', {
+      count: 40,
+      speed: 1,
+      playing: false,
+      ready: function () {
+        this.asyncMethod(function () {
+          this.animator = this.animate.bind(this);
+          this.prepare();
+          this.setup();
+        });
+      },
+      removedCallback: function () {
+        this.playing = false;
+      },
+      countChanged: function () {
+        this.playing = false;
+        this.asyncMethod(this.setup);
+      },
+      prepare: function() {
+        // You can use either PIXI.WebGLRenderer or PIXI.CanvasRenderer
+        var w = this.offsetWidth - 4, h = this.offsetHeight - 4;
+        this.renderer = new PIXI.WebGLRenderer(w, h);
+        this.webkitShadowRoot.appendChild(this.renderer.view);
+        //
+        this.texture = PIXI.Texture.fromImage("google_chrome.png");
+      },
+      setup: function () {
+        var stage = new PIXI.Stage(0xFFFFFF);
+        var sprites = [];
+        var w = this.offsetWidth - 4, h = this.offsetHeight - 4, cw = Math.floor(w / 2), ch = Math.floor(h / 2);
+        for (var i = 0; i < this.count; i++) {
+          var sprite = new PIXI.Sprite(this.texture);
+          sprite.position.x = cw + irand(w, -0.5);
+          sprite.position.y = ch + irand(h, -0.5);
+          var scale = rand(0.8) + 0.2;
+          sprite.scale.x = scale;
+          sprite.scale.y = scale;
+          sprite.anchor.x = 0.5;
+          sprite.anchor.y = 0.5;
+          sprite.vel = [rand(5, -0.5), rand(5, -0.5), rand(0.05)];
+          sprites.push(sprite);
+          stage.addChild(sprite);
+        }
+        this.sprites = sprites;
+        this.stage = stage;
+        this.playing = true;
+      },
+      playingChanged: function () {
+        if (this.playing) {
+          this.animate();
+        }
+      },
+      animate: function () {
+        var w = this.offsetWidth - 4, h = this.offsetHeight - 4;
+        var overlap = 200;
+        var speed = this.speed || 1;
+        this.sprites.forEach(function (s) {
+          s.position.x += s.vel[0] * speed;
+          if (s.position.x > w + overlap) {
+            s.position.x = -overlap;
+          } else if (s.position.x < -overlap) {
+            s.position.x = w + overlap;
+          }
+          s.position.y += s.vel[1] * speed;
+          if (s.position.y > h + overlap) {
+            s.position.y = -overlap;
+          } else if (s.position.y < -overlap) {
+            s.position.y = h + overlap;
+          }
+          s.rotation += s.vel[2] * speed;
+        });
+        this.renderer.render(this.stage);
+        if (this.playing) {
+          requestAnimationFrame(this.animator);
+        }
+      }
+    });
+    function rand(r, o) {
+      return (Math.random() + (o || 0)) * r;
+    };
+    function irand(r, o) {
+      return Math.floor((Math.random() + (o || 0)) * r);
+    };
+  </script>
+</polymer-element>
+

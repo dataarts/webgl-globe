@@ -1,0 +1,11 @@
+[
+  "src/PointerGestureEvent.js",
+  "src/initialize.js",
+  "src/sidetable.js",
+  "src/pointermap.js",
+  "src/dispatcher.js",
+  "src/hold.js",
+  "src/track.js",
+  "src/flick.js",
+  "src/tap.js"
+]

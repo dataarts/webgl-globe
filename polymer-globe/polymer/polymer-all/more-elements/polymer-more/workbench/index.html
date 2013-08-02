@@ -1,0 +1,42 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Polymer UI Elements</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- load polymer -->
+    <script src="../../../polymer/polymer.js"></script>
+    <!-- import some polymer elements-->
+    <link rel="import" href="../../../toolkit-ui/elements/g-app.html">
+    <!-- salt to taste -->
+    <style>
+      .widget {
+				color: white;
+				margin: 0px;
+				height: 30px;
+				display: inline-block;
+				width: auto;
+				line-height: 30px;
+				padding: 0 10px;
+				background: #3c80f6;
+				box-sizing: border-box;
+			}
+			a { color: #3c80f6; text-decoration: none; }
+    </style>
+  </head>
+  <body>
+
+    <g-app>
+		<div style="margin:20px;">
+			<a class="widget" href="../polymer-ui-weather">Weather</a>
+			<a class="widget" href="../polymer-ui-clock">Clock</a>
+			<a class="widget" href="../polymer-ui-stock">Stock</a>
+			</div>
+    </g-app>
+  </body>
+</html>

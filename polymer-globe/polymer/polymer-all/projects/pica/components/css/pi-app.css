@@ -1,0 +1,63 @@
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+#panels, #contentPanels {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  overflow: hidden;
+}
+
+#ribbon {
+  width: 260px;
+}
+
+#ribbon.narrow-layout {
+  left: 0;
+  right: 60px;
+  width: auto;
+}
+
+#main {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-flex-flow: column;
+  flex-direction: column;
+  background: white; 
+}
+
+#Accounts > .panel-loading, #Home > .panel-loading {
+	position: absolute;
+  width: 50px;
+  height: 50px;
+  left: 50%;
+  bottom: 50%;
+  margin: -25px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  background: url(../../images/loading_icon.svg);
+}
+
+#Accounts.ready > .panel-loading, #Home.ready > .panel-loading {
+  display: none;
+}
+    
+@-webkit-keyframes spin {
+  0% {-webkit-transform: rotate(0deg);}
+  100% {-webkit-transform: rotate(359deg);}
+}
+
+@keyframes spin {
+  0% {transform: rotate(0deg);}
+  100% {transform: rotate(359deg);}
+}
+
+@media screen and (max-width: 800px) {
+  #contentPanels:not([hideactionbar=true]) {
+    margin-bottom: 60px;
+  }
+}

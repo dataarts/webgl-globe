@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Flex Layout</title>
+    <link rel="stylesheet" href="../elements/css/g-flex-layout.css">
+    <script src="../../polymer/polymer.js"></script>
+    <style>
+      div {
+        border: 1px solid black;
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="flexbox">
+      <div>hi</div>
+      <div flex>I'm flex</div>
+    </div>
+    <div class="flexbox col" style="height: 100px">
+      <div>hi</div>
+      <div flex>flex column</div>
+    </div>
+    <div class="flexbox flex-all">
+      <div>hello</div>
+      <div>flex-all</div>
+    </div>
+    <div class="flexbox justify-center">
+      <div>justify-center</div>
+    </div>
+    <div class="flexbox justify-start">
+      <div>justify-start</div>
+    </div>
+    <div class="flexbox justify-end">
+      <div>justify-end</div>
+    </div>
+    <div class="flexbox flex-all" style="height: 100px">
+      <div class="align-start">align-start</div>
+      <div class="align-end">align-end</div>
+      <div class="align-center">align-center</div>
+    </div>
+    <div class="flexbox flex-all align-start" style="height: 100px">
+      <div class="align-start">align-start</div>
+    </div>
+    <div class="flexbox flex-all align-end" style="height: 100px">
+      <div class="align-end">align-end</div>
+    </div>
+    <div class="flexbox flex-all align-center" style="height: 100px">
+      <div class="align-center">align-center</div>
+    </div>
+  </body>
+</html>

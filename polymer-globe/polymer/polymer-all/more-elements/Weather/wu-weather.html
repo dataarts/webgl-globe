@@ -1,0 +1,159 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="import" href="../../polymer-elements/polymer-jsonp/polymer-jsonp.html"/>
+<polymer-element name="wu-weather" attributes="autoupdate">
+  <template>
+    <style>
+      @host {
+        * {
+          font-family: arial,sans-serif;
+          font-size: medium;
+          font-weight: lighter;
+          color: #878787;
+        }
+      }
+      .location {
+        font-size: x-large;
+      }
+      .temperature, .weather {
+        font-size: large;
+        color: #000000;
+      }
+      .current-icon {
+        float: left;
+        margin-right: 10px;
+      }
+      .forecast {
+        clear: both;
+        margin-top: 10px;
+      }
+      .forecast-day {
+        display: inline-block;
+        padding: 5px;
+        text-align: center;
+      }
+      .forecast-day div {
+        font-size: small;
+      }
+    </style>
+    <h1 class="location">
+      {{current.display_location.full}}
+    </h1>
+    <template bind="{{current}}">
+      <img class="current-icon" src="{{icon_url}}">
+      <div class="weather">{{weather}}</div>
+      <div class="temperature">{{temperature_string}}</div>
+    </template>
+    <div class="forecast">
+      <template repeat="{{forecast.forecastday}}">
+        <div class="forecast-day">
+          <div class="date">{{date.weekday_short}}</div>
+          <img class="forecast-icon" src="{{icon_url}}" width="36px" height="36px">
+          <div class="high-low">
+            {{high.fahrenheit}}/{{low.fahrenheit}} &deg;F
+          </div>
+          <div class="high-low">
+            ({{high.celsius}}/{{low.celsius}} &deg;C)
+          </div>
+        </div>
+      </template>
+    </div>
+    <polymer-jsonp id="jsonp_current" handleAs="json" 
+        response="{{currentConditionsResponse}}"></polymer-jsonp>
+    <polymer-jsonp id="jsonp_forecast" handleAs="json"
+        response="{{forecastResponse}}"></polymer-jsonp>
+  </template>
+  <script>
+    Polymer('wu-weather', {
+      position: null,
+      currentConditionsResponse: null,
+      forecastResponse: null,
+      updateInterval: 60000,
+      apikey: '6d9e44e91f890cae',
+      position: {
+        coords: {
+          latitude: 37.773285,
+          longitude: -122.417725
+        }
+      },
+      ready: function() {
+        this.loadFromStorage();
+        this.autoupdateChanged();
+      },
+      loadFromStorage: function() {
+        var data = localStorage.getItem('wu-weather-data');
+        var cached = data && JSON.parse(data);
+        // Discard stored data if it's too old.
+        if (!cached ||
+            (new Date() - cached.timestamp) > (60 * 60 * 1000)) {
+          this.positionChanged();
+          this.updatePosition();
+          return;
+        }
+        this.current = cached.current;
+        this.forecast = cached.forecast;
+      },
+      saveToStorage: function() {
+        // Only store when we have all the data.
+        if (this.current && this.forecast) {
+          var data = {
+            current: this.current,
+            forecast: this.forecast,
+            timestamp: new Date().getTime()
+          };
+          localStorage.setItem('wu-weather-data', JSON.stringify(data));
+        }
+      },
+      autoupdateChanged: function() {
+        if (this.autoupdate) {
+          if (!this.intervalId) {
+            this.intervalId = setInterval(this.updatePosition.bind(this),
+                this.updateInterval);
+          }
+        } else {
+          clearInterval(this.intervalId);
+          this.intervalId = null;
+        }
+      },
+      positionChanged: function() {
+        if (!this.$.jsonp_current.isInFlight()) {
+          this.$.jsonp_current.url = 'https://api.wunderground.com/api/' +
+              this.apikey + '/conditions/q/' +
+              this.position.coords.latitude + ',' +
+              this.position.coords.longitude + '.json?callback=';
+          this.$.jsonp_current.go();
+        }
+        if (!this.$.jsonp_forecast.isInFlight()) {
+          this.$.jsonp_forecast.url = 'https://api.wunderground.com/api/' +
+              this.apikey + '/forecast/q/' +
+              this.position.coords.latitude + ',' +
+              this.position.coords.longitude + '.json?callback=';
+          this.$.jsonp_forecast.go();
+        }
+      },
+      currentConditionsResponseChanged: function() {
+        this.current = this.currentConditionsResponse.current_observation;
+        this.saveToStorage();
+      },
+      forecastResponseChanged: function() {
+        this.forecast = this.forecastResponse.forecast.simpleforecast;
+        this.saveToStorage();
+      },
+      updatePosition: function() {
+        // Get the current location.
+        navigator.geolocation.getCurrentPosition(
+            this.getCurrentPositionSuccess.bind(this),
+            this.getCurrentPositionError.bind(this), {timeout: 10000});
+      },
+      getCurrentPositionSuccess: function(position) {
+        this.position = position;
+      },
+      getCurrentPositionError: function(error) {
+        console.log('PositionError', error);
+      }
+    });
+  </script>
+</polymer-element>

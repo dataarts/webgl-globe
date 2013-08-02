@@ -1,0 +1,71 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-canvas" on-pointerup="up" on-trackstart="trackStart" 
+         on-track="track" on-trackend="trackEnd" attributes="designElement">
+  <template>
+    <style>
+      @host {
+        * {
+          outline: none;
+        }
+      }
+      #eventer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: url(assets/grid.png);
+      }
+    </style>
+    <div id="eventer" touch-action="none">
+      <content></content>
+    </div>
+  </template>
+  <script>
+    Polymer('tk-canvas', {
+      grid: 10,
+      designElement: null,
+      snap: function(inX, inY) {
+        return {
+          x: Math.round(inX / this.grid) * this.grid,
+          y: Math.round(inY / this.grid) * this.grid
+        };
+      },
+      trackStart: function(event) {
+        var elt = event.target;
+        while (elt && elt.parentNode && elt.parentNode !== this.designElement && elt !== this.designElement) {
+          elt = elt.parentNode;
+        }
+        if (elt === this.designElement) {
+          elt = null;
+        }
+        this.tracking = elt;
+        if (elt) {
+          event.trackInfo.start = {x: elt.offsetLeft, y: elt.offsetTop};
+        }
+        event.stopPropagation();
+      },
+      track: function(event) {
+        if (this.tracking) {
+          var p = {
+            x: event.trackInfo.start.x + event.dx,
+            y: event.trackInfo.start.y + event.dy
+          };
+          p = this.snap(p.x, p.y);
+          this.tracking.style.left = p.x + 'px';
+          this.tracking.style.top = p.y + 'px';
+          event.stopPropagation();
+        }
+      },
+      trackEnd: function(event) {
+        this.tracking = null;
+        event.stopPropagation();
+        this.fire('design-changed');
+      }
+    });
+  </script>
+</polymer-element>

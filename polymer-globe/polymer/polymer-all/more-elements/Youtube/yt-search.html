@@ -1,0 +1,26 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="import" href="../../polymer-elements/polymer-ajax/polymer-ajax.html">
+<polymer-element name="yt-search" attributes="query list maxResults">
+  <template>
+    <polymer-ajax auto id="ajax" url="http://gdata.youtube.com/feeds/api/videos/" 
+        params='{"alt":"json", "v":"2", "max-results":"{{maxResults}}", "q":"{{query}}"}'
+        handleAs="json" response="{{response}}">
+    </polymer-ajax><content></content>
+  </template>
+  <script>
+    Polymer('yt-search', {
+      query: '',
+      response: null,
+      list: null,
+      maxResults: 50,
+      responseChanged: function() {
+        console.log(this.response)
+        this.list = this.response && this.response.feed.entry;
+      }
+    });
+  </script>
+</element>

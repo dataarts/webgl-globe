@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../mdv.js"></script>
+  </head>
+  <body>
+    <h1>Conditional Attributes</h1>
+
+    <template id="addRemoveAttribute" bind="{{ data }}">
+      <label>Check me: <input type='checkbox' checked="{{ hide }}"></label>
+      <p>The hidden attribute of <span style="color: red" hidden?="{{ hide }}">this span</span> is bound conditionally.</p>
+    </template>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var t = document.getElementById('addRemoveAttribute');
+      t.model = {
+        data: {
+          hide: false
+        }
+      };
+
+      // Needed to detect model changes if Object.observe
+      // is not available in the JS VM.
+      Platform.performMicrotaskCheckpoint();
+    });
+    </script>
+  </body>
+</html>

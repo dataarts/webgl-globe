@@ -1,0 +1,5 @@
+# Lots of problems
+test-change-playback-rate.html
+# Requires the test harness to allow tests to be added after page load. See
+# https://github.com/web-animations/web-animations-js/issues/321
+test-media.html

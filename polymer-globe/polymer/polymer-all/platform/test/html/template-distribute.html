@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <title>template distribute</title>
+    <script src="../../ShadowDOM/shadowdom.js"></script>
+    <script src="../../MDV/mdv.js"></script>
+    <script src="../../tools/test/htmltest.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+  </head>
+  <body>
+  
+  <div id="host"></div>
+  
+  <template id="template">
+    <div id="innerHost">
+      <div>Template Repeat</div>
+      <template bind="{{person}}">
+        <div>{{name}}</div>
+      </template>
+    </div>
+  </template>
+  
+  <script>
+    
+    function createShadowRoot(node) {
+      return window.ShadowDOMPolyfill ? node.createShadowRoot() :
+          node.createShadowRoot();
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      var host = document.querySelector('#host');
+      var root = createShadowRoot(host);
+      var template = document.querySelector('template');
+      root.appendChild(template.createInstance());
+      
+      var innerHost = root.querySelector('#innerHost');
+      var innerRoot = createShadowRoot(innerHost);
+      innerRoot.innerHTML = '<content select="*"></content>';
+      
+      
+      var t = root.querySelector('template');
+      t.model = {
+        person: {name: 'Bob'}
+      };
+      setTimeout(function() {
+        console.log('notifyChanges');
+        Model.notifyChanges();
+        chai.assert.equal(innerHost.children.length, 3, 
+          'Template stamped into shadowDOM');
+        if (window.ShadowDOMPolyfill) {
+          chai.assert.equal(innerHost.impl.children.length, 3, 
+          'Template stamping distributed to composed tree under ShadowDOMPolyfill');
+        }
+        done();
+      }, 500);
+    });
+    
+  </script>
+  </body>
+</html>

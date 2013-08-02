@@ -1,0 +1,151 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-app" on-keyup="keyup" on-design-changed="designChanged" attributes="startMode">
+  <template>
+    <link rel="stylesheet" href="css/tk-app.css">
+    <g-toolbar>
+      <g-selector id="modeSelector" selected="{{selectedMode}}">
+        <g-icon-button name="designer" src="assets/design.png"></g-icon-button>
+        <g-icon-button name="source" src="assets/code.png"></g-icon-button>
+      </g-selector>
+      <g-icon-button id="toggle" on-pointerdown="toggleSize" src="assets/fullscreen.png"></g-icon-button>
+      <g-icon-button src="assets/ic_refresh_darkreg.png" on-tap="clearElement"></g-icon-button>
+      <div class="flex"></div>
+      <g-toolbar id="innerToolbar" responsive="true">
+        <g-menu-button responsive="true" selectedClass="" src="assets/menu.png" valign="right" on-activate="menuActivate">
+          <g-menu-item src="assets/settings.png" on-click="previewElement">Preview</g-menu-item>
+          <g-menu-item src="assets/settings.png" on-click="previewElementSource">Preview Source</g-menu-item>
+          <g-menu-item src="assets/settings.png" on-tap="publishElement">Publish</g-menu-item>
+          <g-menu-item src="assets/ic_refresh_darkreg.png" on-tap="clearElement">Clear</g-menu-item>
+        </g-menu-button>
+      </g-toolbar>
+    </g-toolbar>
+    <div id="main">
+      <tk-designer id="designer" selected="{{selected}}" designElement="{{designElement}}" maximized="{{maximized}}"></tk-designer>
+      <tk-source id="source" fontSize="{{fontSize}}" sourceElement="{{designElement}}" on-source-changed="sourceChanged" on-keydown="sourceKeydown"></tk-source>
+      <tk-tools id="tools" selected="{{selected}}" sourceElement="{{designElement}}"
+          on-parent-element="selectParentElement"
+          on-delete-element="deleteElement"
+          on-property-changed="designChanged"
+          on-bind-property="applyPropertyBinding"
+      ></tk-tools>
+    </div>
+  </template>
+  <script>
+    Polymer('tk-app', {
+      designElement: null,
+      selected: null,
+      useBigFont: false,
+      normalFontSize: '16px',
+      bigFontSize: '26px',
+      selectedMode: '',
+      maximized: false,
+      startMode: '',
+      ready: function() {
+        this.selectedMode = 'designer';
+        this.fontSize = this.normalFontSize;
+        if (!this.startMode) {
+          this.startMode = (window.location.search.indexOf('demo') >= 0) ? 
+            'demo' : '';
+        }
+      },
+      toggleSize: function() {
+        this.maximized = !this.maximized;
+      },
+      startModeChanged: function() {
+        if (this.startMode === 'demo') {
+          this.selectedMode = 'source';
+          this.maximized = true;
+        }
+      },
+      maximizedChanged: function() {
+        this.$.toggle.active = this.maximized;
+        this.$.main.classList.toggle('tk-app-maximized', this.maximized);
+        this.asyncMethod(function() {
+          this.$.source.$.editor.editor.resize();
+        }, null, 500);
+      },
+      selectedModeChanged: function (oldMode) {
+        if (this.selectedMode === 'source') {
+          this.designChanged();
+        }
+        this.asyncMethod(function() {
+          this.classFollows(this.$[this.selectedMode], this.$[oldMode],
+            'selected-panel');
+          if (this.$[this.selectedMode]['shown']) {
+            this.$[this.selectedMode].asyncMethod('shown');
+          }
+          // update mode icons
+          this.$.modeSelector.items.forEach(function(mode) {
+            mode.src = mode.getAttribute('src');
+          });
+          var s = this.$.modeSelector.selection;
+          var src = s.getAttribute('src');
+          var i = src.lastIndexOf('.');
+          s.src = src.substring(0, i) + '_selected' + src.substring(i);
+        });
+      },
+      designChanged: function() {
+        this.$.source.update(this.selectedMode == 'source');
+        this.$.tools.update();
+        this.$.designer.update();
+      },
+      selectParentElement: function() {
+        this.$.designer.selectParentElement();
+      },
+      deleteElement: function() {
+        this.$.designer.deleteElement();
+      },
+      applyPropertyBinding: function(event, detail) {
+        this.$.designer.applyPropertyBinding(detail.obj, detail.name, detail.path);  
+      },
+      sourceChanged: function(event, detail) {
+        this.$.designer.applySource(detail.value);
+      },
+      getSource: function() {
+        this.$.source.updateImmediate();
+        return this.$.source.value;
+      },
+      publishElement: function() {
+        this.$.designer.publishElement(this.getSource());
+      },
+      previewElement: function() {
+        this.$.designer.previewElement(this.getSource());
+      },
+      previewElementSource: function() {
+        this.$.designer.previewElementSource(this.getSource());
+      },
+      clearElement: function() {
+        this.$.designer.clearElement();
+      },
+      sourceKeydown: function(event) {
+        if ((event.keyCode == 192) && event.ctrlKey) {
+          this.useBigFont = !this.useBigFont;
+        }
+      },
+      useBigFontChanged: function() {
+        this.fontSize = this.useBigFont ? this.bigFontSize : this.normalFontSize;
+      }
+    });
+    
+    document.addEventListener('WebComponentsReady', function() {
+      // prevent backspace from navigating away from document.
+      document.addEventListener('keydown', function(e) {
+        if (e.keyCode == 8) {
+          promptForUnload();
+        }
+      });
+      function promptForUnload() {
+        window.onbeforeunload = function() {
+          return ' ';
+        }
+        setTimeout(function() {
+          window.onbeforeunload = null;
+        }, 0);
+      }
+    });
+  </script>
+</polymer-element>

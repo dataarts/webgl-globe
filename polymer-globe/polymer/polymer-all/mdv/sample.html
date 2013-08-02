@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="mdv.js"></script>
+  </head>
+  <body>
+    <h1>Model-driven Views</h1>
+    <ul>
+      <template id="greeting" repeat="{{ salutations }}">
+        <li>{{ what }}: <input type="text" value="{{ who }}"></li>
+      </template>
+    </ul>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var t = document.getElementById('greeting');
+    var model = {
+      salutations: [
+        { what: 'Hello', who: 'World' },
+        { what: 'GoodBye', who: 'DOM APIs' },
+        { what: 'Hello', who: 'Declarative' },
+        { what: 'GoodBye', who: 'Imperative' }
+      ]
+    };
+    t.model = model;
+
+    // Needed to detect model changes if Object.observe
+    // is not available in the JS VM.
+    Platform.performMicrotaskCheckpoint();
+  });
+  </script>
+  <body>
+</html>

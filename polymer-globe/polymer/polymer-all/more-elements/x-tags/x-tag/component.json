@@ -1,0 +1,16 @@
+{
+  "name": "demo",
+  "description": "",
+  "version": "0.1.0",
+  "keywords": [
+    "demo",
+    "web-components",
+    "x-tag"
+  ],
+  "dependencies": {
+    "x-tag-core": "*",
+    "x-tag-spinner": "*",
+    "x-tag-switch": "*",
+    "x-tag-toggle": "*"
+  }
+}

@@ -1,0 +1,42 @@
+<!-- Define a new custom element called <x-element> -->
+<!-- It responds to an attribute called "label" -->
+<element name="x-element" attributes="label">
+  <!-- This template is used to construct the ShadowDOM of new <x-element> instances -->
+  <template>
+    <style>
+      /* styles in @host block affect the <x-element> element */
+      @host {
+        * {
+          display: block;
+          padding: 10px;
+          background: lightblue;
+        }
+      }
+      /* styles here affect the ShadowDOM of the <x-element> element */
+      #label {
+        font-size: 2rem;
+      }
+      .toggle {
+        color: red;
+      }
+    </style>
+    <!-- {{ label }} is replaced by the value of the label property -->
+    <!-- touch-action="none" allows Pointer Events and Gestures -->
+    <!-- on-tap attribute maps the tap gesture to the labelTap function -->
+    <span id="label" touch-action="none" on-tap="labelTap">{{ label }}</span>
+    <!-- <content> is replaced by children of <x-element> -->
+    <content></content>
+  </template>
+  <script>
+    // Register the element with the Polymer library
+    Polymer.register(this, {
+      // Give "label" a default value of "stuff"
+      label: 'stuff',
+      // toggle the "toggle" class on tap
+      labelTap: function() {
+        // this.$ is a hash of all the template children with IDs
+        this.$.label.classList.toggle('toggle');
+      }
+    });
+  </script>
+</element>

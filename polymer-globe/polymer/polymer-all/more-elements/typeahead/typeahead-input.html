@@ -1,0 +1,120 @@
+<polymer-element name="typeahead-input">
+  <template>
+    <style>
+      @host {
+        * {
+          position: relative;
+          display: inline-block;
+          border: 2px inset;
+        }
+      }
+      input {
+        font-size: inherit;
+        width: 100%;
+        border: none;
+        padding 0;
+        background-color: transparent;
+      }
+      input:focus {
+        outline: none;
+      }
+      input#hint {
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0.7;
+      }
+      input#input {
+        position: relative;
+      }
+      span#measure {
+        position: absolute;
+        top: -9999px;
+        width: auto;
+        font: -webkit-small-control;
+        font-size: inherit;
+      }
+    </style>
+    <span id="measure">{{input}}</span>
+    <input id="hint" type="text" disabled value="{{hint}}">
+    <input id="input" type="text" on-input="inputHandler" on-keydown="keydownHandler" on-click="clickHandler">
+  </template>
+  <script>
+    Polymer('typeahead-input', {
+      publish: {
+        values: [],
+        delimiter: '.',
+        enabled: false,
+        hint: '',
+        input: '',
+        base: '',
+        query: ''
+      },
+      valuesChanged: function() {
+        this.values.sort();
+      },
+      enabledChanged: function() {
+        if (!this.enabled) {
+          this.hint = '';
+       }
+      },
+      inputChanged: function(old) {
+        this.enabled = this.input.length > old.length && (this.input.indexOf(old) === 0) && this.$.measure.offsetWidth < this.$.input.offsetWidth;
+        if (this.delimiter) {
+          var delimiterIndex = this.input.lastIndexOf(this.delimiter);
+          var base = this.input.slice(0, Math.max(0, delimiterIndex));
+          this.updateValues(base);
+          this.query = this.input.slice(delimiterIndex + 1);
+        } else {
+          this.query = this.input;
+        }
+      },
+      updateValues: function(base) {
+        if (base === this.base) {
+          return;
+        }
+        var details = {
+          query: base
+        };
+        this.fire('typeahead-delimiter', details);
+        this.values = details.values || [];
+        this.base = base;
+      },
+      queryChanged: function() {
+        if (!this.enabled || !this.query) {
+          return;
+        }
+        var hint = this.query;
+        for (var i = 0, d; d = this.values[i]; i++) {
+          if (d.indexOf(this.query) === 0) {
+            hint = d;
+            break;
+          }
+        }
+        this.hint = (this.base ? this.base + this.delimiter : '') + hint;
+      },
+      inputHandler: function(e) {
+        this.input = this.$.input.value;
+      },
+      keydownHandler: function(e) {
+        switch (e.keyCode) {
+          case 13: // enter
+          case 39: // right arrow
+            this.hint && (this.$.input.value = this.hint);
+            break;
+          case 8: // backspace
+          case 27: // esc
+          case 37: // left arrow
+            this.enabled = false;
+            break;
+          default:
+            break;
+        }
+      },
+      clickHandler: function() {
+        this.enabled = false;
+      }
+    });
+  </script>
+</polymer-element>

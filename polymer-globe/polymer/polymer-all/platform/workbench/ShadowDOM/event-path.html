@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <script src="../../tools/test/htmltest.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <script src="../../platform.js" debug></script>
+  </head>
+  <body>
+    <script>
+      
+      var doc = window.ShadowDOMPolyfill ? ShadowDOMPolyfill.wrap(document) :
+          document;
+      
+      function assertArrayEqual(a, b, msg) {
+        for (var i = 0; i < a.length; i++) {
+          chai.assert.equal(a[i], b[i], msg);
+        }
+        chai.assert.equal(a.length, b.length, msg);
+      }
+      
+      /**
+      * Creates a deep tree, (all nodes but the leaf have 1 child)
+      */
+      function getPropagationTree() {
+        var tree = {};
+        var div = tree.div = document.createElement('div');
+        div.innerHTML = '<a><b><c></c></b></a>';
+        var a = tree.a = div.firstChild;
+        var b = tree.b = a.firstChild;
+        var c = tree.c = b.firstChild;
+        var sr = tree.sr = b.createShadowRoot();
+        sr.innerHTML = '<d><content></content></d>';
+        var d = tree.d = sr.firstChild;
+        var content = tree.content = d.firstChild;
+        var sr2 = tree.sr2 = d.createShadowRoot();
+        sr2.innerHTML = '<e><content></content></e>';
+        var e = tree.e = sr2.firstChild;
+        var content2 = tree.content2 = e.firstChild;
+
+        return tree;
+      }
+     
+      var tree = getPropagationTree();
+      document.body.appendChild(tree.div);
+      tree.div.offsetWidth;
+      
+      var e = new Event('x', {bubbles: true});
+      
+      tree.e.addEventListener('x', function f(e) {
+        assertArrayEqual(
+            // polyfill currently works with this path
+            /*
+            [
+              tree.e,
+              tree.sr2,
+              tree.d,
+              tree.sr,
+              tree.b,
+              tree.a,
+              tree.div,
+            ],
+            */
+            [
+              tree.c,
+              tree.content,
+              tree.content2,
+              tree.e,
+              tree.sr2,
+              tree.d,
+              tree.sr,
+              tree.b,
+              tree.a,
+              tree.div,
+              doc.body,
+              doc.body.parentNode,
+              doc
+            ],
+            e.path);
+
+        tree.e.removeEventListener('x', f);
+      });
+
+      tree.sr.addEventListener('x', function f(e) {
+        assertArrayEqual(
+            // polyfill currently works with this path
+            /*
+            [
+              tree.sr,
+              tree.b,
+              tree.a,
+              tree.div,
+              doc.body,
+              doc.body.parentNode,
+              doc
+            ],
+            */
+            [
+              tree.c,
+              tree.content,
+              tree.d,
+              tree.sr,
+              tree.b,
+              tree.a,
+              tree.div,
+              doc.body,
+              doc.body.parentNode,
+              doc
+            ],
+            e.path);
+
+        tree.sr.removeEventListener('x', f);
+      });
+
+      
+      tree.c.addEventListener('x', function f(e) {
+        assertArrayEqual(
+            [
+              tree.c,
+              tree.b,
+              tree.a,
+              tree.div,
+              doc.body,
+              doc.body.parentNode,
+              doc,
+            ],
+            e.path);
+
+        tree.c.removeEventListener('x', f);
+      });
+      
+      tree.c.dispatchEvent(e);
+      done();
+    </script>
+  </body>
+</html>

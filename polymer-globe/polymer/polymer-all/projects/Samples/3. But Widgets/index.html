@@ -1,0 +1,93 @@
+<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>But, Widgets!</title>
+  <!-- pull in polymer -->
+  <script src="../../../polymer/polymer.js"></script>
+  <!-- import elements -->
+  <link rel="import" href="../../../polymer-elements/polymer-view-source-link/polymer-view-source-link.html">
+  <link rel="import" href="../../../polymer-elements/polymer-page/polymer-page.html">
+  <link rel="import" href="../../../polymer-elements/polymer-layout/polymer-layout.html">
+  <link rel="import" href="../../../polymer-elements/polymer-layout/polymer-slide.html">
+  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-toolbar/polymer-ui-toolbar.html">
+  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-icon-button/polymer-ui-icon-button.html">
+  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu/polymer-ui-menu.html">
+  <link rel="import" href="../../../polymer-ui-elements/polymer-ui-menu-item/polymer-ui-menu-item.html">
+  <!-- regular styling -->
+  <link rel="stylesheet" href="../../../polymer-ui-elements/basic.css">
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body class="polymer-ui-body-text polymer-ui-dark-bg" theme="polymer-ui-dark-theme">
+
+  <!-- just an element, this one makes document.body fit the viewport -->
+  <polymer-page fullbleed></polymer-page>
+
+  <!-- just an element, arranges sibling elements to fit their container -->
+  <polymer-layout vertical></polymer-layout>
+
+  <section fit>
+    <polymer-layout></polymer-layout>
+
+    <section class="sidebar polymer-ui-dark-bg">
+      <polymer-slide id="slide" closed></polymer-slide>
+      <polymer-layout vertical></polymer-layout>
+
+      <section class="logo">
+        <img src="polymer.svg"> Polymer
+      </section>
+
+      <!-- look-n-feel elements (aka widgets) -->
+      <polymer-ui-menu fit>
+        <polymer-ui-menu-item icon="dialog"><a class="item-content" href="../2. Not Just Widgets/">Previous</a></polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="dialog"><a class="item-content" href="../4. Encapsulate/">Next</a></polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="dialog"><a class="item-content" is="polymer-view-source-link">View Source</a></polymer-ui-menu-item>
+      </polymer-ui-menu>
+    </section>
+
+    <section fit>
+      <polymer-layout vertical></polymer-layout>
+
+      <!-- look-n-feel elements (aka widgets) -->
+      <polymer-ui-toolbar>
+        <polymer-ui-icon-button icon="drawer" onclick="document.querySelector('#slide').toggle()"></polymer-ui-icon-button>
+        <span fit>&nbsp;But, Widgets!</span>
+      </polymer-ui-toolbar>
+
+      <section fit class="main polymer-ui-light-bg">
+        We started showing non-styled non-widgets because it's important
+        to realize that custom elements are a <b>primitive</b>. The idea 
+        is not to lock users into a framework, but the opposite, to unleash 
+        <b>creativity</b>.
+        <br /><br />
+
+        But it's not fun to start at the bottom, so the <b>Polymer</b> 
+        team is working on a nicely styled widget set to blaze the trail.
+        <br /><br />
+
+        Click the <b>drawer</b> button in the upper-left corner.
+        <br /><br />
+
+        Notes for the advanced:
+        <br /><br />
+
+        The particular custom elements used here are <b>not yet canonical</b>, 
+        they are just examples. A key takeaway is that the underlying 
+        implementations are easily <b>modified</b> without necessarily impacting 
+        the app itself.
+        <br /><br />
+
+        For example, these layout tools use absolute positioning. Soon, we will
+        have superior objects that use, for example, flex-box or CSS grids. Those 
+        improved elements can just drop in.
+      </section>
+    </section>
+  </section>
+
+</body>
+</html>

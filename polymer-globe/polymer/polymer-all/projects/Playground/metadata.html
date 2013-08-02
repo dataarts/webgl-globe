@@ -1,0 +1,455 @@
+<polymer-meta id="polymer-ui-icon" label="Icon">
+  <template>
+    <div theme="polymer-ui-light-theme">
+      <polymer-ui-icon icon="drawer"></polymer-ui-icon>
+      <polymer-ui-icon icon="menu"></polymer-ui-icon>
+      <polymer-ui-icon icon="search"></polymer-ui-icon>
+      <polymer-ui-icon icon="dropdown"></polymer-ui-icon>
+      <polymer-ui-icon icon="close"></polymer-ui-icon>
+      <polymer-ui-icon icon="add"></polymer-ui-icon>
+      <polymer-ui-icon icon="trash"></polymer-ui-icon>
+      <polymer-ui-icon icon="settings"></polymer-ui-icon>
+      <polymer-ui-icon icon="dialog"></polymer-ui-icon>
+    </div>
+    <div theme="polymer-ui-dark-theme" class="polymer-ui-dark-bg">
+      <polymer-ui-icon icon="drawer"></polymer-ui-icon>
+      <polymer-ui-icon icon="menu"></polymer-ui-icon>
+      <polymer-ui-icon icon="search"></polymer-ui-icon>
+      <polymer-ui-icon icon="dropdown"></polymer-ui-icon>
+      <polymer-ui-icon icon="close"></polymer-ui-icon>
+      <polymer-ui-icon icon="add"></polymer-ui-icon>
+      <polymer-ui-icon icon="trash"></polymer-ui-icon>
+      <polymer-ui-icon icon="settings"></polymer-ui-icon>
+      <polymer-ui-icon icon="dialog"></polymer-ui-icon>
+    </div>
+    <div>
+      <polymer-ui-icon src="src/images/arrow_left.png"></polymer-ui-icon>
+      <polymer-ui-icon src="src/images/arrow_right.png"></polymer-ui-icon>
+    </div>
+  </template>
+</polymer-meta>
+
+<polymer-meta id="polymer-ui-icon-button" label="Icon Button">
+  <template>
+    <div theme="polymer-ui-light-theme">
+      <polymer-ui-icon-button icon="drawer"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="dropdown"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="close"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="add"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="trash"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="settings"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="dialog"></polymer-ui-icon-button>
+    </div>
+    <div theme="polymer-ui-dark-theme" class="polymer-ui-dark-bg">
+      <polymer-ui-icon-button icon="drawer"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="dropdown"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="close"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="add"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="trash"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="settings"></polymer-ui-icon-button>
+      <polymer-ui-icon-button icon="dialog"></polymer-ui-icon-button>
+    </div>
+    <div>
+      <polymer-ui-icon-button src="src/images/arrow_left.png"></polymer-ui-icon-button>
+      <polymer-ui-icon-button src="src/images/arrow_right.png"></polymer-ui-icon-button>
+    </div>
+  </template>
+</polymer-meta>
+
+<polymer-meta id="polymer-ui-toolbar" label="Toolbar">
+  <polymer-meta label="Basic">
+    <template>
+      <polymer-ui-toolbar theme="polymer-ui-light-theme">
+        <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+        <div flex>Title</div>
+        <polymer-ui-icon-button icon="refresh"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="add"></polymer-ui-icon-button>
+      </polymer-ui-toolbar>
+      <br />
+      <polymer-ui-toolbar theme="polymer-ui-dark-theme">
+        <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+        <div flex>Title</div>
+        <polymer-ui-icon-button icon="refresh"></polymer-ui-icon-button>
+        <polymer-ui-icon-button icon="add"></polymer-ui-icon-button>
+      </polymer-ui-toolbar>
+    </template>
+  </polymer-meta>
+  <polymer-meta label="Responsive">
+    <template>
+      <style>
+        body {
+          margin: 0;
+        }
+      </style>
+      
+      <polymer-ui-toolbar theme="polymer-ui-dark-theme">
+        <polymer-ui-icon-button icon="menu"></polymer-ui-icon-button>
+        <div flex>Responsive Toolbar</div>
+        <polymer-ui-toolbar responsive>
+          <polymer-ui-icon-button icon="refresh"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="add"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="trash"></polymer-ui-icon-button>
+          <polymer-ui-icon-button icon="search"></polymer-ui-icon-button>
+        </polymer-ui-toolbar>
+      </polymer-ui-toolbar>
+    </template>
+  </polymer-meta>
+</polymer-meta>
+
+<polymer-meta id="polymer-ui-menu" label="Menu">
+  <polymer-meta label="Basic">
+    <template>
+      <polymer-ui-menu selected="0" theme="polymer-ui-light-theme">
+        <polymer-ui-menu-item icon="settings" label="Settings"></polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="dialog" label="Dialog"></polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="search" label="Search"></polymer-ui-menu-item>
+      </polymer-ui-menu>
+      <polymer-ui-menu selected="0" theme="polymer-ui-dark-theme">
+        <polymer-ui-menu-item icon="settings" label="Settings"></polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="dialog" label="Dialog"></polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="search" label="Search"></polymer-ui-menu-item>
+      </polymer-ui-menu>
+    </template>
+  </polymer-meta>
+  <polymer-meta label="Nested">
+    <template>
+      <polymer-ui-menu selected="0" theme="polymer-ui-light-theme">
+        <polymer-ui-menu-item icon="settings" label="Topics">
+          <polymer-ui-menu-item label="Topic 1"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Topic 2"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Topic 3"></polymer-ui-menu-item>
+        </polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="settings" label="Favorites">
+          <polymer-ui-menu-item label="Favorites 1"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Favorites 2"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Favorites 3"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Favorites 4"></polymer-ui-menu-item>
+        </polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="settings" label="Explore">
+          <polymer-ui-menu-item label="Explore 1"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Explore 2"></polymer-ui-menu-item>
+        </polymer-ui-menu-item>
+      </polymer-ui-menu>
+    </template>
+  </polymer-meta>
+</polymer-meta>
+
+<polymer-meta id="polymer-ui-sidebar-menu" label="Sidebar Menu">
+  <polymer-meta label="Basic">
+    <template>
+      <polymer-ui-sidebar-menu selected="0" label="Polymer" theme="polymer-ui-dark-theme" style="width: 300px; height: 600px;">
+        <polymer-ui-menu-item icon="settings" label="Settings"></polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="dialog" label="Dialog"></polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="search" label="Search"></polymer-ui-menu-item>
+      </polymer-ui-sidebar-menu>
+    </template>
+  </polymer-meta>
+  <polymer-meta label="Nested">
+    <template>
+      <polymer-ui-sidebar-menu selected="0" label="Polymer" theme="polymer-ui-dark-theme" style="width: 300px; height: 600px;">
+        <polymer-ui-menu-item icon="settings" label="Topics">
+          <polymer-ui-menu-item label="Topic 1"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Topic 2"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Topic 3"></polymer-ui-menu-item>
+        </polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="settings" label="Favorites">
+          <polymer-ui-menu-item label="Favorites 1"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Favorites 2"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Favorites 3"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Favorites 4"></polymer-ui-menu-item>
+        </polymer-ui-menu-item>
+        <polymer-ui-menu-item icon="settings" label="Explore">
+          <polymer-ui-menu-item label="Explore 1"></polymer-ui-menu-item>
+          <polymer-ui-menu-item label="Explore 2"></polymer-ui-menu-item>
+        </polymer-ui-menu-item>
+      </polymer-ui-sidebar-menu>
+    </template>
+  </polymer-meta>
+</polymer-meta>
+
+<polymer-meta id="polymer-collapse" label="Collapse">
+  <template>
+    <style>
+      section {
+        padding: 5px;
+        margin: 5px;
+        border: 1px solid #ddd;
+      }
+      
+      .box {
+        height: 0;
+      }
+    </style>
+    
+    <section>
+      <button onclick="toggle('collapse1')">toggle collapse</button>
+      <div id="box1" class="box">
+        Forma temperiemque cornua sidera dissociata cornua recessit innabilis ligavit: solidumque coeptis nullus caelum sponte phoebe di regat mentisque tanta austro capacius amphitrite sui quin postquam semina fossae liquidum umor galeae coeptis caligine liberioris quin liquidum matutinis invasit posset: flexi glomeravit radiis certis invasit oppida postquam onerosior inclusum dominari opifex terris pace finxit quam aquae nunc sine altae auroram quam habentem homo totidemque scythiam in pondus ensis tegit caecoque poena lapidosos humanas coeperunt poena aetas totidem nec natura aethera locavit caelumque distinxit animalibus phoebe cingebant moderantum porrexerat terrae possedit sua sole diu summaque obliquis melioris orbem
+        <section>
+          <button onclick="toggle('collapse2')">toggle collapse</button>
+          <div id="box2" class="box">
+            Coercuit iunctarum vix sic aberant spisso imagine litem cetera nubes ambitae tanta usu circumfuso fulminibus umentia rectumque iuga pluviaque meis semina regat ne campoque meis coeperunt nix cura iunctarum ligavit: secant ventos seductaque permisit sic iunctarum locoque his coeptis tum terras animalia recepta aethera cornua invasit tollere videre tonitrua humanas otia tuba alta dissociata sanctius adsiduis inclusum caesa ita onus
+          </div>
+          <polymer-collapse id="collapse2" targetId="box2" closed></polymer-collapse>
+        </section>
+      </div>
+      <polymer-collapse id="collapse1" targetId="box1" closed></polymer-collapse>
+    </section>
+    
+    <script>
+      function toggle(id) {
+        document.querySelector('#' + id).toggle();
+      }
+    </script>
+  </template>
+</polymer-meta>
+
+<polymer-meta id="polymer-ui-accordion" label="Accordion">
+  <template>
+    <style>
+      body {
+        overflow: hidden;
+      }
+      polymer-ui-collapsible {
+        margin-bottom: 2px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+      }
+      .polymer-ui-collapsible-header {
+        padding: 10px;
+        border-bottom: 1px solid #bcbcbc;
+        cursor: pointer;
+        font-weight: bold;
+        color: #6699FF;
+      }
+      .polymer-selected .polymer-ui-collapsible-header {
+        color: blue;
+      }
+      .content {
+        padding: 10px;
+      }
+    </style>
+    
+    <polymer-ui-accordion selected="0">
+      <polymer-ui-collapsible>
+        <div class="polymer-ui-collapsible-header">Header 1</div>
+        <div class="content">
+          Forma temperiemque cornua sidera dissociata cornua recessit innabilis ligavit: solidumque coeptis nullus caelum sponte phoebe di regat mentisque tanta austro capacius amphitrite sui quin postquam semina fossae liquidum umor galeae coeptis caligine liberioris quin liquidum matutinis invasit posset: flexi glomeravit radiis certis invasit oppida postquam onerosior inclusum dominari opifex terris pace finxit quam aquae nunc sine altae auroram quam habentem homo totidemque scythiam in pondus ensis tegit caecoque poena lapidosos humanas coeperunt poena aetas totidem nec natura aethera locavit caelumque distinxit animalibus phoebe cingebant moderantum porrexerat terrae possedit sua sole diu summaque obliquis melioris orbem
+        </div>
+      </polymer-ui-collapsible>
+      <polymer-ui-collapsible>
+        <div class="polymer-ui-collapsible-header">Header 2</div>
+        <div class="content">
+          Coercuit iunctarum vix sic aberant spisso imagine litem cetera nubes ambitae tanta usu circumfuso fulminibus umentia rectumque iuga pluviaque meis semina regat ne campoque meis coeperunt nix cura iunctarum ligavit: secant ventos seductaque permisit sic iunctarum locoque his coeptis tum terras animalia recepta aethera cornua invasit tollere videre tonitrua humanas otia tuba alta dissociata sanctius adsiduis inclusum caesa ita onus sine pluviaque litem manebat fixo extendi ubi inposuit cum sublime membra undas orba forma deducite aethera turba coercuit retinebat obliquis bracchia nisi mentisque origine peregrinum manebat
+        </div>
+      </polymer-ui-collapsible>
+      <polymer-ui-collapsible>
+        <div class="polymer-ui-collapsible-header">Header 3</div>
+        <div class="content">
+          Forma temperiemque cornua sidera dissociata cornua recessit innabilis ligavit: solidumque coeptis nullus caelum sponte phoebe di regat mentisque tanta austro capacius amphitrite sui quin postquam semina fossae liquidum umor galeae coeptis caligine liberioris quin liquidum matutinis invasit posset: flexi glomeravit radiis certis invasit oppida postquam onerosior inclusum dominari opifex terris pace finxit quam aquae nunc sine altae auroram quam habentem homo totidemque scythiam in pondus ensis tegit caecoque poena lapidosos humanas coeperunt poena aetas totidem nec natura aethera locavit caelumque
+        </div>
+      </polymer-ui-collapsible>
+    </polymer-ui-accordion>
+  </template>
+</polymer-meta>
+
+<polymer-meta id="polymer-ui-ratings" label="Ratings">
+  <template>
+    <polymer-ui-ratings value="3"></polymer-ui-ratings>
+    <br><br>
+    <polymer-ui-ratings value="5" count="10"></polymer-ui-ratings>
+  </template>
+</polymer-meta>
+
+<polymer-meta id="polymer-ui-toggle-button" label="Toggle Button">
+  <template>
+    <polymer-ui-toggle-button></polymer-ui-toggle-button>
+    <br><br>
+    <polymer-ui-toggle-button value="true"></polymer-ui-toggle-button>
+  </template>
+</polymer-meta>
+
+<polymer-meta id="polymer-ui-tabs" label="Tabs">
+  <template>
+    <polymer-ui-tabs selected="0">
+      <span>One</span>
+      <span>Two</span>
+      <span>Three</span>
+      <span>Four</span>
+    </polymer-ui-tabs>
+  </template>
+</polymer-meta>
+
+<polymer-meta id="polymer-ui-splitter" label="Splitter">
+  <polymer-meta label="Basic">
+    <template>
+      <style>
+        .container {
+          height: 300px;
+          border: 2px solid #ccc;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+        }
+        
+        .container div {
+          overflow: hidden;
+        }
+        
+        #box1 {
+          width: 100px;
+        }
+        
+        #box2 {
+          height: 80px;
+        }
+      </style>
+      
+      <div class="container flexbox">
+        <div id="box1">left</div>
+        <polymer-ui-splitter direction="left"></polymer-ui-splitter>
+        <div flex>right</div>
+      </div>
+      
+      <br>
+      
+      <div class="container flexbox column">
+        <div id="box2">top</div>
+        <polymer-ui-splitter direction="up"></polymer-ui-splitter>
+        <div flex>bottom</div>
+      </div>
+      </template>
+  </polymer-meta>
+  <polymer-meta label="Combo">
+    <template>
+      <style>
+        .container {
+          height: 300px;
+          border: 2px solid #ccc;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+        }
+        
+        .container div {
+          overflow: hidden;
+        }
+        
+        #box1, #boxLeft, #boxRight {
+          width: 100px;
+        }
+        
+        #box2 {
+          height: 80px;
+        }
+      </style>
+      
+      <div class="container flexbox">
+        <div id="box1">1</div>
+        <polymer-ui-splitter direction="left"></polymer-ui-splitter>
+        <div class="flexbox column" flex>
+          <div id="box2">2</div>
+          <polymer-ui-splitter direction="up"></polymer-ui-splitter>
+          <div flex>3</div>
+        </div>
+      </div>
+      
+      <br>
+      
+      <div class="container flexbox">
+        <div id="boxLeft">left</div>
+        <polymer-ui-splitter direction="left"></polymer-ui-splitter>
+        <div flex>center</div>
+        <polymer-ui-splitter direction="right"></polymer-ui-splitter>
+        <div id="boxRight">right</div>
+      </div>
+    </template>
+  </polymer-meta>
+</polymer-meta>
+
+<polymer-meta id="pg-app" label="Playground">
+  <polymer-meta label="Default">
+    <template>
+      <link rel="import" href="src/pg-app.html">
+      <link rel="import" href="metadata.html">
+      
+      <pg-app theme="polymer-ui-dark-theme"></pg-app>
+    </template>
+  </polymer-meta>
+  <polymer-meta label="Turf Theme">
+    <template>
+      <link rel="import" href="src/pg-app.html">
+      <link rel="import" href="metadata.html">
+      
+      <style>
+        .turf-bg {
+          background-image: url('https://ssl.gstatic.com/ui/v1/icons/mail/themes/turf/bg3_1920x1200.jpg');
+          color: white;
+        }
+      </style>
+      
+      <pg-app theme="polymer-ui-light-icon" class="turf-bg"></pg-app>
+    </template>
+  </polymer-meta>
+  <polymer-meta label="Blue Sky Theme">
+    <template>
+      <link rel="import" href="src/pg-app.html">
+      <link rel="import" href="metadata.html">
+      
+      <style>
+        .blue-sky-bg {
+          background-image: url('https://mail.google.com/mail/ca/u/0/images/2/5/tree/sunny/header_bg.jpg');
+          background-size: cover;
+        }
+      </style>
+      
+      <pg-app theme="polymer-ui-dark-icon" class="blue-sky-bg"></pg-app>
+    </template>
+  </polymer-meta>
+</polymer-meta>
+
+<!-- <polymer-meta id="pg-misc" label="Misc">
+  <polymer-meta label="Name Tag">
+    <template>
+      Polymer supports declarative binding of events to methods in the component.
+      It uses special on-event syntax to trigger this binding behavior.
+      <polymer-element name="x-nametag" on-click="toggleSize" attributes="name color">
+        <template>
+          <style>
+            @host {
+              * {
+                display: inline-block;
+                padding: 6px;
+                border: 1px solid #ccc;
+              }
+              
+              .large {
+                font-size: 40px;
+              }
+            }
+          </style>
+          
+          Published properties are data-bound inside of Polymer elements 
+          and accessible via MDV's {{}}. These bindings are by reference and 
+          are two-way.
+          
+          Hello! My name is <span style="color:{{color}}">{{name}}</span>
+        </template>
+        <script>
+          Polymer('x-nametag', {
+            // initial value of color is "blue"
+            color: 'blue',
+            toggleSize: function() {
+              this.classList.toggle('large');
+            }
+          });
+        </script>
+      </polymer-element>
+      
+      <x-nametag name="Joe"></x-nametag>
+      <x-nametag name="Mary" color="tomato"></x-nametag>
+    </template>
+  </polymer-meta>
+</polymer-meta> -->

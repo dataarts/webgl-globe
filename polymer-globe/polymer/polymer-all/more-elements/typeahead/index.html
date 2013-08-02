@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Typehead</title>
+    <link rel="import" href="typeahead-input.html">
+    <script src="../../polymer/polymer.js"></script>
+    <style>
+      body {
+        text-align: center;
+        padding-top: 50px;
+        font-family: Arial Sans-Serif;
+      }
+    </style>
+  </head>
+  <body>
+    <typeahead-test></typeahead-test>
+    <polymer-element name="typeahead-test">
+      <template>
+        <style>
+          typeahead-input {
+            margin: 25px;
+            width: 500px;
+            font-size: 32px;
+          }
+          .values > div {
+            display: inline-block;
+            padding: 5px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            color: #ccc;
+          }
+          .values > div[selected="true"] {
+            color: black;
+            border: 1px solid black;
+          }
+        </style>
+        <typeahead-input id="typeahead" on-typeahead-delimiter="more"></typeahead-input>
+        <div class="values">
+          <template repeat="{{data}}">
+            <div selected="{{selected}}">
+              <template repeat="{{values}}">
+                {{}}<br>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+      <script>
+        Polymer('typeahead-test', {
+          data: [{
+            selected: true,
+            values: [
+              'apple',
+              'zebra',
+              'orange',
+              'yellow',
+              'awesome'
+              ]
+          }, {
+            selected: false,
+            values: [
+              'zonk',
+              'baa',
+              'sheep',
+              'happy',
+              'house'
+            ]
+          }, {
+            selected: false,
+            values: [
+              'moo',
+              'spazz',
+              'lemons',
+              'duck',
+              'straw'
+            ]
+          }],
+          selected: 0,
+          ready: function() {
+            this.$.typeahead.values = this.selectedValues;
+          },
+          selectedChanged: function(old) {
+            this.data[old % 3].selected = false;
+            this.data[this.selected % 3].selected = true;
+          },
+          more: function(e, details) {
+            this.selected = details.query ? details.query.split('.').length : 0;
+            details.values = this.selectedValues;
+          },
+          get selectedValues() {
+            return this.data[this.selected % 3].values;
+          }
+        });
+      </script>
+    </polymer-element>
+  </body>
+</html>

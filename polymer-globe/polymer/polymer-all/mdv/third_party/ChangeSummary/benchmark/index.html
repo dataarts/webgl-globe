@@ -1,0 +1,185 @@
+<html>
+<!--
+Copyright 2013 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<head>
+  <title>Observation Benchmarks</title>
+  <meta charset="utf-8">
+  <script src="../change_summary.js"></script>
+  <script src="chartjs/Chart.js"></script>
+  <script src="benchmark.js"></script>
+  <script src="observation_benchmark.js"></script>
+  <style>
+    * {
+      font-family: arial, helvetica, sans-serif;
+      font-weight: 400;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: rgba(0, 0, 0, .1);
+    }
+  </style>
+</head>
+<body>
+<h1>Observation Benchmarks</h1>
+
+<select id="benchmarkSelect">
+  <option>ObjectBenchmark</option>
+  <option>ArrayBenchmark</option>
+  <option>PathBenchmark</option>
+</select>
+<select id="configSelect">
+</select>
+
+<button id="go">Run Benchmarks</button>
+
+<span id="objectCountSpan"></span>
+<span id="mutationCountSpan"></span>
+<span id="runCountSpan"></span><br>
+
+<span>Object Count: </span>
+<input id="objectCountInput" style="width: 200px" value="4000, 8000, 16000, 32000, 64000"><br>
+<span>Mutation Count: </span>
+<input id="mutationCountInput" style="width: 200px" value="0, 100, 200, 400, 800, 1600"><br>
+
+<section style="width: 100%">
+  <article>
+    <div style="display:inline-block; padding-bottom: 20px">
+      Times in ms
+    </div>
+    <div style="display:inline-block">
+      <canvas id="times" width="800" height="400"></canvas>
+    </div>
+    <div style="display:inline-block">
+      <ul id="legendList">
+      </ul>
+    </div>
+  </article>
+</section>
+<h3 style="margin-left: 440px">Object Set Size</h3>
+<script>
+var benchmark;
+var goButton = document.getElementById('go');
+
+var objectCountInput = document.getElementById('objectCountInput');
+var mutationCountInput = document.getElementById('mutationCountInput');
+
+
+var objectCountSpan = document.getElementById('objectCountSpan');
+var mutationCountSpan = document.getElementById('mutationCountSpan');
+var runCountSpan = document.getElementById('runCountSpan');
+
+var timesCanvas = document.getElementById('times');
+var benchmarkSelect = document.getElementById('benchmarkSelect');
+var configSelect = document.getElementById('configSelect');
+
+function changeBenchmark() {
+  benchmark = window[benchmarkSelect.value];
+  configSelect.innerHTML = '';
+  benchmark.configs.forEach(function(config) {
+    var option = document.createElement('option');
+    option.innerHTML = config;
+    configSelect.appendChild(option);
+  });
+}
+
+benchmarkSelect.addEventListener('change', changeBenchmark);
+
+changeBenchmark();
+var ul = document.getElementById('legendList');
+var colors = [
+  [0, 0, 255],
+  [138,43,226],
+  [165,42,42],
+  [100,149,237],
+  [220,20,60],
+  [184,134,11]
+].map(function(rgb) {
+  return 'rgba(' + rgb.join(',') + ',.7)';
+});
+
+goButton.addEventListener('click', function() {
+  goButton.disabled = true;
+  goButton.innerHTML = 'Running...';
+  ul.innerHTML = '';
+
+  var objectCounts = objectCountInput.value.split(',').map(function(val) {
+    return Number(val);
+  });
+  var mutationCounts = mutationCountInput.value.split(',').map(function(val) {
+    return Number(val);
+  });
+
+  mutationCounts.forEach(function(count, i) {
+    var li = document.createElement('li');
+    li.innerHTML = count + ' mutations.'
+    li.setAttribute('style', 'color: ' + colors[i]);
+    ul.appendChild(li);
+  });
+
+  function benchmarkComplete(results) {
+    if (Observer._allObserversCount !== 0)
+      alert('Error. All Observer Count: ' + Observer._allObserversCount);
+
+    datasets = [];
+
+    var timesArray = [];
+    for (var i = 0; i < results[0].length; i++) {
+      timesArray.push(results.map(function(result) {
+        return result[i];
+      }));
+    }
+    timesCanvas.setAttribute('height', '400');
+    timesCanvas.setAttribute('width', '800');
+    timesCanvas.setAttribute('style', '');
+
+    var ctx = timesCanvas.getContext("2d");
+    new Chart(ctx).Line({
+      labels : objectCounts,
+      datasets : timesArray.map(function(times, i) {
+        return {
+          fillColor : 'rgba(255, 255, 255, 0)',
+          strokeColor : colors[i],
+          pointColor : colors[i],
+          pointStrokeColor : "#fff",
+          data : times
+        };
+      })
+    }, {
+      bezierCurve : false
+    });
+
+    goButton.disabled = false;
+    goButton.innerHTML = 'Run Benchmarks';
+    updateStatus();
+  }
+
+  function updateStatus(setup, variant, runCount) {
+    objectCountSpan.innerHTML = setup ? setup + ' objects' : '';
+    mutationCountSpan.innerHTML = setup ? variant + ' mutations' : '';
+    runCountSpan.innerHTML = setup ? runCount + ' runs' : '';
+  }
+
+  var test = new benchmark(configSelect.value);
+  var runner = new BenchmarkRunner(test, objectCounts,
+                                  mutationCounts,
+                                  benchmarkComplete,
+                                  updateStatus);
+  runner.go();
+});
+</script>
+</body>
+</html>

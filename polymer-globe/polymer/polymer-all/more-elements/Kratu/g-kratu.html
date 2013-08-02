@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="stylesheet" href="google-kratu-bc126c1/css/kratu.css">
+<script src="google-kratu-bc126c1/js/kratu.js"></script>
+<script src="google-kratu-bc126c1/js/dataproviders/csv.js"></script>
+<script src="google-kratu-bc126c1/js/dataproviders/json.js"></script>
+<polymer-element name="g-kratu">
+  <script>
+    Polymer('g-kratu', {
+      src: '',
+      report: '',
+      data: null,
+      definition: null,
+      pending: 0,
+      ready: function() {
+        // Instantiate a new Kratu object
+        this.kratu = new Kratu();
+        // Tell Kratu where to render our report
+        this.kratu.setRenderElement(this);
+      },
+      srcChanged: function() {
+        this.dataPending = true;
+        var provider = this.providerForUrl(this.src);
+        if (provider) {
+          provider.load(this.src, function(data) {
+            this.dataPending = false;
+            this.data = data;
+          }.bind(this));
+        }
+      },
+      reportChanged: function() {
+        this.definitionPending = true;
+        var provider = this.providerForUrl(this.report);
+        if (provider) {
+          provider.load(this.report, function(reportDefinition) {
+            this.definition = reportDefinition;
+          }.bind(this));
+        }
+      },
+      providerForUrl: function(inUrl) {
+        var ext = inUrl.split('.').pop();
+        var ctor = {csv: KratuCSVProvider, json: KratuJsonProvider}[ext];
+        return ctor ? new ctor() : null;
+      },
+      definitionChanged: function() {
+        this.definitionPending = true;
+        this.kratu.setReportDefinition(this.definition, function() {
+          this.definitionPending = false;
+          this.render();
+        }.bind(this));
+      },
+      dataChanged: function() {
+        this.kratu.setEntities(this.data);
+        this.render();
+      },
+      render: function() {
+        if (!this.dataPending && !this.definitionPending) {
+          this.kratu.renderReport();
+        }
+      }
+    });
+  </script>
+</polymer-element>

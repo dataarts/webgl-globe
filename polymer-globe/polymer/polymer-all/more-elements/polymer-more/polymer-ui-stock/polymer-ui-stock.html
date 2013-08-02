@@ -1,0 +1,151 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+<link rel="import" href="polymer-ui-stock-data.html">
+<link rel="import" href="polymer-ui-stock-legend-item.html">
+<!--<link rel="import" href="../polymer-ui-line-chart/polymer-ui-line-chart.html">-->
+<link rel="import" href="../../../more-elements/Chart.js/chart-js.html">
+<link rel="import" href="../../../polymer-elements/polymer-ajax/polymer-ajax.html">
+
+<polymer-element name="polymer-ui-stock" attributes="symbols autoupdate">
+
+  <template>
+    <link rel="stylesheet" href="css/polymer-ui-stock.css">
+    <div id="widget-title">Market Summary</div>
+    <template repeat="{{stocks}}">
+      <polymer-ui-stock-legend-item id="legend-{{name}}" label="{{name}}" data="{{data}}" color="{{color}}"></polymer-ui-stock-legend-item>
+    </template>
+    <div class="stock-more">
+      <!--<polymer-ui-line-chart series="{{polymerChartSeries}}"></polymer-ui-line-chart>-->
+      <chart-js id="chartjs" style="height: 150px;" kind="line" data="{{chartJsSeries}}" options="{{chartjsOptions}}"></chart-js>
+    </div>
+    <!--<polymer-ajax id="ajax" response="{{timeData}}" auto></polymer-ajax>-->
+  </template>
+
+  <script>
+    (function() {
+      Polymer('polymer-ui-stock', {
+        symbols: '',
+        stocks: null,
+        timeData: null,
+        autoupdate: false,
+        updateinterval: 60000,
+        ready: function() {
+          //this.$.ajax.url = this.resolvePath('mock/polymer-ui-stock-test-data.json');
+          if (this.symbols === '') {
+            this.symbols = '.INX,NDAQ,.DJI';
+          }
+          this.timeData = {results: []};
+          this.chartjsOptions = chartjs_options;
+        },
+        // when our symbol listing changes, generate new data objects
+        symbolsChanged: function() {
+          var list = [];
+          this.symbols.split(',').forEach(function(s, i) {
+            list.push(new PolymerStockData(s, colors[i % 3]));
+          });
+          this.stocks = list;
+        },
+        // demand-update the stock data
+        update: function() {
+          this.stocks.forEach(function(s) {
+            s.update();
+          });
+        },
+        // update on interval, if desired
+        autoupdateChanged: function() {
+          if (this.autoupdate) {
+            this.interval = setInterval(this.update.bind(this), 
+                this.updateinterval);
+          } else if (this.intervalId) {
+            clearInterval(this.interval);
+          }
+        },
+        stocksChanged: function() {
+          this.updateChart();
+        },
+        timeDataChanged: function() {
+          this.updateChart();
+        },
+        updateChart: function() {
+          if (this.stocks && this.timeData) {
+            this.parseTimeData();
+            this.generatePolymerChartSeries();
+            this.generateChartJsSeries();
+          }
+        },
+        parseTimeData: function() {
+          var series = [];
+          var data = this.timeData.results;
+          var pts = ['9:30', '10am', '11', '12', '1', '2', '3', '4pm'];
+          var vv = [1600, 700, 1300];
+          this.stocks.forEach(function(s, j) {
+            var ss = {label: s.name, data: []};
+            var v = vv[j];
+            for(var i=0; i<8; i++) {
+              //var value = parseFloat(data[s.symbol][pts[i]].percent) || 0;
+              value = v + Math.random() * (v*0.5);
+              ss.data.push(value);
+            }
+            series.push(ss);
+          });
+          this.series = series;
+        },
+        generatePolymerChartSeries: function(){
+          // init columns
+          var cols = [{type:'string', id:'Time'}];
+          // init rows
+          var rows = [
+            {c:[{v:'9:30'}]},
+            {c:[{v:'10am'}]},
+            {c:[{v:'11'}]},
+            {c:[{v:'12'}]},
+            {c:[{v:'1'}]},
+            {c:[{v:'2'}]},
+            {c:[{v:'3'}]},
+            {c:[{v:'4pm'}]}
+          ];
+          // construct rows/columns from series data
+          this.series.forEach(function(s) {
+            cols.push({type: 'number', id: s.label});
+            for(var i=0; i<s.data.length; i++) {
+              rows[i].c.push({v: s.data[i]});
+            }
+          });
+          this.polymerChartSeries = {cols: cols, rows: rows};
+        },
+        generateChartJsSeries: function() {
+          var labels = [];
+          var sets = []
+          this.series.forEach(function(s) {
+            labels.push(s.label);
+            sets.push({data: s.data});
+          });
+          sets.forEach(function(s, i) {
+            s.fillColor = 'rgba(' + rgb[i%3] + ', 0.2)';
+            s.strokeColor = 'rgba(' + rgb[i%3] + ',1)';
+            s.pointColor = 'rgba(' + rgb[i%3] + ',1)';
+            s.pointStrokeColor = '#fff';
+          });
+          var labels = ['9:30', '10am', '11', '12', '1', '2', '3', '4pm'];
+          this.chartJsSeries = {
+            labels: labels,
+            datasets: sets
+          };
+        }
+      });
+      // static color palette
+      var rgb = ['78, 141, 245', '219, 71, 67', '244, 193, 56'];
+      var colors = ['#4E8DF5', '#DB4743', '#F4C138'];
+      // static chartjs options
+      var chartjs_options = {
+        pointDot: false,
+        datasetStrokeWidth: 1,
+        scaleFontColor: '#eee'
+      };
+    })();
+  </script>
+</polymer-element>

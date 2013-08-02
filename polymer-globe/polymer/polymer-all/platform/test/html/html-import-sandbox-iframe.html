@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+	<head>
+		<link rel="import" href="dummy.html">
+		<script src="../../lib/patches-html-imports-csp.js"></script>
+		<script src="../../../HTMLImports/src/HTMLImports.js"></script>
+		<script src="../../../HTMLImports/src/Parser.js"></script>
+		<script src="../../../HTMLImports/src/boot.js"></script>
+	</head>
+	<body>
+		<script>
+			window.addEventListener('HTMLImportsLoaded', function() {
+				parent.postMessage({
+					type: 'test',
+					data: document.querySelector('link[rel=import]').content.querySelector('body').innerHTML
+				}, '*');
+			});
+		</script>
+	</body>
+</html>

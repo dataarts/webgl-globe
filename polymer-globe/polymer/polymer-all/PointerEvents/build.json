@@ -1,0 +1,14 @@
+[
+  "src/boot.js",
+  "src/touch-action.js",
+  "src/PointerEvent.js",
+  "src/pointermap.js",
+  "src/sidetable.js",
+  "src/dispatcher.js",
+  "src/installer.js",
+  "src/mouse.js",
+  "src/touch.js",
+  "src/ms.js",
+  "src/platform-events.js",
+  "src/capture.js"
+]

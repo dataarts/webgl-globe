@@ -1,0 +1,96 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="import" href="../../../polymer-elements/polymer-google-jsapi/polymer-google-jsapi.html">
+<polymer-element name="polymer-ui-line-chart" attributes="series">
+  <template>
+    <style>
+      @host {
+        * {
+          position: relative;
+        }
+      }
+      #bg {
+        background: rgba(242, 242, 238, 0.2);
+        width:298px;
+        height:120px;
+        position:absolute;
+        top:0;
+        left:0;
+        border-left: 1px solid #E6E6E6;
+        border-right: 1px solid #E6E6E6;
+      }
+    </style>
+    <div id="bg"></div>
+    <div id="chart"></div>
+    <polymer-google-jsapi on-polymer-google-jsapi-loaded="jsapiLoaded"></polymer-google-jsapi>
+  </template>
+  <script>
+    (function() {
+      Polymer('polymer-ui-line-chart', {
+        chart: null,
+        jsapiLoaded: function() {
+          google.load('visualization', '1', {packages:['corechart']});
+          google.setOnLoadCallback(function() {
+            this.chart = new google.visualization.LineChart(this.$.chart);
+          }.bind(this));
+        },
+        chartChanged: function() {
+          this.update();
+        },
+        seriesChanged: function() {
+          this.update();
+        },
+        update: function(){
+          if (this.chart && this.series) {
+            // new data table
+            var data = new google.visualization.DataTable(this.series);
+            // render the data
+            this.chart.draw(data, chartOptions);
+          }
+        }
+      });
+      // statics
+      chartOptions = {
+        titlePosition: 'none',
+        enableInteractivity: true,
+        fontSize: 12,
+        lineWidth: 1,
+        interpolateNulls: false,
+        animation:{
+          duration: 1000,
+          easing: 'out',
+        },
+        fontName: 'Arial, HelveticaNeue',
+        backgroundColor: {
+          fill: 'transparent',
+        },
+        chartArea:{
+          left:0,
+          top:0,
+          width: 300,
+          height: 120
+        },
+        hAxis: {
+          viewWindowMode: 'explicit',
+          allowContainerBoundaryTextCutoff: true,
+          viewWindow: {
+            min: 1,
+            max: 8
+          }
+        },
+        vAxis: {
+          baselineColor: '#999999',
+          gridlines: {
+            color: '#E6E6E6'
+          }
+        },
+        legend: {
+          position: 'none'
+        }
+      };
+    })();
+  </script>
+</polymer-element>

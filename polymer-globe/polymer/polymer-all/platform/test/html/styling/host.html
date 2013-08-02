@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <meta name="viewport" content="initial-scale=1.0">
+  <title>Using @host styling</title>
+  <script src="../../../platform.js"></script>
+  <script src="register.js"></script>
+  <script src="../../../tools/test/htmltest.js"></script>
+  <script src="../../../node_modules/chai/chai.js"></script>
+</head>
+<body>
+  <script>
+    
+  </script>
+  <template id="x-foo">
+    <style>
+      @host {
+        * {
+          display: block;
+          background: red;
+        }
+
+        *.foo {
+          background: black;
+          color: white;
+        }
+      }
+    </style>
+    <div>background</div>
+  </template>
+  <template id="x-bar">
+    <style>
+      @host {
+        x-bar {
+          color: white;
+        }
+      }
+    </style>
+    <shadow></shadow>
+    <div>white text</div>
+  </template>
+
+  <template id="x-zot">
+    <style>
+      @host {
+        * {
+          border: 5px solid orange;
+        }
+      }
+    </style>
+    <shadow></shadow>
+    <div>orange border & gray background</div>
+  </template>
+
+  <template id="x-scope">
+    <style>
+      @host {
+        :scope {
+          display: block;
+          background: red;
+        }
+        .foo:scope {
+          background: black;
+          color: white;
+        }
+      }
+    </style>
+    <div>background</div>
+  </template>
+  <template id="x-button">
+    <style>
+      @host {
+        * {
+          background: green;
+        }
+      }
+    </style>
+    <content></content>
+  </template>
+
+  <template id="x-zim">
+    <style>
+      @host {
+        * {
+          padding: 20px;
+        }
+      }
+    </style>
+    <shadow></shadow>
+    <div>padding: 20px</div>
+  </template>
+
+  
+  <script>
+    XFoo = register('x-foo', '', HTMLElement.prototype, ['x-foo']);
+    XBar = register('x-bar', 'x-foo', XFoo.prototype, ['x-foo', 'x-bar']);
+    XZot = register('x-zot', 'x-bar', XBar.prototype, ['x-foo', 'x-bar', 'x-zot']);
+    XZim = register('x-zim', 'x-zot', XZot.prototype, ['x-foo', 'x-bar', 'x-zot', 'x-zim']);
+    register('x-scope', '', HTMLElement.prototype, ['x-scope']);
+    register('x-button', '', HTMLButtonElement.prototype, ['x-button']);
+  </script>
+  
+  <h4>Expected: red background</h4>
+  <x-foo></x-foo>
+  
+  <h4>Expected: red background</h4>
+  <x-scope></x-scope>
+
+  <h4>Expected: green background</h4>
+  <button is="x-button">green</button>
+  
+  <h4>Expected: black background</h4>
+  <x-foo class="foo"></x-foo>
+  
+  <h4>Expected: black background</h4>
+  <x-scope class="foo"></x-scope>
+  
+  <h4>Expected: red background with white text</h4>
+  <x-bar></x-bar>
+  
+  <h4>Expected: red background with black text and orange border</h4>
+  <x-zot></x-zot>
+  
+  <h4>Expected: red background with black text and orange border and 20px padding</h4>
+  <x-zim></x-zim>
+  
+  <script>
+    document.addEventListener('WebComponentsReady', function() {
+      var foo = document.querySelector('x-foo');
+      chai.assert.equal(getComputedStyle(foo).backgroundColor, 'rgb(255, 0, 0)',
+        '@host styles matching * are applied (backgroundColor)');
+      
+      var foo2 = document.querySelector('x-foo.foo');
+      chai.assert.equal(getComputedStyle(foo2).backgroundColor, 'rgb(0, 0, 0)',
+        '@host styles matching * are conditionally applied (backgroundColor)');  
+        
+      var scope = document.querySelector('x-scope');
+      chai.assert.equal(getComputedStyle(scope).backgroundColor, 'rgb(255, 0, 0)',
+        '@host styles matching :scope  are applied (backgroundColor)');
+        
+      var scope2 = document.querySelector('x-scope.foo');
+      chai.assert.equal(getComputedStyle(scope2).backgroundColor, 'rgb(0, 0, 0)',
+        '@host styles matching :scope  are conditionally applied (backgroundColor)');  
+      
+      var bar = document.querySelector('x-bar');
+      var barStyle = getComputedStyle(bar);
+      chai.assert.equal(barStyle.backgroundColor, 'rgb(255, 0, 0)', 
+        '@host styles are inherited (backgroundColor)');
+      chai.assert.equal(barStyle.color, 'rgb(255, 255, 255)',
+        '@host styles are combined with inherited @host styles (color)');
+        
+      var zot = document.querySelector('x-zot');
+      var zotStyle = getComputedStyle(zot);
+      chai.assert.equal(zotStyle.backgroundColor, 'rgb(255, 0, 0)', 
+        '@host styles are inherited (backgroundColor)');
+      chai.assert.equal(zotStyle.borderTopColor, 'rgb(255, 165, 0)', 
+        '@host styles are combined with inherited @host styles (borderTopColor)');
+      chai.assert.equal(zotStyle.color, 'rgb(0, 0, 0)',
+        '@host styles are applied to given selector (color)');
+        
+      var zim = document.querySelector('x-zim');
+      var zimStyle = getComputedStyle(zim);
+      chai.assert.equal(zimStyle.backgroundColor, 'rgb(255, 0, 0)', 
+        '@host styles are inherited (backgroundColor)');
+      
+      chai.assert.equal(zimStyle.borderTopColor, 'rgb(255, 165, 0)', 
+        '@host styles are combined with inherited @host styles (borderTopColor)');
+      chai.assert.equal(zimStyle.borderBottomColor, 'rgb(255, 165, 0)', 
+        '@host styles are combined with inherited @host styles (borderBottomColor)');
+      chai.assert.equal(zimStyle.color, 'rgb(0, 0, 0)',
+        '@host styles are applied to given selector (color)');
+      chai.assert.equal(zimStyle.paddingTop, '20px',
+        '@host styles are loaded via external sheet in import (paddingTop)');
+        chai.assert.equal(zimStyle.paddingLeft, '20px',
+        '@host styles are loaded via external sheet in import (paddingLeft)');
+      zim.offsetHeight;
+      done();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<link rel="import" href="../../../toolkit-ui/elements/g-icon.html"/>
+<link rel="import" href="../../../more-elements/Speech/speech-mic.html"/>
+<link rel="import" href="pi-gfeeds.html"/>
+<link rel="import" href="pi-feed-viewer.html"/>
+<polymer-element name="pi-explore" attributes="panel topic">
+  <template>
+    <link rel="stylesheet" href="css/pi-explore.css" />
+    <div id="searchBox">
+      <input id="searchInput" on-input="inputChange"/>
+      <g-icon src="../images/search.png"></g-icon>
+      <speech-mic id="speech" on-result="speechResult"></speech-mic>
+    </div>
+    <pi-feed-viewer id="viewer" topics="{{topics}}" topic="{{topic}}" panel="{{panel}}"
+        layout="{{layout}}" topicsLayout="{{layout}}" loading="{{loading}}" disableTracking></pi-feed-viewer>
+    <pi-gfeeds query="{{query}}" on-queryresponse="queryResponse" loading="{{loading}}"></pi-gfeeds>
+  </template>
+  <script>
+    Polymer('pi-explore', {
+      layout: 'list',
+      ready: function() {
+        this.contentNode = document.createElement('div');
+      },
+      get canPrevious() {
+        return this.$.viewer.canPrevious;
+      },
+      previous: function() {
+        return this.$.viewer.previous();
+      },
+      panelChanged: function() {
+        this.$.searchBox.hidden = this.panel !== 'topics';
+      },
+      inputChange: function() {
+        clearTimeout(this._queryJob);
+        this._queryJob = setTimeout(function() {
+          this.$.speech.stop();
+          this.query = this.$.searchInput.value;
+        }.bind(this), 500);
+      },
+      speechResult: function(e, detail) {
+        this.$.searchInput.value = detail.transcript;
+        this.inputChange();
+      },
+      queryResponse: function(e, detail) {
+        var n = this.contentNode;
+        this.topics = [];
+        detail.entries.forEach(function(e) {
+          // unescape html content
+          n.innerHTML = e.title;
+          var t = n.textContent.trim();
+          this.topics.push({title: t, feed: [{feed: e.url}]});
+        }.bind(this));
+      }
+    });
+  </script>
+</polymer-element>

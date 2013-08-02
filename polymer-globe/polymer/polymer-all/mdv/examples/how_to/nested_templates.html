@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../mdv.js"></script>
+  </head>
+  <body>
+    <h1>Nested Template</h1>
+
+    Managers:
+    <ul>
+    <template id="example" repeat="{{ managers }}">
+      <li>{{ name }}, Employees:
+        <ul>
+          <template repeat="{{ employees }}">
+            <li>{{ name }}</li>
+          </template>
+        </ul>
+      </li>
+    </template>
+    </ul>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var t = document.getElementById('example');
+      t.model = { managers: [
+        {
+          name: 'Bob',
+          employees: [{ name: 'Sally' }, { name: 'Tim' }, { name: 'Joe' }]
+        },
+        {
+          name: 'Janet',
+          employees: [{ name: 'Eric' }, { name: 'Jack' }, { name: 'Laura' }]
+        },
+        {
+          name: 'Suzie',
+          employees: [{ name: 'John' }, { name: 'Lucy' }, { name: 'Fred' }]
+        },
+      ]};
+
+      // Needed to detect model changes if Object.observe
+      // is not available in the JS VM.
+      Platform.performMicrotaskCheckpoint();
+    });
+    </script>
+  </body>
+</html>

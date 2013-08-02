@@ -1,0 +1,142 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<link rel="import" href="arrange-game-tile.html">
+<polymer-element name="arrange-game">
+  <template>
+    <style>
+      @host {
+        :scope {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: block;
+          background: whitesmoke;
+        }
+      }
+      
+      header {
+        height: 60px;
+        box-sizing: border-box;
+        font-size: 36px;
+        padding: 10px;
+      }
+      
+      section {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      
+      button {
+        float: right;
+      }
+      
+    </style>
+    <header>Arrange Game <button on-tap="startGame">Restart</button></header>
+    <section id="board">
+      <template repeat="{{tiles}}"><arrange-game-tile tile="{{}}" 
+          on-pointerdown="tileDown" on-request-tile-metrics="requestTileMetrics"></arrange-game-tile></template>
+    </section>
+  </template>
+  <script>
+    Polymer('arrange-game', {
+      tiles: null,
+      rows: 4,
+      cols: 4,
+      ready: function() {
+        this.setAttribute('touch-action', 'none');
+      },
+      inserted: function() {
+        this.metrics = {
+          left: this.$.board.clientWidth / this.cols,
+          top: this.$.board.clientHeight / this.rows,
+          width: 100 / this.cols,
+          height: 100 / this.rows
+        };
+        this.startGame();
+      },
+      startGame: function() {
+        this.tiles = this.makeTiles();
+        this.inviso = this.tiles[this.rows * this.cols-1];
+        this.inviso.invisible = true;
+        this.shuffleTiles();
+        this.winner = false;
+      },
+      makeTiles: function() {
+        var tiles = [];
+        for (var i=0; i < this.rows; i++) {
+          for (var j=0, p; j < this.cols; j++) {
+            tiles.push({
+              row: i,
+              col: j,
+              position: i * this.cols + j
+            })
+          }
+        }
+        return tiles;
+      },
+      shuffleTiles: function() {
+        var size = this.rows * this.cols;
+        for (var i=0, count = size * 10; i < count; i++) {
+          this.moveTile(this.tiles[Math.floor(Math.random() * size)]);
+        }
+      },
+      tileDown: function(e) {
+        if (!this.winner) {
+          this.moveTile(e.target.templateInstance.model);
+        }
+        if (this.youWin()) {
+          this.winner = true;
+          this.tiles.forEach(function(t) {
+            t.winner = true;
+            t.invisible = false;
+          });
+        }
+        // faster response
+        Platform.flush();
+      },
+      moveTile: function(tile) {
+        if (tile.row === this.inviso.row && tile.col === this.inviso.col) {
+          return;
+        }
+        if (tile.row === this.inviso.row) {
+          this.move(tile, 'row', 'col');
+        } else if (tile.col === this.inviso.col) {
+          this.move(tile, 'col', 'row');
+        }
+      },
+      // row == axis
+      move: function(tile, axis, offAxis) {
+        var op = tile[offAxis] > this.inviso[offAxis] ? 1 : -1;
+        var moves = this.tiles.filter(function(t) {
+          return !t.invisible &&
+                 (t[axis] === this.inviso[axis]) && 
+                 (t[offAxis] * op > this.inviso[offAxis] * op) &&
+                 (t[offAxis] * op <= tile[offAxis] * op);
+        }, this);
+        moves.forEach(function(t) {
+          t[offAxis] -= op;
+          this.inviso[offAxis] += op;
+        }, this);
+      },
+      youWin: function() {
+        return this.tiles.every(function(t) {
+          return (t.col === t.position % this.cols) &&
+              (t.row === Math.floor(t.position / this.cols));
+        }, this);
+      },
+      requestTileMetrics: function(e) {
+        e.detail.metrics = this.metrics;
+      }
+    });
+  </script>
+</polymer-element>

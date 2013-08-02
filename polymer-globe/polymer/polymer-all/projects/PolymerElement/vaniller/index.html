@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script src="../../../polymer/platform/platform.min.js"></script>
+</head>
+<body>
+  <x-foo></x-foo>
+  <template element="x-foo">
+    Hello Light World
+  </template>
+  <script>
+    var t = document.querySelector('[element=x-foo]');
+    document.register(t.attributes.element.value, {
+      prototype: Object.create(HTMLElement.prototype, {
+        readyCallback: {
+          value: function() {
+            this.webkitCreateShadowRoot().appendChild(t.createInstance());
+          }          
+        }
+      })
+    });
+  </script>
+</body>
+</html>

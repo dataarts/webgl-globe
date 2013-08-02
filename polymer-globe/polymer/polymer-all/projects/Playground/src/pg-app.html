@@ -1,0 +1,103 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+
+<link rel="import" href="../../../more-elements/Ace/Ace.html">
+<link rel="import" href="pg-output.html">
+
+<polymer-element name="pg-app">
+  <template>
+    <link rel="stylesheet" href="../../../polymer-elements/polymer-flex-layout/polymer-flex-layout.css">
+    <link rel="stylesheet" href="css/pg-app.css">
+    <polymer-ui-sidebar-menu id="menu" label="Playground" valueattr="label" selectedModel="{{selectedElement}}">
+      <polymer-ui-icon logo src="images/toolkit.svg" size="32"></polymer-ui-icon>
+      <template repeat="{{elements}}">
+        <polymer-ui-menu-item label="{{label}}" src="images/code.png">
+          <template repeat="{{subElements}}">
+            <polymer-ui-menu-item label="{{label}}"></polymer-ui-menu-item>
+          </template>
+        </polymer-ui-menu-item>
+      </template>
+    </polymer-ui-sidebar-menu>
+    <div class="flexbox column" flex>
+      <polymer-ui-toolbar>
+        <button class="toolbar-button" on-tap="run">Run</button>
+        <div flex></div>
+      </polymer-ui-toolbar>
+      <div id="stage" class="flexbox" flex>
+        <polymer-collapse targetId="ace" horizontal fixedSize closed="{{maximized}}"></polymer-collapse>
+        <ajaxorg-ace id="ace" mode="html" theme="chrome" tabSize="2"></ajaxorg-ace>
+        <polymer-ui-splitter direction="left" locked="{{maximized}}" on-pointerdown="disableOutputMouseEvents" on-pointerup="enableOutputMouseEvents" on-trackend="splitterDragEnd"></polymer-ui-splitter>
+        <div class="flexbox column" flex>
+          <polymer-ui-toolbar theme="polymer-ui-light-theme">
+            <polymer-ui-icon-button src="{{arrowImageSrc}}" on-tap="toggleMaximized"></polymer-ui-icon-button>
+            <div>Output</div>
+          </polymer-ui-toolbar>
+          <pg-output id="output" flex html="{{source}}"></pg-output>
+        </div>
+      </div>
+    </div>
+    <polymer-meta list="{{elements}}"></polymer-meta>
+  </template>
+  <script>
+    Polymer('pg-app', {
+      maximized: false,
+      selectedElement: null,
+      ready: function() {
+        this.classList.add('flexbox');
+        this.asyncMethod(function() {
+          this.$.menu.selected = this.elements[0].label;
+        });
+        this.maximizedChanged();
+      },
+      toggleMaximized: function() {
+        this.maximized = !this.maximized;
+      },
+      maximizedChanged: function() {
+        this.arrowImageSrc = this.resolvePath('images/arrow_' + 
+            (this.maximized ? 'right' : 'left')  + '.png');
+        if (!this.maximized) {
+          // ace doesn't render its editor content if it's size 0
+          // so here we force ace to render after it's not collapsed
+          this.asyncMethod(function() {
+            this.$.ace.editor.renderer.updateText();
+          });
+        }
+      },
+      splitterDragEnd: function() {
+        this.enableOutpuMouseEvents();
+        this.$.ace.editor.resize();
+      },
+      disableOutputMouseEvents: function() {
+        this.$.output.classList.add('pointer-none');
+      },
+      enableOutpuMouseEvents: function() {
+        this.$.output.classList.remove('pointer-none');
+      },
+      selectedElementChanged: function() {
+        var s = this.selectedElement;
+        if (!s) {
+          return;
+        }
+        s.subElements = Array.prototype.slice.call(
+            s.querySelectorAll('polymer-meta'));
+        var s = this.selectedElement.archetype.innerHTML;
+        var n = s.match(/^\n([  \t]*)/)[1].length;
+        // remove extra spaces/indents at the beginning of each line
+        var regex = new RegExp('^[\\s]{0,' + n + '}', 'gm');
+        s = s.replace(regex, '').trim();
+        // remove emtpy string value e.g. vertical=""
+        s = s.replace(/=\"\"/g, '');
+        this.$.ace.value = s;
+        this.asyncMethod('run');
+      },
+      run: function() {
+        this.source = this.$.ace.editorValue;
+      }
+    });
+  </script>
+</polymer-element>

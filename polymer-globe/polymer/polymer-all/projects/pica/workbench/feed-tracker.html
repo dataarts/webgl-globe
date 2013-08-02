@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<html>
+<head>
+  <title>feed tracker</title>
+  <script src="https://www.google.com/jsapi"></script>
+  <script src="../../../polymer/polymer.js"></script>
+  <link rel="import" href="../components/pi-feed-aggregator.html"/>
+  <link rel="import" href="../components/pi-feed-tracker.html"/>
+</head>
+<body>
+  <pi-feed-aggregator></pi-feed-aggregator>
+  <pi-feed-tracker></pi-feed-tracker>
+  <div id="countDisplay" style="border-bottom: 1px solid #ccc;"></div>
+  <template repeat="{{entries}}">
+    <div>[{{source}}] {{title}} <input type="radio" checked="{{read}}" onchange="markRead(event)"/></div>
+  </template>
+  
+  <script>
+    var topic = {title: 'Technology', feed: [
+      {feed: 'http://www.theverge.com/rss/index.xml'},
+      {feed: 'http://feeds.engadget.com/weblogsinc/engadget'}
+    ]};
+    var tracker;
+    document.addEventListener('WebComponentsReady', function() {
+      var fa = document.querySelector('pi-feed-aggregator');
+      tracker = document.querySelector('pi-feed-tracker');
+      fa.addEventListener("response", 
+        function(event) {
+          var entries = event.detail.entries;
+          if (entries) {
+            document.querySelector('template').model = {entries: entries};
+            tracker.loadStories(entries);
+            updateReadCount();
+          }
+        }
+      );
+      fa.count = 50;
+      fa.feed = topic.feed;
+    });
+    function markRead(event) {
+      tracker.markRead(event.target.templateInstance.model);
+      updateReadCount();
+    }
+    function updateReadCount() {
+      document.querySelector('#countDisplay').textContent = 
+          'Read Count for ' + topic.title + ': ' + tracker.getReadCountForTopic(topic);
+    }
+  </script>
+</body>
+</html>

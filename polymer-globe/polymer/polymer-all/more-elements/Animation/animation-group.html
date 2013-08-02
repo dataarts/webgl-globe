@@ -1,0 +1,37 @@
+<link rel="import" href="../../toolkit-ui/elements/animation/all.html">
+<polymer-element name="animation-group" extends="g-animation-group" on-click="clickHandler">
+  <template>
+    <style>
+      @host {
+        * {
+          display: block;
+        }
+      }
+      /*@polyfill #container > * */
+      content::-webkit-distributed(*) {
+        display: block;
+        padding-left: 8px;
+      }
+    </style>
+    <span>{{type}} group</span><br>
+    <div id="container">
+      <content></content>
+    </div>
+  </template>
+  <script>
+    Polymer('animation-group', {
+      publish: {
+        type: 'seq'
+      },
+      clickHandler: function() {
+        this.doOnChildren(function(c) {
+          if (c.targetSelector && !c.target) {
+            c.targetSelectorChanged();
+          }
+        });
+        this.asyncApply();
+        setTimeout(this.play.bind(this), 500);
+      }
+    });
+  </script>
+</polymer-element>

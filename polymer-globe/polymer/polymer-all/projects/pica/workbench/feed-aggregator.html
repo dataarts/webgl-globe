@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<html>
+<head>
+  <title>feed aggregator</title>
+  <script src="https://www.google.com/jsapi"></script>
+  <script src="../../../polymer/polymer.js"></script>
+  <link rel="import" href="../components/pi-feed-aggregator.html"/>
+</head>
+<body>
+  <pi-feed-aggregator></pi-feed-aggregator>
+  <template repeat="{{entries}}">
+    <div style="width: 60px; height: 60px; background: url({{imgSrc}}) no-repeat center; background-size: contain;"></div>
+    <div>[{{source}}] {{title}} ({{since}})</div>
+  </template>
+  
+  <script>
+    document.addEventListener('WebComponentsReady', function() {
+      var fa = document.querySelector('pi-feed-aggregator');
+      fa.addEventListener("response", 
+        function(event) {
+          var model = {entries: event.detail.entries};
+          document.querySelector('template').model = model;
+        }
+      );
+      fa.count = 50;
+      fa.feed = [
+        {feed: 'http://www.theverge.com/rss/index.xml'},
+        {feed: 'http://feeds.engadget.com/weblogsinc/engadget'}
+      ];
+    });
+  </script>
+</body>
+</html>

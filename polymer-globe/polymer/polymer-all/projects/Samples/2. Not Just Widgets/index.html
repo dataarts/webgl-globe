@@ -1,0 +1,64 @@
+﻿<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>Not Just Widgets</title>
+  <!-- pull in polymer -->
+  <script src="../../../polymer/polymer.js"></script>
+  <!-- import elements -->
+  <link rel="import" href="../../../polymer-elements/polymer-page/polymer-page.html">
+  <link rel="import" href="../../../polymer-elements/polymer-layout/polymer-layout.html">
+  <link rel="import" href="../../../polymer-elements/polymer-layout/polymer-slide.html">
+  <link rel="import" href="../../../polymer-elements/polymer-view-source-link/polymer-view-source-link.html">
+  <!-- regular styling -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <!-- just an element, this one makes document.body fit the viewport -->
+  <polymer-page fullbleed></polymer-page>
+
+  <!-- just an element, arranges sibling elements to fit their container -->
+  <polymer-layout vertical></polymer-layout>
+
+  <header>
+    Not Just Widgets
+  </header>
+
+  <section fit>
+
+    <polymer-layout></polymer-layout>
+
+    <section class="sidebar">
+      Side Bar
+      <polymer-slide id="slide"></polymer-slide>
+    </section>
+
+    <section class="main" fit>
+      Custom elements need not be limited to buttons or menus. Custom elements 
+      can be complicated (a spreadsheet sytem, a report generator),
+      and can even be <b>invisible</b>.
+      <br /><br />
+      This page uses an invisible <b>layout</b> element to fit the orange sections 
+      to whatever screen you are looking at.
+      <br /><br />
+      This page uses an invisible <b>panel slider</b> element to slide the sidebar
+      in and out when you hit a <button onclick="document.querySelector('#slide').toggle()">Sidebar</button> button.
+    </section>
+
+  </section>
+
+  <footer>
+    <button onclick="document.querySelector('#slide').toggle()">Sidebar</button>
+  </footer>
+
+  <footer>
+    <a href="../3. But Widgets/">Next</a><!--<a href="../1. Start Here/" style="float:right;">Previous</a> --><a is="polymer-view-source-link" style="float:right;">View Source</a>
+  </footer>
+
+</body>
+</html>

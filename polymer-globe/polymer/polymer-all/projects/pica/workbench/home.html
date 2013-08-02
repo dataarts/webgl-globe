@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<html>
+<head>
+  <title>home</title>
+  <script src="https://www.google.com/jsapi"></script>
+  <script src="../../../polymer/polymer.js"></script>
+  <link rel="import" href="../components/pi-home.html"/>
+  <style>
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, 'open sans', sans-serif;
+      margin: 0;
+      display: -webkit-flex;
+      -webkit-flex-flow: column;
+    }
+    
+    pi-home {
+      -webkit-flex: 1;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <pi-home></pi-home>
+  
+  <script>
+    document.addEventListener('WebComponentsReady', function() {
+      var home = document.querySelector('pi-home');
+      home.stocks = ['GOOG', 'AAPL'];
+    });
+  </script>
+</body>
+</html>

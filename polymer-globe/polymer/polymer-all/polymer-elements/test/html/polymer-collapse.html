@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head>
+    <title>polymer-collapse</title>
+    <script src="../../../polymer/polymer.js"></script>
+    <script src="../../../polymer/tools/test/htmltest.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <link rel="import" href="../../polymer-collapse/polymer-collapse.html">
+  </head>
+  <body>
+    <button onclick="document.querySelector('#collapse').toggle()">toggle collapse</button>
+    <div id="box">
+      Forma temperiemque cornua sidera dissociata cornua recessit innabilis ligavit: solidumque coeptis nullus caelum sponte phoebe di regat mentisque tanta austro capacius amphitrite sui quin postquam semina fossae liquidum umor galeae coeptis caligine liberioris quin liquidum matutinis invasit posset: flexi glomeravit radiis certis invasit oppida postquam onerosior inclusum dominari opifex terris pace finxit quam aquae nunc sine altae auroram quam habentem homo totidemque scythiam in pondus ensis tegit caecoque poena lapidosos humanas coeperunt poena aetas totidem nec natura aethera locavit caelumque distinxit animalibus phoebe cingebant moderantum porrexerat terrae possedit sua sole diu summaque obliquis melioris orbem
+    </div>
+    <polymer-collapse id="collapse" targetId="box" duration="0.1"></polymer-collapse>
+    
+    <script>
+      var assert = chai.assert;
+      document.addEventListener('WebComponentsReady', function() {
+        var c = document.querySelector('#collapse');
+        var origH = getBoxHeight();
+        assert.notEqual(origH, 0);
+        c.closed = true;
+        setTimeout(function() {
+          assert.equal(getBoxHeight(), 0);
+          c.closed = false;
+          setTimeout(function() {
+            assert.equal(getBoxHeight(), origH);
+            done();
+          }, 200);
+        }, 200);
+      });
+      
+      function getBoxHeight() {
+        var b = document.querySelector('#box');
+        return parseInt(getComputedStyle(b).height);
+      }
+    </script>
+  </body>
+</html>

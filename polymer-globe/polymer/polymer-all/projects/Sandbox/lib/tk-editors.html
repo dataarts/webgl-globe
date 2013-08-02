@@ -1,0 +1,293 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-abstract-editor" attributes="value">
+  <script>
+    Polymer('tk-abstract-editor', {
+      value: '',
+      meta: null,
+      workingValue: null,
+      valueChanged: function() {
+        this.workingValue = this.value;
+      },
+      commit: function() {
+        this.value = this.format(this.workingValue);
+        // it's critical to have an event from the editor UI so we know when
+        // a user has changed a value, vs some other form of alteration
+        // for the same reason, we float our own changed event
+        this.fire('editor-value-changed');
+      },
+      format: function(value) {
+        return value;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-string-editor" extends="tk-abstract-editor">
+  <template>
+    <style>
+      @host {
+        * {
+          display: inline-block;
+          width: 95%;
+        }
+      }
+      input {
+        border: 1px solid #e4e4e4;
+        border-top-color: #cecece;
+        color: #333;
+        background: #fff;
+        padding: 9px 8px;
+        margin: 0;
+        width: 100%;
+        font: inherit;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-user-select: all;
+        -moz-user-select: all;
+        user-select: all;
+      }
+      input:focus {
+        outline: 1px solid #448afd;
+      }
+      input:invalid {
+        outline: 1px solid #d84437;
+      }
+      input:active {
+        background: #ededed;
+      }
+    </style>
+    <input id="input" type="{{type}}" value="{{workingValue}}" autocapitalize="off"
+      autocorrect="off" on-change="commit">
+  </template>
+  <script>
+    Polymer('tk-string-editor', {
+      type: "text",
+      focus: function() {
+        this.$.input.focus();
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-color-editor" extends="tk-string-editor">
+  <script>
+    Polymer('tk-color-editor', {
+      type: 'color',
+      ready: function() {
+        // TODO(sjmiles): box-sizing: border-box doesn't play nice with color inputs
+        // TODO(sjmiles): is there a way to effect these styles via stylesheet?
+        this.$.input.style.boxSizing = 'content-box';
+        this.$.input.style.width = '95%';
+        this.$.input.style.padding = '5px';
+        // TODO(dfreedm): Workaround for http://crbug.com/234801, colorpicker
+        // does not update swatch when in shadowdom because of focus issues
+        this.$.input.tabindex = -1;
+      },
+      valueChanged: function() {
+        this.workingValue = toHex(this.value);
+      },
+      format: function(value) {
+        return toHex(value);
+      }
+    });
+    function toHex(color) {
+      if (!color || color.substr(0, 1) === "#") {
+        return color;
+      }
+      var nums = /(.*?)rgb\((\d+),\s*(\d+),\s*(\d+)\)/i.exec(color),
+          r = parseInt(nums[2], 10).toString(16),
+          g = parseInt(nums[3], 10).toString(16),
+          b = parseInt(nums[4], 10).toString(16);
+      return "#"+ (
+          (r.length == 1 ? r + "0" : r) +
+          (g.length == 1 ? g + "0" : g) +
+          (b.length == 1 ? b + "0" : b)
+      );
+    }
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-boolean-editor" extends="tk-abstract-editor">
+  <template>
+    <style>
+      input {
+        font: inherit;
+      }
+    </style>
+    <input id="input" type="checkbox" checked="{{workingValue}}" on-change="inputChange">
+  </template>
+  <script>
+    Polymer('tk-boolean-editor', {
+      inputChange: function(event) {
+        this.workingValue = event.target.checked;
+        this.commit();
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-select-editor" extends="tk-abstract-editor" attributes="options">
+  <template>
+    <style>
+      @host {
+        * {
+          display: inline-block;
+          width: 95%;
+          position: relative;
+        }
+      }
+      select {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%; 
+        font: inherit;
+        -webkit-user-select: all; 
+        -moz-user-select: all;
+        user-select: all;
+      }
+    </style>
+    <select id="select" on-change="selectChange"></select>
+  </template>
+  <script>
+    // TODO(sorvell): Template repeat functions specially inside a select
+    // by using <option template repeat="{{options}}">{{}}</option>
+    // However, this creates an extra space in the select; see
+    // due to https://github.com/toolkitchen/mdv/issues/56.
+    // For that reason, we're manually iterating these nodes.
+    Polymer('tk-select-editor', {
+      metaChanged: function() {
+        this.options = this.meta.options;
+        // allow template to generate options before setting value
+        this.asyncMethod(function() {
+          this.$.select.value = this.workingValue;
+        });
+      },
+      optionsChanged: function() {
+        this.$.select.value = this.workingValue;
+        this.$.select.textContent = '';
+        this.options.forEach(function(o) {
+          var option = document.createElement('option');
+          option.textContent = o;
+          this.$.select.appendChild(option);
+        }, this);
+        /*
+        this.asyncMethod(function() {
+          if (this.workingValue !== this.$.select.value) {
+            this.selectChange();
+          }
+        });
+        */
+      },
+      selectChange: function() {
+        this.workingValue = this.$.select.value;
+        this.commit();
+      },
+      focus: function() {
+        this.$.select.focus();
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-text-editor" extends="tk-abstract-editor">
+  <template>
+    <style>
+      textarea {
+        padding: 6px;
+        margin: 0;
+        width: 95%; 
+        -webkit-user-select: all; 
+        -moz-user-select: all;
+        user-select: all;
+        overflow: auto; 
+        vertical-align: middle;
+      }
+    </style>
+    <textarea id="input" on-change="commit" rows="10"></textarea>
+  </template>
+  <script>
+    Polymer('tk-text-editor', {
+      workingValueChanged: function() {
+        this.$.input.textContent = this.workingValue;
+      },
+      commit: function() {
+        this.workingValue = this.$.input.value;
+        this.super();
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-range-editor" extends="tk-abstract-editor" attributes="min max step defaultValue">
+  <template>
+    <style>
+      @host {
+        * {
+          display: inline-block;
+          width: 95%;
+          position: relative;
+        }
+      }
+      input {
+        padding: 7px 6px 8px;
+        margin: 0;
+        width: 95%; 
+        box-sizing: border-box;
+        vertical-align: middle;
+        -webkit-user-select: all; 
+        -moz-user-select: all;
+        user-select: all;
+      }
+    </style>
+    <input id="input" type="range" value="{{workingValue}}" min="{{min}}" max="{{max}}" step="{{step}}" on-change="commit">
+  </template>
+  <script>
+    Polymer('tk-range-editor', {
+      min: 0,
+      max: 0,
+      step: 0,
+      defaultValue: 0,
+      metaChanged: function() {
+        if (this.meta) {
+          this.min = this.meta.min;
+          this.max = this.meta.max;
+          this.step = this.meta.step;
+          this.defaultValue = this.meta.defaultvalue;
+        }
+      },
+      defaultValueChanged: function() {
+        if (this.workingValue === null || this.workingValue === '') {
+          this.workingValue = this.defaultValue || this.min || 0;
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-speech-editor" extends="tk-string-editor">
+  <script>
+    Polymer('tk-speech-editor', {
+      ready: function() {
+        this.$.input.setAttribute('x-webkit-speech');
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-compound-editor" extends="tk-abstract-editor">
+  <template>
+    <tk-string-editor style="width: 90px;"></tk-string-editor>
+    <tk-select-editor style="width: 70px;" options="{{options}}"></tk-select-editor>
+    <tk-range-editor style="width: 100px;"></tk-range-editor>
+  </template>
+  <script>
+    Polymer('tk-compound-editor', {
+      options: ['px', 'pt', '%', 'em', 'rem', '']
+    });
+  </script>
+</polymer-element>
+

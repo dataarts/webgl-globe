@@ -1,0 +1,108 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<polymer-element name="arrange-game-tile" attributes="tile">
+  <template>
+    <style id="style">
+      div {
+        position: absolute;
+        display: inline-block;
+        box-sizing: border-box;
+        -webkit-transition: -webkit-transform .1s, opacity .2s;
+        -webkit-user-select: none;
+        cursor: pointer;
+        font-size: 100px;
+        line-height: 200px;
+      }
+      
+      #inner {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        bottom: 4px;
+        left: 4px;
+        background: -webkit-gradient(linear, left bottom, right top, from(skyblue), to(steelblue), color-stop(0.5, steelblue), color-stop(0.5, steelblue));
+        border: 2px solid black;
+        border-radius: 8px;
+        text-align: center;
+        vertical-align: middle;
+        opacity: 1;
+      }
+      
+      #inner.winner {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border: none;
+        border-radius: 0;
+        background: lightseagreen;
+      }
+      
+      .invisible {
+        visibility: hidden;
+        opacity: 0;
+      }
+      
+    </style>
+    <div class="tile {{invisible: tile.invisible}}" style="-webkit-transform: translate3d({{position.left}}px, {{position.top}}px, 0);">
+      <div id="inner" class="{{winner: tile.winner}}">{{tile.position + 1}}</div>
+    </div>
+  </template>
+  <script>
+  (function() { 
+    Polymer('arrange-game-tile', {
+      tile: null,
+      inserted: function() {
+        var i = {};
+        this.fire('request-tile-metrics', i);
+        var m = this.metrics = i.metrics;
+        this.$.style.textContent += '.tile { width: ' + m.width + 
+            '%;\n height: ' + m.height + '%;\n}';
+        this.binding = observePaths(this, 'tile.col tile.row',
+            this.updatePosition.bind(this));
+      },
+      updatePosition: function() {
+        this.position = {
+          left: this.tile.col * this.metrics.left,
+          top: this.tile.row * this.metrics.top
+        }
+      }
+    });
+    
+    function observePaths(model, pathsString, callback) {
+      if (!callback) {
+        return;
+      }
+      var observer = new CompoundBinding(function(values) {
+        callback(values, calcOldValues(observer));
+      });
+      var paths = pathsString.split(' ');
+      paths.forEach(function(path) {
+        observer.bind(nameForPath(observer, path), model, path);
+      });
+      return observer;
+    }
+    
+    function nameForPath(binding, path) {
+      var pathName = path, k=0;
+      while (Object.keys(binding.bindings).indexOf(pathName) >= 0) {
+        pathName = path + ++k;
+      }
+      return pathName;
+    }
+    
+    function calcOldValues(binding) {
+      var values = {};
+      Object.keys(binding.bindings).forEach(function(k) {
+        values[k] = binding.bindings[k].oldValue;
+      });
+      return values;
+    }
+  })();
+  </script>
+</polymer-element>

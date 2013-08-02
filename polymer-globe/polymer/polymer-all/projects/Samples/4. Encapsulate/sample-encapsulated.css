@@ -1,0 +1,30 @@
+﻿@host {
+  * {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+  }
+}
+
+.logo {
+  padding: 14px;
+  color: #eaeaea;
+  font-size: 21px;
+  height: 60px;
+}
+
+footer {
+  padding: 8px;
+}
+
+img {
+  width: 32px;
+  vertical-align: middle;
+}
+
+section {
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+}

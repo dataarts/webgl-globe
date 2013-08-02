@@ -1,0 +1,226 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<script src="binding.js"></script>
+<polymer-element name="tk-dumper">
+  <script>
+    Polymer('tk-dumper', {
+      tab: '  ',
+      dumpTag: function(node, indent) {
+        if (node.dumpTag) {
+          return node.dumpTag(this.dumpTab, indent, TAB);
+        }
+        if (node.nodeType == Node.TEXT_NODE) {
+          return this.dumpTextNode(node);
+        }
+        var html = '';
+        html += indent + '<' + node.localName;
+        var attributes = this.dumpAttributes(node);
+        Object.keys(attributes).forEach(function(k) {
+          var v = attributes[k];
+          if (v !== null && v !== undefined) {
+            html += ' ' + k + (v !== '' ? '="' + v + '"': '');
+          }
+        })
+        html += '>';
+        var end = '</' + node.localName + '>\n';
+        if (node.meta && node.meta.hideSubtree) {
+          html += end;
+        } else {
+          if (node.firstElementChild) {
+            Array.prototype.forEach.call(node.children, function(c, i) {
+              if (i == 0) {
+                html += '\n';
+              }
+              html += this.dumpTag(c, indent + this.tab);
+            }, this);
+            html += indent + end;
+          } else {
+            html += node.firstChild ? this.dumpTextNode(node.firstChild) + end
+              : end;
+          }
+        }
+        return html;
+      },
+      dumpAttributes: function(node) {
+        var p$ = Reflection.properties(node);
+        var attributes = {};
+        p$.forEach(function(p) {
+          var v = p.value, n = p.name, binding = Bindings.getBinding(node, n);
+          if (n == 'textContent') {
+            return;
+          }
+          if (binding) {
+            v = '{{ ' + binding + ' }}';
+          } else if (!((v || v === 0) && (typeof v === 'string' || typeof v === 'number' ||
+              typeof v === 'boolean'))) {
+            v = null;
+          }
+          if (v != null) {
+            attributes[n.toLowerCase()] = v;
+          }
+        });
+        for (var i=0, a, n; (a = node.attributes[i]); i++) {
+          n = a.name.toLowerCase();
+          if (attributes[n] === undefined) {
+            attributes[n] = a.value;
+          }
+        }
+        this.filterAttributes(attributes);
+        return attributes;
+      },
+      // special handling for certain attributes: style, class
+      filterAttributes: function(attributes) {
+        attributes.style = null;
+        var v = attributes['class'];
+        v = v ? v.replace(/selected-element/g, '') : null;
+        if (v && (v.trim() == 'selected')) {
+          v = '';
+        }
+        attributes['class'] = v || null;
+      },
+      dumpTextNode: function(node) {
+        var binding = Bindings.getBinding(node, 'textContent');
+        return binding ? '{{ ' + binding + ' }}' : node.textContent;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-element-dumper" extends="tk-dumper">
+  <script>
+    Polymer('tk-element-dumper', {
+      elementBlackList: ['style'],
+      propertyBlackList: null,
+      ready: function() {
+        var node = document.createElement('tk-dumper-blacklist');
+        this.propertyBlackList = Object.keys(node.__proto__);
+      },
+      dumpElement: function(node, indent) {
+        // resolve properties to attributes before dumping
+        var proto = this.dumpProto(node, indent + this.tab + this.tab);
+        var name = node.elementAttributes.name || '';
+        var script = 'Polymer(\'' + name +'\', ' + proto + ');';
+        var html = indent + '<polymer-element' + this.dumpElementAttributes(node) +
+          '>\n' + indent + this.tab + '<template>\n';
+        html += indent + this.dumpStyle(node, indent + this.tab + this.tab);
+        var children = '';
+        Array.prototype.forEach.call(node.children, function(c) {
+          if (this.elementBlackList.indexOf(c.localName) < 0) {
+            children += this.dumpTag(c, indent + this.tab + this.tab);
+          }
+        }, this);
+        html += children || (indent + this.tab + this.tab + '\n');
+        html += indent + this.tab + '</template>\n' +
+          indent + this.tab +'<script>\n' +
+          indent + this.tab + this.tab + script + '\n' +
+          indent + this.tab +'</s' + 'cript>\n'+
+          indent + '</polymer-element>';
+        return html;
+      },
+      dumpElementAttributes: function(node) {
+        var html = '';
+        if (node.elementAttributes) {
+          Object.keys(node.elementAttributes).forEach(function(a) {
+            html += ' ' + a + '="' + node.elementAttributes[a] + '"';
+          });
+        }
+        return html;
+      },
+      dumpProto: function(node, indent) {
+        var dump = '{\n';
+        var props = Object.keys(node.__proto__).filter(function(p) {
+          return (this.propertyBlackList.indexOf(p) < 0);
+        }, this);
+        if (!props.length) {
+          dump += indent + this.tab;
+        }
+        props.forEach(function(k, i) {
+          var value = node.__proto__[k], nodeValue = node[k];
+          dump += indent + this.tab + k + ': ';
+          if (typeof value == 'function') {
+            dump += value.toString();
+          } else {
+            dump += (typeof value == 'string' ? '\'' + nodeValue +
+              '\'' : nodeValue);
+          }
+          dump += (i <  props.length-1 ? ',\n' : '');
+        }, this);
+        dump += '\n' + indent + '}';
+        return dump;
+      },
+      dumpStyle: function(node, startIndent) {
+        var css = startIndent + '<style>\n';
+        var style = node.querySelector('style');
+        if (style && style.sheet) {
+          css += this.cssTextFromSheet(node, style.sheet, startIndent, this.tab)
+            || '';
+        }
+        var tab = this.tab;
+        function subtree(root, indent) {
+          var e = root.firstElementChild;
+          while (e) {
+            var parts = e.hasAttribute('style') ?
+              e.getAttribute('style').split(';') : null;
+            if (parts && e.id) {
+              css += indent + '#' + e.id + ' {\n';
+              parts.forEach(function(p) {
+                if (p) {
+                  p = p.trim();
+                  if (p === 'position: absolute') {
+                    p = p + ' !important';
+                  }
+                  css += indent + tab + p.trim() + ';\n';
+                }
+              });
+              css += indent + '}' + '\n';
+            }
+            if (e.firstElementChild) {
+              subtree(e, indent);
+            }
+            e = e.nextElementSibling;
+          }
+        }
+        subtree(node, (startIndent || '') + this.tab);
+        css += startIndent + '</style>\n';
+        return css;
+      },
+      cssTextFromSheet: function(node, sheet, indent) {
+        if (sheet) {
+          var rules = sheet.cssRules;
+          for (var i=0, css=[]; i < rules.length; i++) {
+            if (!(this.ignoreSelector(node, rules[i].selectorText))) {
+              css.push(this.dumpRule(rules[i], indent + this.tab));
+            }
+          }
+          return css.join('');
+        }
+      },
+      // ignore id selectors
+      ignoreSelector: function (node, selector) {
+        return selector.match(/^#[^, ]*$/) && node.querySelector(selector);
+      },
+      dumpRule: function(rule, indent) {
+        indent = indent || '';
+        // format
+        var css = rule.cssText
+          .replace(/{ /g, '{')
+          .replace(/; /g, ';')
+          .replace(/(^.*{)/g, indent + '$&\n' + indent + this.tab)
+          .replace(/;/g, ';\n' + indent + this.tab)
+          .replace(new RegExp(indent + this.tab + '}', 'g'), indent + '}\n')
+          .replace(/\n[^;]*:[^;]*initial[^;]*;/g, '');
+        return css;
+      }
+    });
+  </script>  
+</polymer-element>
+
+<polymer-element name="tk-dumper-blacklist">
+  <script>
+    // note: this element exists to generate a property black list for tk-element
+    Polymer('tk-dumper-blacklist');
+  </script>
+</polymer-element>

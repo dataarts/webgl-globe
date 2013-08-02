@@ -1,0 +1,14 @@
+{
+	"name":"Bug Prioritization Sheet",
+	"signalDefinitionUrl":"./bugs_signaldefinition.js",
+	"signals":[
+		{"key":"ticketId"},
+		{"key":"customerId"},
+		{"key":"customerName"},
+		{"key":"subject"},
+		{"key":"department"},
+		{"key":"ticketType"},
+		{"key":"priority"},
+		{"key":"customerTier"}
+	]
+}

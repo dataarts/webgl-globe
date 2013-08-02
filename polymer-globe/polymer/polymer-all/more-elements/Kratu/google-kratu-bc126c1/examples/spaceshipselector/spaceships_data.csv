@@ -1,0 +1,31 @@
+name,model,imageUrl,cost,resellValueDrop,engineSize,propulsionType,hyperdrive,kesselRunRecord,freightCapacity,passengerCapacity
+Recommentatur Wing,(RW-27),img/1.gif,1127,43,1.7,Electrostatic Ion Thruster,1,23,5000,4
+Storm Predator Tena,(PTE-997),img/2.gif,1565,48,2,Pulsed Inductive Thruster,0,25,9000,4
+Uranium Rogue Yacht,(URY-509),img/3.gif,1328,45,1.1,DC Arcjet,1,11,6000,10
+Futurens-class Trident,(FUT-238),img/4.gif,1650,40,2.7,Pulsed Induct%ive Thruster,1,19,1000,0
+Shining Jumper,(SJU-554),img/5.gif,533,20,3.2,Pulsed Inductive Thruster,1,15,6000,6
+Space Sloop,(SS-4144),img/6.gif,1479,39,2.6,Colloid Thruster,1,12,7000,1
+Republic Commander,(CO-2696),img/7.gif,715,32,1.2,Pulsed Inductive Thruster,0,16,9000,1
+Imperial Trawler,(ITR-294),img/8.gif,793,59,3.2,DC Arcjet,0,9,8000,9
+Jupiter Rocket,(JR-875),img/9.gif,1842,35,3.9,Pulsed Inductive Thruster,0,9,5000,1
+Warp Esper Tracker,(TR-5890),img/10.gif,1001,32,4,Pulsed Inductive Thruster,0,19,1000,9
+Exsanguax-class Spy,(ES-591),img/11.gif,1166,41,2.1,Pulsed Inductive Thruster,0,11,6000,3
+Onyx Scavenger,(OS-6379),img/12.gif,1963,55,4.7,Pulsed Inductive Thruster,0,18,6000,6
+Light Privateer Civilit,(LPC-289),img/13.gif,1712,29,3.9,Pulsed Inductive Thruster,0,19,4000,4
+Midnight Sussures Hydra,(SHY-482),img/14.gif,1966,30,1,Pulsed Inductive Thruster,1,21,6000,10
+Runcible Blue Locator,(BLO-107),img/15.gif,584,24,2.3,Electrostatic Ion Thruster,0,16,5000,6
+Scaeves Escort,(SE-982),img/16.gif,923,32,1.8,Pulsed Plasma Thruster,1,20,4000,5
+Covert Medusam,(CM-826),img/17.gif,848,46,2.6,Pulsed Inductive Thruster,1,25,5000,5
+Satellite Steel Barbarar,(STB-242),img/18.gif,1297,44,4.1,Pulsed Inductive Thruster,1,18,2000,2
+Shielded Fessit-class Retriever,(FER-655),img/19.gif,1885,40,4.5,Pulsed Inductive Thruster,0,18,7000,12
+Luxuret Cruiser,(LUC-222),img/20.gif,1011,24,3,Electrostatic Ion Thruster,0,21,4000,2
+Imperial Cyclone,(IMC-713),img/21.gif,1424,53,3.3,Magnetoplasmadynamic Thruster,0,17,5000,10
+Stealth Defiant Obstructete,(EOB-486),img/22.gif,460,32,4.2,Pulsed Inductive Thruster,0,13,2000,10
+Fire Defender,(ED-41),img/23.gif,999,28,1.1,Magnetoplasmadynamic Thruster,1,9,2000,5
+Expiritus Voyager,(EV-1935),img/24.gif,1906,56,3.1,Pulsed Inductive Thruster,0,11,6000,5
+Warp Parabilis,(WAP-835),img/25.gif,1770,46,3.9,DC Arcjet,1,21,4000,4
+Hyperspace Chameleon,(YC-9827),img/26.gif,810,49,2.8,Pulsed Plasma Thruster,1,19,4000,12
+Violet Royal Cheetah,(ROC-396),img/27.gif,1839,26,1.6,Field Emission Electric Propulsion,0,12,6000,0
+Nova Stalking Galleon,(NSTG-56),img/28.gif,1337,54,4.2,Pulsed Inductive Thruster,1,23,2000,4
+Tesla Emporex Chimera,(TEC-194),img/29.gif,1476,32,1.4,Pulsed Inductive Thruster,1,24,7000,11
+Venom Fessit,(VF-332),img/30.gif,718,49,3.9,Colloid Thruster,1,11,1000,0

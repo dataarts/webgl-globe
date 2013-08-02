@@ -1,0 +1,29 @@
+﻿/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+.toolbar-bg {
+  background: url(../assets/toolbar.png) repeat no-repeat;
+}
+
+.toolbar-bg-0 {
+  background: url(../assets/toolbar.png) repeat no-repeat;
+}
+
+.toolbar-bg-1 {
+  background: url(../assets/toolbar.png) 0 -62px repeat no-repeat;
+}
+
+.toolbar-bg-2 {
+  background: url(../assets/toolbar.png) 0 -124px repeat no-repeat;
+}
+
+.toolbar-bg-3 {
+  background: url(../assets/toolbar.png) 0 -186px repeat no-repeat ;
+}
+
+.toolbar-bg-4 {
+  background: url(../assets/toolbar.png) 0 -248px repeat no-repeat ;
+}
+

@@ -1,0 +1,138 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="import" href="../../polymer-elements/polymer-jsonp/polymer-jsonp.html">
+<polymer-element name="x-stock" attributes="symbol autoupdate">
+  <template>
+    <style>
+      .stock-label {
+        font-family: arial,sans-serif;
+        font-size: medium;
+        font-weight: lighter;
+        color: #878787;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      
+      .large {
+        font-size: x-large;
+      }
+      
+      .small {
+        font-size: small;
+      }
+      
+      .stock-desc {
+        text-transform: uppercase;
+      }
+      
+      .quote {
+        margin-top: 10px;
+      }
+      
+      .price {
+        color: #212121;
+        margin-right: 10px;
+      }
+      
+      .change {
+        color: #3d9400;
+      }
+      
+      .change.down {
+        color: #dd4b39;
+      }
+      
+      .more {
+        margin-top: 20px;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+      }
+      
+      .chart {
+        margin-right: 20px;
+      }
+      
+      .details {
+        width: 120px;
+      }
+      
+      .details > * {
+        line-height: 1.4;
+      }
+      
+      .details > * > :first-child {
+        display: inline-block;
+        width: 60px;
+      }
+      
+      @media screen and (max-width: 520px) {
+        .details {
+          display: none;
+        }
+      }
+    </style>
+    <div class="stock-label large">{{response.name}}</div>
+    <div class="stock-label stock-desc">{{response.e}}: {{symbol}}</div>
+    <div class="stock-label large quote">
+      <span class="price">{{response.l}}</span>
+      <span class="change {{change}}">{{response.c}} ({{response.cp}}%)</span>
+    </div>
+    <div class="more">
+      <div class="chart">
+        <img src="https://www.google.com/finance/chart?q={{response.e}}:{{symbol}}&amp;tlf=12&amp;chst=vks&amp;p=1d&amp;chs={{chartWidth}}x96&amp;chsc=1&amp;nocache={{random}}" />
+      </div>
+      <div class="stock-label small details">
+        <div><label>Open</label>{{response.op}}</div>
+        <div><label>High</label>{{response.hi}}</div>
+        <div><label>Low</label>{{response.lo}}</div>
+        <div><label>Volume</label>{{response.vo}}</div>
+        <div><label>Avg Vol</label>{{response.avvo}}</div>
+        <div><label>Mkt Cap</label>{{response.mc}}</div>
+      </div>
+    </div>
+    <polymer-jsonp id="jsonp" response="{{jsonpResponse}}"></polymer-jsonp>
+  </template>
+  <script>
+    Polymer('x-stock', {
+      symbol: '',
+      updateinterval: 60000,
+      jsonpResponse:null,
+      ready: function() {
+        var mq = window.matchMedia('(max-width: 400px)');
+        mq.addListener(this.layoutChange.bind(this));
+        this.layoutChange(mq);
+      },
+      symbolChanged: function() {
+        if (this.symbol) {
+          this.go();
+        }
+      },
+      layoutChange: function(inQuery) {
+        this.chartWidth = inQuery.matches ? 256 : 327; 
+      },
+      go: function() {
+        this.$.jsonp.url = 'https://clients1.google.com/finance/info?q=' + this.symbol + '&client=ob&infotype=infoonebox&callback=';
+        this.$.jsonp.go();
+      },
+      autoupdateChanged: function() {
+        if (this.autoupdate) {
+          this.intervalId = setInterval(this.go.bind(this), this.updateinterval);
+        } else if (this.intervalId) {
+          clearInterval(this.intervalId);
+        }
+      },
+      jsonpResponseChanged: function() {
+        var r = this.response = this.jsonpResponse && this.jsonpResponse[0];
+        if (r) {
+          this.random = Math.random() * 10000;
+          this.change = Number(r.c) >= 0 ? 'up' : 'down';
+        }
+      }
+    });
+  </script>
+</polymer-element>

@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <title>polymer-selector-activate-event</title>
+    <script src="../../../polymer/polymer.js"></script>
+    <script src="../../../polymer/tools/test/htmltest.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <link rel="import" href="../../polymer-selector/polymer-selector.html">
+  </head>
+  <body>
+
+    <polymer-selector id="selector" selected="0">
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+      <div>Item 4</div>
+      <div>Item 5</div>
+    </polymer-selector>
+    
+    <script>
+      var assert = chai.assert;
+      document.addEventListener('WebComponentsReady', function() {
+        var s = document.querySelector('#selector');
+        s.addEventListener("polymer-activate", function(event) {
+          assert.equal(event.detail.item, s.children[1]);
+          assert.equal(s.selected, 1);
+          done();
+        });
+        assert.equal(s.selected, 0);
+        s.children[1].dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+      });
+    </script>
+  </body>
+</html>

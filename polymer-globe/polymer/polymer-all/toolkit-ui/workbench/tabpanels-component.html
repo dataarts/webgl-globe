@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Panels</title>
+  <script src="../../polymer/polymer.js"></script>
+  <link rel="import" href="../elements/g-tabpanels.html">
+  <style>
+      html, body {
+      height: 100%;
+      margin: 0;
+      background: lightgrey;
+    }
+  </style>
+  <polymer-element name="nested-tabs">
+  <template>
+    <style>
+    @host { 
+      :scope {
+        height: 100%;
+        margin: 0;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        webkit-box-orient: vertical;
+        -webkit-flex-flow: column;
+        flex-direction: column;
+      }
+    }
+
+    g-tabpanels {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      flex: 1;
+      outline: none;
+      border: 1px solid #ccc;
+      position: relative;
+      overflow: hidden;
+    }
+
+    section {
+      font-size: 30px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+  </style>
+  <g-tabpanels id="tabs" selected="two">
+    <div name="one">One</div>
+    <div name="two">Two</div>
+    <div name="three">Three</div>
+    <div name="four">Four</div>
+  </g-tabpanels>
+  </template>
+  <script>
+    Polymer('nested-tabs', {
+      ready: function() {}
+  });
+  </script>
+</polymer-element>
+</head>
+<body>
+  <nested-tabs id="t"></nested-tabs>
+</body>
+</html>

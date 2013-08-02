@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../mdv.js"></script>
+  </head>
+  <body>
+    <h1>Custom Syntax</h1>
+
+    <ul>
+    <template id="example" bind syntax="MyCustom">
+      <span>Amount: <input value="{{ value }}">, Twice Amount: {{ 2x: value }}</span>
+    </template>
+    </ul>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var delegate = {
+        getBinding: function(model, path, name, node) {
+          var twoXPattern = /2x:(.*)/
+          var match = path.match(twoXPattern);
+          if (match == null)
+            return;
+
+          path = match[1].trim();
+          var binding = new CompoundBinding(function(values) {
+            return values['value'] * 2;
+          });
+
+          binding.bind('value', model, path);
+          return binding;
+        }
+      };
+
+      var t = document.getElementById('example');
+      t.bindingDelegate = delegate;
+      t.model = {
+        value: 4
+      };
+
+      // Needed to detect model changes if Object.observe
+      // is not available in the JS VM.
+      Platform.performMicrotaskCheckpoint();
+    });
+    </script>
+  </body>
+</html>

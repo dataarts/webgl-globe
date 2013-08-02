@@ -1,0 +1,21 @@
+<link rel="import" href="../../toolkit-ui/elements/animation/g-flip.html">
+<script src="tk-proto.js"></script>
+<polymer-element name="tk-flip" extends="g-flip" on-click="clickHandler">
+  <template>
+    <style>
+      @host {
+        * {
+          background-color: #e0e0e0;
+          border: 1px solid silver;
+          border-radius: 3px;
+          padding: 5px 10px;
+          margin: 5px;
+        }
+      }
+    </style>
+    {{animationName}}:{{targetLabel}}
+  </template>
+  <script>
+    Polymer('tk-flip', tkAnimationProto('flip'));
+  </script>
+</polymer-element>

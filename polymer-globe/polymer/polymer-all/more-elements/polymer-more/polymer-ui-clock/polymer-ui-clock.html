@@ -1,0 +1,89 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="polymer-ui-clock">
+  <template>
+    <link rel="stylesheet" href="polymer-ui-clock.css">
+    <div id="widget-title">{{ dateStr }}</div>
+    <div id="clock">
+      <div id="second" style="-webkit-transform: translate3d({{xSecond}}px,{{ySecond}}px,0) rotate({{rotateSecond}}deg);"></div>
+      <div id="minute" style="-webkit-transform: translate3d({{xMinute}}px,{{yMinute}}px,0) rotate({{rotateMinute}}deg);"></div>
+      <div id="hour" style="-webkit-transform: translate3d({{xHour}}px,{{yHour}}px,0) rotate({{rotateHour}}deg);"></div>
+      <!-- <div id="dot"></div> -->
+    </div>
+    <div id="time">{{ time }}</div>
+  </template>
+  <script>
+    (function() {
+      Polymer('polymer-ui-clock', {
+        // note: properties only used in MDV bindings need not be declared (xSecond, ySecond, rotateSecond, etc.)
+        // properties that need observation (e.g. we observe 'time' via 'timeChanged') must be declared
+        time: null,
+        dateStr: '',
+        seconds: -1,
+        minutes: -1,
+        hours: -1,
+        inserted: function() {
+          // when we are inserted into DOM, start watching the time
+          this.updateTime();
+          this.interval = setInterval(this.updateTime.bind(this), 1000);
+        },
+        removed: function() {
+          // when we are removed from DOM, stop watching the time
+          clearInterval(this.interval);
+        },
+        updateTime: function() {
+          // get a current dateTime
+          this.time = new Date();
+        },
+        timeChanged: function() {
+          // if the time has changed, update the dateStr, hours, minutes, and seconds
+          this.dateStr = [
+            days[this.time.getDay()],
+            months[this.time.getMonth()],
+            this.time.getDate()
+          ].join(' ');
+          this.hours = this.time.getHours();
+          this.minutes = this.time.getMinutes();
+          this.seconds = this.time.getSeconds();
+        },
+        secondsChanged: function() {
+          // if seconds have changed, update the clock second hand
+          this.rotateSecond = this.seconds * 6;
+          var px = 1;
+          var py = 50;
+          px = px - 49 * Math.sin(this.rotateSecond * degToRad);
+          py = py + 49 * Math.cos(this.rotateSecond * degToRad);
+          this.xSecond = 99 - px;
+          this.ySecond = 99 - py;
+        },
+        minutesChanged: function() {
+          // if minutes have changed, update the clock minute hand
+          this.rotateMinute = this.minutes * 6;
+          var px = 2;
+          var py = 46;
+          px = px - 44 * Math.sin(this.rotateMinute * degToRad);
+          py = py + 44 * Math.cos(this.rotateMinute * degToRad);
+          this.xMinute = 99 - px;
+          this.yMinute = 99 - py;
+        },
+        hoursChanged: function() {
+          // if hours have changed, update the clock hour hand
+          this.rotateHour = this.hours * 30;
+          var px = 3;
+          var py = 41;
+          px = px - 38*Math.sin(this.rotateHour * degToRad);
+          py = py + 38*Math.cos(this.rotateHour * degToRad);
+          this.xHour = 99 - px;
+          this.yHour = 99 - py;
+        }
+      });
+      // statics
+      var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var degToRad = Math.PI / 180;
+    })();
+  </script>
+</polymer-element>

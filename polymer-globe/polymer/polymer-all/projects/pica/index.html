@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<html>
+<head>
+  <title>Pica</title>
+  <script src="logBoot.js"></script>
+  <script src="../../polymer/polymer.js"></script>
+  <script src="https://www.google.com/jsapi"></script>
+  <script>
+    logBoot.scriptsDone();
+  </script>
+  <link rel="import" href="components/pi-app.html"/>
+  <style>
+    body {
+      opacity: 1;
+    }
+    
+    .app-loading {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      left: 50%;
+      bottom: 50%;
+      margin: -25px;
+/*      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;*/
+      background: url(images/loading_icon.svg);
+    }
+    
+    @-webkit-keyframes spin {
+      0% {-webkit-transform: rotate(0deg);}
+      100% {-webkit-transform: rotate(359deg);}
+    }
+    
+    @keyframes spin {
+      0% {transform: rotate(0deg);}
+      100% {transform: rotate(359deg);}
+    }
+  </style>
+</head>
+<body>
+  <pi-app>
+    <div class="app-loading"></div>
+  </pi-app>
+</body>
+</html>

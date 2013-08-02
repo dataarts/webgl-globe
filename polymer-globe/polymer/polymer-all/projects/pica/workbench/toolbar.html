@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<html>
+<head>
+  <title>toolbar</title>
+  <script src="../../../polymer/polymer.js"></script>
+  <link rel="import" href="../components/pi-toolbar-buttons.html"/>
+  <link rel="import" href="../components/pi-toolbar.html"/>
+  <style>
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, 'open sans', sans-serif;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <pi-toolbar label="Topics">
+    <pi-link-button id="linkButton" link="http://www.google.com"></pi-link-button>
+    <pi-view-button id="viewButton" layout="grid"></pi-view-button>
+    <pi-action-button></pi-action-button>
+    <g-icon-button src="../images/refresh.png"></g-icon-button>
+  </pi-toolbar>
+</body>
+</html>

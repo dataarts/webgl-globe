@@ -1,0 +1,117 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="yt-video" attributes="videoId videoEntry muted">
+  <template>
+    <style>
+      @host {
+        * {
+          background: url(images/logo.png) no-repeat center;
+          display: block;
+        }
+      } 
+    </style>
+    <div id="container"></div>
+  </template>
+  <script>
+    (function() {
+      Polymer('yt-video', {
+        videoId: '',
+        videoEntry: '',
+        muted: false,
+        videoIdChanged: function() {
+          if (this.videoId && this.videoId !== true) {
+            if (this.player) {
+             this.player.loadVideoById(this.videoId);
+            } else {
+             this.createPlayer();
+            }
+          }
+        },
+        videoEntryChanged: function() {
+          if (this.videoEntry && this.videoEntry.media$group) {
+            this.videoId = this.videoEntry.media$group.yt$videoid.$t;
+          }
+        },
+        createPlayer: function() {
+          if (!window.YT) {
+            loadYtApi(this);
+            return;
+          }
+          this.player = new YT.Player(this.$.container, {
+            height: '100%',
+            width: '100%',
+            events: {
+              onReady: this.playerReady.bind(this),
+              onStateChange: this.playerStateChange.bind(this)
+            }
+          });
+          if (this.playerNode) {
+            this.playerNode.hidden = true;
+          }
+        },
+        playerReady: function(inEvent) {
+          this.playerNode.hidden = true;
+          this.player.loadVideoById(this.videoId);
+          this.player.playVideo();
+          if (this.muted) {
+            this.player.mute();
+          }
+          // make player iframe fittable to this component.
+          this.playerNode.style.position = "absolute";
+        },
+        playerStateChange: function(inEvent) {
+          if (inEvent.data == 1) {
+            this.playerNode.hidden = false;
+          }
+        },
+        get playerNode() {
+          return this.player && this.player.a;
+        },
+        clearVideo: function() {
+          if (this.player) {
+            this.player.stopVideo();
+            this.playerNode.hidden = true;
+          }
+        },
+        mutedChanged: function() {
+          var p = this.player;
+          if (p) {
+            p[this.muted ? 'mute' : 'unMute']();
+          }
+        }
+      });
+      
+      var YT_URL = '//www.youtube.com/player_api';
+      var ytListeners = [];
+      
+      function loadYtApi(node) {
+        if (!document.querySelector('[src="' + YT_URL + '"]')) {
+          var s = document.createElement('script');
+          s.src = YT_URL;
+          document.head.appendChild(s);
+          pollForYoutubeApi();
+        }
+        ytListeners.push(node);
+      }
+      
+      function pollForYoutubeApi() {
+        setTimeout(function() {
+          if (!(window.YT && window.YT.Player)) {
+            pollForYoutubeApi();
+          } else {
+            youtubeApiReady();
+          }
+        }, 100);
+      }
+      
+      function youtubeApiReady() {
+        ytListeners.forEach(function(l) {
+          l.videoIdChanged();
+        });
+      }
+    })();
+  </script>
+</polymer-element>

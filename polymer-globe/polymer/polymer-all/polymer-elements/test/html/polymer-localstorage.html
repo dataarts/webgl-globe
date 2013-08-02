@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <title>polymer-localstorage</title>
+    <script src="../../../polymer/polymer.js"></script>
+    <script src="../../../polymer/tools/test/htmltest.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <link rel="import" href="../../polymer-localstorage/polymer-localstorage.html">
+  </head>
+  <body>
+    <polymer-localstorage id="localstorage" name="polymer-localstorage-test" useRaw></polymer-localstorage>
+    
+    <script>
+      var assert = chai.assert;
+      document.addEventListener('WebComponentsReady', function() {
+        var s = document.querySelector('#localstorage');
+        var m = 'hello wold';
+        window.localStorage.setItem(s.name, m);
+        s.load();
+        assert.equal(s.value, m);
+        s.value = 'goodbye';
+        assert.equal(window.localStorage.getItem(s.name), m);
+        done();
+      });
+    </script>
+  </body>
+</html>

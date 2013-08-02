@@ -1,0 +1,373 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-property-inspector" attributes="property nobind" 
+    on-editor-value-changed="valueChangedEvent">
+  <template>
+    <style>
+      @host {
+        * {
+          display: block;
+          white-space: nowrap;
+          margin-bottom: 1rem;
+        }
+      }
+      .property-name {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        color: #919191;
+        font-weight: bold;
+        margin-bottom: 1em;
+      }
+      #container {
+        display: inline-block;
+        width: 92%;
+      }
+      g-icon#icon {
+        opacity: 0.3;
+        vertical-align: middle;
+      }
+      #iconContainer {
+        position: relative;
+        left: -10px;
+        padding: 10px;
+        display: inline-block;
+        vertical-align: middle;
+        cursor: pointer;
+      }
+      
+      #icon.binding {
+        opacity: 0.6;
+        border-radius: 12px;
+        background-color: lightblue;
+        -webkit-box-shadow: 0px 0px 14px 3px lightblue;
+      }
+      [nodisplay=true] {
+        display: none !important;
+      }
+    </style>
+    <div class="property-name">{{property.name}}:</div>
+    <span id="container"><content></content></span>
+    <div id="iconContainer" on-click="linkTap" nodisplay="{{nobind}}">
+      <g-icon id="icon" src="assets/link_dark.png" size="16"></g-icon>
+    </div>  
+    <g-flip-out id="animOut" targetSelector="#container" on-complete="animOutComplete"></g-flip-out>
+    <g-flip-in id="animIn" targetSelector="#container"></g-flip-in>
+  </template>
+  <script>
+    Polymer('tk-property-inspector', {
+      property: null,
+      editor: null,
+      propertyValue: null,
+      bindingMode: null,
+      binding: null,
+      nobind: false,
+      editorTags: {
+        'boolean': 'tk-boolean-editor',
+        'string': 'tk-string-editor',
+        'number': 'tk-string-editor',
+        'select': 'tk-select-editor',
+        'color': 'tk-color-editor',
+        'text': 'tk-text-editor',
+        'id-select': 'tk-id-select-editor',
+        'target-select': 'tk-target-select-editor',
+        'speech': 'tk-speech-editor',
+        'range': 'tk-range-editor',
+        any: 'tk-string-editor'
+      },
+      propertyChanged: function() {
+        // discover binding
+        this.binding = Bindings.getBinding(this.property.obj, 
+            this.property.name);
+        // special handling for textContent
+        if (this.property.name == 'textContent') {
+          this.binding = Bindings.getBinding(this.property.obj.firstChild,
+            this.property.name);
+        }
+        // discover editorTag
+        var type = (this.property.meta || 0).kind || typeof this.property.value;
+        this.editorTag = this.editorTags[type || typeof this.property.value] 
+            || type;
+      },
+      bindingChanged: function() {
+        this.bindingMode = Boolean(this.binding);
+      },
+      bindingModeChanged: function() {
+        this.$.icon.classList.toggle('binding', this.bindingMode);
+        this.makeEditor(this.bindingMode ? 'tk-binding-editor' 
+            : 'tk-property-editor');
+      },
+      makeEditor: function(tag) {
+        this.editor = document.createElement(tag);
+        this.editor.cancelUnbindAll();
+        this.editor.meta = {
+          property: this.property,
+          editorTag: this.editorTag,
+          binding: this.binding
+        };
+      },
+      editorChanged: function(inOld) {
+        if (inOld) {
+          inOld.parentNode.removeChild(inOld);
+        }
+        this.appendChild(this.editor);
+      },
+      // it's critical to have an event from the editor UI so we know when
+      // a user has changed a value, vs some other form of alteration
+      // for the same reason, we float our own changed event
+      valueChangedEvent: function(event) {
+        event.stopPropagation();
+        this.fire('property-changed');
+      },
+      linkTap: function() {
+        // start animation
+        this.$.animOut.play();
+        //this.animOutComplete();
+      },
+      animOutComplete: function() {
+        // after the first animation, effect the changes
+        this.$.container.selected = this.bindingMode ? 1 : 0;
+        this.bindingMode = !this.bindingMode;
+        // we are animating, flush now
+        Platform.flush();
+        // ending animation
+        this.$.animIn.play();
+      }
+    });
+  </script>
+</polymer-element>
+
+<!--<polymer-element name="g-flip-out" extends="g-animation">
+  <template>
+    <g-property name="transform">
+      <g-keyframe value="perspective(400px) translateZ(0px) rotateX(0deg) scale(1)"></g-keyframe>
+      <g-keyframe value="perspective(400px) translateZ(0px) rotateX(90deg) scale(1)"></g-keyframe>
+    </g-property>
+  </template>
+  <script>
+    Polymer.register(this, {
+      duration: 0.2,
+      fillMode: 'none',
+      easing: 'ease-in'
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="g-flip-in" Xextends="g-animation" extends="g-flip-out">
+  <template>
+    <g-property name="transform">
+      <g-keyframe value="perspective(400px) translateZ(0px) rotateY(270deg) scale(1)"></g-keyframe>
+      <g-keyframe value="perspective(400px) translateZ(0px) rotateY(360deg) scale(1)"></g-keyframe>
+    </g-property>
+  </template>
+  <script>
+    Polymer.register(this, {
+      easing: 'ease-out'
+    });
+  </script>
+</polymer-element>-->
+
+ <polymer-element name="g-flip-out" extends="g-animation">
+  <script>
+    Polymer('g-flip-out', {
+      duration: 0.2,
+      fillMode: 'none',
+      properties: {
+        transform: [{
+          easing: 'ease-in',
+          offset: 0,
+          value: 'perspective(400px) translateZ(0px) rotateX(0deg) scale(1)'
+        }, {
+          offset: 1,
+          value: 'perspective(400px) translateZ(0px) rotateX(90deg) scale(1)'
+        }]
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="g-flip-in" extends="g-flip-out">
+  <script>
+     Polymer('g-flip-in', {
+      properties: {
+        transform: [{
+          easing: 'ease-out',
+          offset: 0,
+          value: 'perspective(400px) translateZ(0px) rotateY(270deg) scale(1)'
+        }, {
+          offset: 1,
+          value: 'perspective(400px) translateZ(0px) rotateY(360deg) scale(1)'
+        }]
+      }
+    });
+  </script>
+</polymer-element> 
+
+<polymer-element name="tk-property-editor" attributes="editorTag">
+  <template>
+    <style>
+      @host {
+        * {
+          display: block;
+          white-space: nowrap;
+        }
+      }
+    </style>
+    <content></content>
+  </template>
+  <script>
+    Polymer('tk-property-editor', {
+      meta: null,
+      metaChanged: function(type) {
+        // create polymorphic editor
+        this.editor = document.createElement(this.meta.editorTag);
+        this.appendChild(this.editor);
+        // bind propertyValue to property
+        var p = this.meta.property;
+        //Polymer.bindProperties(this, 'propertyValue', p.obj, p.name);
+        this.bindProperty('propertyValue', p.obj, p.name);
+        // bind this.editor.value to propertyValue
+        // (imperative form of <editor value="{{editorValue}}">)
+        //Polymer.bindProperties(this.editor, 'value', this, 'propertyValue');
+        this.editor.bindProperty('value', this, 'propertyValue');
+        // update editor meta from property
+        this.updateEditorMeta();
+      },
+      updateEditorMeta: function() {
+        if (this.editor) {
+          this.editor.meta = this.meta.property.meta || {};
+          this.editor.meta.obj = this.meta.property.obj;
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-binding-editor" extends="tk-abstract-editor">
+  <template>
+    <style>
+      @host {
+        * {
+          display: block;
+          white-space: nowrap;
+        }
+      }
+    </style>
+    <tk-id-select-editor id="idSelect" style="width: 112px;" options="{{elements}}" value="{{target}}" on-editor-value-changed="editorValueChanged" ></tk-id-select-editor>
+    <!-- <tk-select-editor style="width: 145px;" options="{{properties}}"></tk-select-editor> -->
+    <tk-string-editor style="width: 161px;" value="{{workingValue}}" on-editor-value-changed="editorValueChanged" ></tk-string-editor>
+  </template>
+  <script>
+    Polymer('tk-binding-editor', {
+      target: null,
+      meta: null,
+      metaChanged: function() {
+        this.$.idSelect.meta = {obj: this.meta.property.obj };
+        this.value = this.meta.binding || '';
+      },
+      editorValueChanged: function(event) {
+        event.stopPropagation();
+        this.commit();
+      },
+      format: function(value) {
+        var path = [];
+        if (this.target == this.meta.property.obj.id) {
+          this.target = '';
+        }
+        if (this.target) {
+          path.push('$', this.target);
+        }
+        if (value) {
+          path.push(value);
+        }
+        path = path.join('.');
+        return path;
+      },
+      valueChanged: function() {
+        if (this.value[0] == '$') {
+          var values = this.value.split('.');
+          values.shift(); // remove $
+          this.target = values.shift() // get object id
+          this.workingValue = values.join('.');
+        } else {
+          this.workingValue = this.value;
+        }
+      },
+      commit: function() {
+        this.super();
+        //console.log('binding-editor.bind-property: %s - %s', this.meta.property.name, this.value);
+        this.fire('bind-property', {
+          obj: this.meta.property.obj,
+          name: this.meta.property.name,
+          path: this.value
+        });
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-id-select-editor" extends="tk-select-editor">
+  <template>
+    <shadow></shadow>
+  </template>
+  <script>
+    Polymer('tk-id-select-editor', {
+      root: null,
+      idPrefix: '',
+      metaChanged: function() {
+        this.super();
+        this.root = this.findRoot(this.meta.obj);
+      },
+      rootChanged: function() {
+        this.buildOptions();
+      },
+      findRoot: function(node) {
+        while (node && node.id !== 'designElement') {
+          node = node.parentNode;
+        }
+        return node;
+      },
+      buildOptions: function() {
+        var o = [''];
+        if (this.root) {
+          var pre = this.idPrefix;
+          Array.prototype.forEach.call(this.root.querySelectorAll('[id]'), 
+            function(n) {
+              o.push(pre + n.id);
+            });
+        }
+        this.options = o;
+      },
+      get selectedNode() {
+        return this.root && this.value 
+            && this.root.querySelector('#' + this.value);
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-target-select-editor" extends="tk-id-select-editor">
+  <script>
+    Polymer('tk-target-select-editor', {
+      idPrefix: '#'
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-action-editor" extends="tk-abstract-editor">
+  <template>
+    <button touch-action="none" on-pointerup="buttonClick">{{meta.label}}</button>
+  </template>
+  <script>
+    Polymer('tk-action-editor', {
+      buttonClick: function() {
+        var action = this.meta.action;
+        if (this.meta.obj[action]) {
+          this.meta.obj[action]();
+        }
+      }
+    });
+  </script>
+</polymer-element>

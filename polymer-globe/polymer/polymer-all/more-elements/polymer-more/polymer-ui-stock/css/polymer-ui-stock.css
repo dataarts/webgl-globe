@@ -1,0 +1,52 @@
+@host {
+  * {
+    display: inline-block;
+    padding: 8px;
+    white-space: nowrap;
+    background-image: url(../../assets/glass.png);
+    background-repeat: no-repeat;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background-size: cover;
+    vertical-align: top;
+    overflow: hidden;
+  }
+}
+
+#widget-title {
+  font-size: 21px;
+  margin: 8px 0 24px;
+}
+
+.stock-label {
+  font-size: medium;
+  font-weight: lighter;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stock-large {
+  font-size: x-large;
+}
+
+.stock-small {
+  font-size: small;
+}
+
+.stock-desc {
+  text-transform: uppercase;
+}
+
+.stock-quote {
+  margin-top: 10px;
+}
+
+polymer-ui-stock-legend-item {
+  line-height: 20px;
+  display: block;
+}
+
+.stock-more {
+  margin-top: 10px;
+}

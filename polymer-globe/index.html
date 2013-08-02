@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script type="text/javascript" src="polymer/polymer-all/polymer/polymer.js"></script>
+  <script src="three.min.js"></script>
+  <link rel="import" href="webgl-globe.html" />
+  <style>
+  body {
+    background-color: #000;
+    color: #0FF;
+  }
+  </style>
+</head>
+<body>
+  <webgl-globe 
+    title="my title"
+    dataUrl="search.json" 
+    dataFormat="json">
+  </webgl-globe>
+  <script>
+    var globe = document.querySelectorAll('webgl-globe')[0];
+    // globe.panTo(30, 100);
+    // globe.pause(5);
+    // globe.panTo(50, 100);
+    // globe.displayText('Look at my text.');
+    // globe.pause(10);
+  </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<polymer-element name="pi-feed-tracker">
+  <script>
+    (function() {
+      var FEED_TRACKER_STORAGE_NAME = 'pica-feed-tracker-1';
+      
+      Polymer('pi-feed-tracker', {
+        ready: function() {
+          this.feeds = {};
+          this.load();
+        },
+        load: function() {
+          var s = window.localStorage.getItem(FEED_TRACKER_STORAGE_NAME);
+          if (s) {
+            this.feeds = JSON.parse(s).feeds;
+          }
+        },
+        save: function() {
+          window.localStorage.setItem(FEED_TRACKER_STORAGE_NAME,
+              JSON.stringify({feeds: this.feeds}));
+        },
+        loadStories: function(stories) {
+          var feeds = {};
+          stories.forEach(function(s) {
+            var l = s.feedUrl;
+            var t = s.title;
+            var f = this.feeds[l];
+            var nf = feeds[l] = feeds[l] || {};
+            s.read = !!(f && f[t] && f[t].read);
+            nf[t] = {read: s.read};
+          }.bind(this));
+          for (var f in feeds) {
+            this.feeds[f] = feeds[f];
+          }
+          this.save();
+        },
+        markRead: function(story) {
+          var f = this.feeds[story.feedUrl];
+          if (f) {
+            f[story.title].read = story.read = true;
+            this.save();
+          }
+        },
+        getReadCountForTopic: function(topic) {
+          var read = 0;
+          topic.feed.forEach(function(f) {
+            var feed = this.feeds[f.feed];
+            for (var t in feed) {
+              feed[t].read && read++;
+            }
+          }.bind(this));
+          return read;
+        }
+      });
+    })();
+  </script>
+</polymer-element>

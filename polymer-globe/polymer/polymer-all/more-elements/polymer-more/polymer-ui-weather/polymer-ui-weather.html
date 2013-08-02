@@ -1,0 +1,138 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="import" href="../../../polymer-elements/polymer-jsonp/polymer-jsonp.html"/>
+<polymer-element name="polymer-ui-weather" attributes="autoupdate">
+	<template>
+	  <link rel="stylesheet" href="polymer-ui-weather.css">
+		<div id="widget-title">{{current.display_location.full}}</div>
+
+		<template bind="{{current}}" id="current">
+			<div id="current-condition">{{temp_f}}&deg;</div>
+			<div id="current-icon" class="{{icon}}">{{weather}}</div>
+			<div id="current-wind" class="{{wind_dir}}">{{wind_dir}} {{wind_mph}} mph</div>
+		</template>
+
+		<div id="latest">
+			<template repeat="{{forecast.forecastday}}">
+				<div class="entry">
+					<div class="day">{{date.weekday_short}}</div>
+					<div class="icon {{icon}}">{{conditions}}</div>
+					<div class="condition high">{{high.fahrenheit}}</div>
+					<div class="condition low">{{low.fahrenheit}}</div>
+				</div>
+			</template>
+		</div>
+
+		<polymer-jsonp id="jsonp_current" response="{{currentConditionsResponse}}"></polymer-jsonp>
+    <polymer-jsonp id="jsonp_forecast" handleAs="json" response="{{forecastResponse}}"></polymer-jsonp>
+  </template>
+  <script>
+		Polymer('polymer-ui-weather', {
+      position: null,
+      currentConditionsResponse: null,
+      forecastResponse: null,
+      autoupdate: false,
+      updateInterval: 60000,
+      apikey: '6d9e44e91f890cae',
+      position: {
+        coords: {
+          latitude: 37.773285,
+          longitude: -122.417725
+        }
+      },
+      icons: ['clear', 'cloudy', 'rainy', 'sunny', 'mostlysunny', 'partlycloudy'],
+      ready: function() {
+        this.loadFromStorage();
+      },
+      loadFromStorage: function() {
+        var data = localStorage.getItem('wu-weather-data');
+        var cached = data && JSON.parse(data);
+        // Discard stored data if it's too old.
+        if (!cached ||
+            (new Date() - cached.timestamp) > (60 * 60 * 1000)) {
+          this.positionChanged();
+          this.updatePosition();
+          return;
+        }
+        this.current = cached.current;
+        this.forecast = cached.forecast;
+      },
+      saveToStorage: function() {
+        // Only store when we have all the data.
+        if (this.current && this.forecast) {
+        	this.forecast.forecastday = this.forecast.forecastday.splice(0, 5);
+
+	      	if (!~this.icons.indexOf(this.current.icon)) {
+	      		this.current.icon = 'cloudy';
+	      	}
+
+	      	for (x=0; x<this.forecast.forecastday.length; x++) {
+	      		if (!~this.icons.indexOf(this.forecast.forecastday[x].icon)) {
+		      		this.forecast.forecastday[x].icon = 'cloudy';
+		      	}
+	      	}
+
+          var data = {
+            current: this.current,
+            forecast: this.forecast,
+            timestamp: new Date().getTime()
+          };
+
+          localStorage.setItem('wu-weather-data', JSON.stringify(data));
+        }
+      },
+      autoupdateChanged: function() {
+        if (this.autoupdate) {
+          if (!this.intervalId) {
+            this.intervalId = setInterval(this.updatePosition.bind(this),
+                this.updateInterval);
+          }
+        } else {
+          clearInterval(this.intervalId);
+          this.intervalId = null;
+        }
+      },
+      positionChanged: function() {
+        if (!this.$.jsonp_current.isInFlight()) {
+          this.$.jsonp_current.url = 'https://api.wunderground.com/api/' +
+              this.apikey + '/conditions/q/' +
+              this.position.coords.latitude + ',' +
+              this.position.coords.longitude + '.json?callback=';
+          this.$.jsonp_current.go();
+        }
+        if (!this.$.jsonp_forecast.isInFlight()) {
+          this.$.jsonp_forecast.url = 'https://api.wunderground.com/api/' +
+              this.apikey + '/forecast10day/q/' +
+              this.position.coords.latitude + ',' +
+              this.position.coords.longitude + '.json?callback=';
+          this.$.jsonp_forecast.go();
+        }
+      },
+      currentConditionsResponseChanged: function() {
+        this.current = this.currentConditionsResponse.current_observation;
+        this.saveToStorage();
+      },
+      forecastResponseChanged: function() {
+        this.forecast = this.forecastResponse.forecast.simpleforecast;
+        this.saveToStorage();
+      },
+      updatePosition: function() {
+        // Get the current location.
+        navigator.geolocation.getCurrentPosition(
+            this.getCurrentPositionSuccess.bind(this),
+            this.getCurrentPositionError.bind(this), {timeout: 10000});
+
+       localStorage.clear();
+      },
+      getCurrentPositionSuccess: function(position) {
+        this.position = position;
+      },
+      getCurrentPositionError: function(error) {
+        console.log('PositionError', error);
+      }
+    });
+  </script>
+</polymer-element>

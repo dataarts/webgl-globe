@@ -1,0 +1,59 @@
+<!doctype html>
+<!-- Copyright 2013 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Kratu BugReport Sample</title>
+    <link rel="stylesheet" href="../../css/kratu.css">
+    <link rel="stylesheet" href="../../css/examples.css">
+    <script src='../../js/kratu.js'></script>
+    <script src='../../js/dataproviders/json.js'></script>
+    <script src='../../js/dataproviders/csv.js'></script>
+    <script type="text/javascript" >
+      /** Render a Kratu report showcasing the BugReport Example */
+      window.onload = function() {
+        'use strict';
+        var kratu = new Kratu();
+        var csvProvider = new KratuCSVProvider({forceReload: true});
+        var jsonProvider = new KratuJsonProvider({forceReload: true});
+        jsonProvider.load('./bugs_reportdefinition.json', function(report) {
+          kratu.setReportDefinition(report, function() {
+            csvProvider.load('./bugs_data.csv', function(bugs) {
+              kratu.setEntities(bugs);
+              kratu.setPageSize(21);
+              kratu.setRenderElement(document.getElementById('bugReport'));
+              kratu.renderCurrentPage();
+            });
+          });
+        });
+        document.getElementById('previous').addEventListener('click',
+          function() {kratu.renderPreviousPage();}
+        );
+        document.getElementById('next').addEventListener('click',
+          function() {kratu.renderNextPage();}
+        );
+      };
+      </script>
+  </head>
+  <body>
+    <div class="kratuLogo small"><a href="">k</a><span>powered by</span></div>
+    <h1>Kratu BugReport Sample</h1>
+    <div id="bugReport" class="fixedWidthBugReport"></div>
+    <div class='navigation'>
+      <button id='previous'>&laquo;</button>
+      <button id='next'>&raquo;</button>
+    </div>
+  </body>
+</html>

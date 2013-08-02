@@ -1,0 +1,40 @@
+<link rel="import" href="../../toolkit-ui/elements/animation/g-shake.html">
+<script src="tk-proto.js"></script>
+<polymer-element name="tk-shake" extends="g-shake" on-click="clickHandler">
+  <template>
+    <style>
+      @host {
+        * {
+          background-color: #e0e0e0;
+          border: 1px solid silver;
+          border-radius: 3px;
+          padding: 5px 10px;
+          margin: 5px;
+        }
+      }
+    </style>
+    <g-animation duration="{{period}}">
+      <g-property name="transform">
+        <g-keyframe value="translateX(0px)"></g-keyframe>
+        <g-keyframe value="{{negTransform}}"></g-keyframe>
+      </g-property>
+    </g-animation>
+    <g-animation duration="{{shakeDuration}}" iterationCount="{{shakeIterations}}">
+      <g-property name="transform">
+        <g-keyframe value="{{negTransform}}"></g-keyframe>
+        <g-keyframe value="{{posTransform}}"></g-keyframe>
+        <g-keyframe value="{{negTransform}}"></g-keyframe>
+      </g-property>
+    </g-animation>
+    <g-animation duration="{{period}}">
+      <g-property name="transform">
+        <g-keyframe value="{{negTransform}}"></g-keyframe>
+        <g-keyframe value="translateX(0px)"></g-keyframe>
+      </g-property>
+    </g-animation>
+    {{animationName}}:{{targetLabel}}
+  </template>
+  <script>
+    Polymer('tk-shake', tkAnimationProto('shake'));
+  </script>
+</polymer-element>

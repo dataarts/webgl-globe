@@ -1,0 +1,76 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="ga-app" attributes="metadata" on-select-card="showDetail">
+  <template>
+    <link rel="stylesheet" href="css/ga-app.css">
+    <polymer-flex-layout vertical></polymer-flex-layout>
+    <polymer-ui-toolbar theme="polymer-ui-dark-theme">
+      <polymer-ui-icon-button icon="menu" hidden="{{mainShowing}}" on-tap="showMain"></polymer-ui-icon-button>
+      <div fit class="toolbar-title">Polymer Gallery</div>
+      <polymer-ui-icon-button icon="search" hidden="{{detailShowing}}" on-tap="toggleSearchBox"></polymer-ui-icon-button>
+    </polymer-ui-toolbar>
+    <div class="panels" fit>
+      <div id="main" hidden="{{detailShowing}}">
+        <polymer-flex-layout vertical></polymer-flex-layout>
+        <div id="searchBox">
+          <input id="input" x-webkit-speech placeholder="Search" on-input="search" />
+        </div>
+        <ga-cards fit items="{{items}}" selected="{{selected}}"></ga-cards>
+      </div>
+      <ga-detail id="detail" hidden="{{mainShowing}}" item="{{selected}}"></ga-detail>
+    </div>
+    <ga-meta id="meta" list="{{metadata}}"></ga-meta>
+  </template>
+  <script>
+    Polymer('ga-app', {
+      selectedPanel: 'main',
+      searchSlideOpened: false,
+      inserted: function() {
+        this.selectedPanelChanged();
+        this.search();
+      },
+      showMain: function() {
+        this.selectedPanel = 'main';
+      },
+      showDetail: function() {
+        this.selectedPanel = 'detail';
+      },
+      selectedPanelChanged: function(old) {
+        this.mainShowing = this.selectedPanel === 'main';
+        this.detailShowing = this.selectedPanel === 'detail';
+      },
+      toggleSearchBox: function() {
+        this.searchSlideOpened = !this.searchSlideOpened;
+      },
+      searchSlideOpenedChanged: function() {
+        this.$.main.classList.toggle('slide-opened', this.searchSlideOpened);
+        if (!this.searchSlideOpened) {
+          this.$.input.value = '';
+          this.search();
+        } else {
+          this.$.input.focus();
+        }
+      },
+      search: function() {
+        var q = this.$.input.value;
+        if (q) {
+          var r = [];
+          this.metadata.forEach(function(d) {
+            ['id', 'author', 'label'].some(function(n) {
+              if (d[n] && d[n].toLowerCase().indexOf(q) > -1) {
+                r.push(d);
+                return true;
+              }
+            });
+          });
+          this.items = r;
+        } else {
+          this.items = this.metadata;
+        }
+      }
+    });
+  </script>
+</polymer-element>

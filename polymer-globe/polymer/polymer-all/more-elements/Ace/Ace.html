@@ -1,0 +1,126 @@
+<!--
+Copyright 2012 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<script src="src-min-noconflict/ace.js"></script>
+<polymer-element name="ajaxorg-ace" attributes="theme mode value readonly wrap fontSize tabSize">
+  <template>
+    <style type="text/css" media="screen">
+      @host {
+        * {
+          display: block;  
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+        }
+      }
+      .ajaxorg-ace {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+      }
+    </style>
+    <div class="ajaxorg-ace" id="editor"></div>
+  </template>
+  <script>
+    Polymer('ajaxorg-ace', {
+      mode: 'javascript',
+      theme: 'monokai',
+      readonly: false,
+      value: null,
+      wrap: false,
+      // allow styling from the outside world!
+      applyAuthorStyles: true,
+      ready: function() {
+        ace.config.set('basePath', this.resolvePath('src-min-noconflict/'));
+        this.editor = ace.edit(this.$.editor);
+        this.editor.focus();
+        this.modeChanged();
+        this.themeChanged();
+        this.readonlyChanged();
+        this.wrapChanged();
+        this.tabSizeChanged();
+        this.editor.on("blur", this.editorBlur.bind(this));
+        this.value = this.textContent;
+      },
+      fontSizeChanged: function() {
+        this.$.editor.style.fontSize = this.fontSize;
+      },
+      modeChanged: function() {
+        this.editor.getSession().setMode('ace/mode/' + this.mode);
+      },
+      themeChanged: function() {
+        this.editor.setTheme('ace/theme/' + this.theme);
+      },
+      valueChanged: function() {
+        this.editorValue = this.value;
+        this.editor.clearSelection();
+        this.editor.resize();
+        //this.editor.focus();
+      },
+      readonlyChanged: function() {
+        this.editor.setReadOnly(this.readonly);
+        this.editor.setHighlightActiveLine(!this.readonly);
+        this.editor.setHighlightGutterLine(!this.readonly);
+        this.editor.renderer.$cursorLayer.element.style.opacity = this.readonly ? 0 : 1;
+      },
+      wrapChanged: function() {
+        this.editor.getSession().setUseWrapMode(this.wrap);
+      },
+      tabSizeChanged: function() {
+        if (this.tabSize) {
+          this.editor.getSession().setTabSize(this.tabSize);
+        }
+      },
+      foldTag: function(tag) {
+        var s = this.editor.getSession();
+        if (!s.foldWidgets) {
+          return
+        }
+        var pos = this.find('<' + tag, {start: 0});
+        // check if tag found
+        if (!pos) {
+          return;
+        }
+        var start = pos.start.row;
+        // find the fold range
+        var range = s.getFoldWidgetRange(start);
+        // check if can be folded
+        if (range) {
+          var end = range.end.row;
+          // fold
+          s.foldAll(start, end);
+        }
+      },
+      find: function() {
+        return this.editor.find.apply(this.editor, arguments);
+      },
+      gotoLine: function() {
+        this.editor.gotoLine.apply(this.editor, arguments);
+        this.editor.getSession().selection.moveCursorLineStart();
+        this.editor.clearSelection();
+      },
+      editorBlur: function(event) {
+        if (this._value !== null && this._value != this.editorValue) {
+          this.fire('editor-change', {value: this.editorValue, oldValue: this._value});
+        }
+        this._value = this.editorValue;
+      },
+      get editorValue() {
+        return this.editor.getValue();
+      },
+      set editorValue(value) {
+        this._value = value;
+        this.editor.setValue(value);
+      },
+      focus: function() {
+        this.editor.focus();
+      }
+    });
+  </script>
+</polymer-element>

@@ -1,0 +1,81 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-palette" attributes="elements" on-mousedown="mousedown">
+  <template>
+    <style>
+      #title {
+        height: 54px;
+        line-height: 54px;
+        font-size: 21px;
+        padding-left: 22px;
+        background-color: #E0E0E0;
+        border-bottom: 1px solid #E1E1E1;
+      }
+      #list {
+        background-color: #F2F2F2;
+        position: absolute;
+        /*
+        border-top: 1px solid #BCBCBC;
+        top: 55px;
+        */
+        top: 0;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 8px;
+      }
+      .item {
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 12px;
+        margin: 10px 6px 10px 10px;
+        background-color: white;
+        border: 1px solid #D3D2D2;
+        border-radius: 5px;
+      }
+      [ishidden=true] {
+        display: none;
+      }
+
+    </style>
+    <!--<div id="title">Palette</div>-->
+    <div id="list"
+        touch-action="pan-y"
+        on-trackstart="trackStart"
+        on-track="track"
+        on-trackend="trackEnd">
+      <template repeat="{{elements}}">
+        <div class="item" tag="{{id}}" ishidden="{{isHidden}}">{{label}}</div>
+      </template>
+   </div>
+  </template>
+  <script>
+    Polymer('tk-palette', {
+      trackStart: function(event) {
+        var tag = event.target.getAttribute('tag');
+        if (tag) {
+          this.fire('palette-drag-start', tag);
+          event.stopPropagation();
+        }
+      },
+      track: function(event) {
+        this.fire('palette-drag', {x: event.pageX, y: event.pageY});
+        event.stopPropagation();
+      },
+      trackEnd: function(event) {
+        this.fire('palette-drag-end');
+        event.stopPropagation();
+      },
+      // TODO(sorvell): prevent text selection (file shadowDOM bug!)
+      mousedown: function(e) {
+        e.preventDefault();
+      }
+    });
+  </script>
+</polymer-element>

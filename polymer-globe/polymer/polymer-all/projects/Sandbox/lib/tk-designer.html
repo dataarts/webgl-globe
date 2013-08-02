@@ -1,0 +1,259 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-designer" on-source-applied="sourceApplied" attributes="designElement selected maximized">
+  <template>
+    <link rel="stylesheet" href="../../../more-elements/x-tags/x-tag/demo/x-tag-components.css">
+    <style>
+      @host {
+        * {
+          outline: 0;
+        }
+      }
+      
+      #palette {
+        position: absolute !important;
+        top: 0;
+        width: 264px;
+        bottom: 0;
+        left: 0;
+        -webkit-transition: left 0.4s;
+        transition: left 0.4s;
+        z-index: 1;
+        box-shadow: 5px 0 8px rgba(0, 0, 0, 0.16);
+      }
+      #canvas {
+        position: absolute;
+        top: 0px;
+        right: 0;
+        bottom: 0;
+        left: 264px;
+        background-color: white;
+        overflow: hidden;
+        -webkit-transition: left 0.4s;
+        transition: left 0.4s;
+      }
+      #designElement {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+      .selected-element {
+        outline: solid 10px rgba(72, 154, 254, 0.20);
+        outline-offset: -2px;
+      }
+      .tab-selected {
+        z-index: 100;
+      }
+      #palette.maximized {
+        left: -264px;
+      }
+      #canvas.maximized {
+        left: 0px;
+      }
+    </style>
+    <tk-palette id="palette" elements="{{elements}}"
+        on-palette-drag-start="paletteDragStart"
+        on-palette-drag="paletteDrag"
+        on-palette-drag-end="paletteDragEnd"
+    ></tk-palette>
+    <tk-canvas id="canvas" tabIndex="-1"
+        on-tap="canvasTap"
+        on-pointerup="canvasDrop"
+        on-keydown="canvasKeydown"
+        designElement="{{$.designElement}}"
+    ><design-element id="designElement"></design-element></tk-canvas>
+    <tk-meta id="meta" list="{{elements}}"></tk-meta>
+    <tk-preview-window id="preview"></tk-preview-window>
+    <tk-publisher id="publisher" sourceElement="{{$.designElement}}"></tk-publisher>
+  </template>
+  <script>
+  (function() {
+    Polymer('tk-designer', {
+      designElement: null,
+      selected: null,
+      selectedTab: 'design',
+      maximized: false,
+      ready: function() {
+        this.designElement = this.$.canvas;
+        this.$.meta.ensureMeta(this.$.designElement);
+        this.selected = this.$.designElement;
+      },
+      update: function() {
+        this.$.designElement.update();
+      },
+      maximizedChanged: function() {
+        this.$.palette.classList.toggle('maximized', this.maximized);  
+        this.$.canvas.classList.toggle('maximized', this.maximized);  
+      },
+      selectedChanged: function(inOld) {
+        this.classFollows(this.selected, inOld, 'selected-element');
+        this.canvasChange();
+      },
+      canvasChange: function() {
+        this.fire('design-changed');
+      },
+      createNew: function(tag) {
+        var meta = this.$.meta.byId(tag);
+        var neo = meta.createElement();
+        neo.style.position = 'absolute';
+        neo.style.pointerEvents = 'none';
+        this.$.designElement.appendChild(neo);
+        this.$.designElement.childAdded(neo);
+        this.neo = neo;
+      },
+      paletteDragStart: function(event, detail) {
+       var rect = this.$.designElement.getBoundingClientRect();
+        this.origin = {
+          x: rect.left,
+          y: rect.top
+        };
+        this.dragType = detail;
+        this.createNew(detail);
+      },
+      paletteDrag: function(event, detail) {
+        if (this.neo) {
+          var x = detail.x - this.origin.x - 24;
+          var y = detail.y - this.origin.y - 24;
+          var p = this.$.canvas.snap(x, y);
+          this.$.canvas.scrollTop = 0;
+          this.neo.style.left = p.x + 'px';
+          this.neo.style.top = p.y + 'px';
+        }
+      },
+      paletteDragEnd: function() {
+        // if the drag ends before neo has dropped on canvas, remove him
+        if (this.neo) {
+          this.neo.parentNode.removeChild(this.neo);
+          this.neo = null;
+        }
+      },
+      canvasDrop: function(e) {
+        // if dropped on canvas, let neo stay
+        if (this.neo) {
+          this.neo.style.pointerEvents = null;
+          var container = e.target;
+          while (container && container !== this.$.canvas) {
+            if (container.meta && container.meta.isContainer) {
+              if (!container.meta.childFilter 
+                  || container.meta.childFilter(this.neo) ) {
+                container.appendChild(this.neo);
+                this.neo.style.left = null;
+                this.neo.style.top = null;
+                this.neo.style.position = null;
+                break;
+              }
+            }
+            container = container.parentNode;
+          }
+          this.selected = this.neo;
+          var focusNode = nodeIsEditor(this.selected) ? this.selected : 
+            this.$.canvas;
+          focusNode.focus();
+        }
+        this.neo = null;
+      },
+      deleteElement: function() {
+        var e = this.selected;
+        if (e) {
+          if (e === this.$.designElement) {
+            this.clearElement();
+          } else {
+            e.parentNode.removeChild(e);
+            this.selected = null;
+          }
+          this.canvasChange();
+        }
+      },
+      canvasTap: function(event) {
+        this.inspectTarget(event);
+      },
+      canvasKeydown: function(event) {
+        switch(event.keyCode) {
+          case 27:
+            this.selectParentElement();
+            break;
+          case 8:
+          case 46:
+            if (!nodeIsEditor(event.target)) {
+              this.deleteElement();
+              event.preventDefault();
+            }
+            break;
+        }
+      },
+      inspectTarget: function(event) {
+        var t = event.target;
+        if (t) {
+          if (t === this.$.canvas) {
+            this.selected = null;
+          } else {
+            // don't allow selection within a node with meta.hideSubtree
+            var n = t;
+            while (n) {
+              if (n.meta && n.meta.hideSubtree) {
+                t = n;
+                break;
+              }
+              n = n.parentNode;
+            }
+            this.selected = t;
+          }
+          Platform.flush();
+        }
+      },
+      selectParentElement: function() {
+        var e = this.selected;
+        if (e && e.parentNode) {
+          e = e.parentNode;
+          if (e === this.$.canvas) {
+            e = null;
+          }
+          this.selected = e;
+        }
+      },
+      applyPropertyBinding: function(obj, name, path) {
+        this.$.designElement.applyPropertyBinding(obj, name, path);  
+      },
+      applySource: function(source) {
+        this.$.designElement = this.$.designElement.applySource(source);
+      },
+      sourceApplied: function(event, node) {
+        this.$.meta.ensureMeta(node);
+        // reselect selection
+        if (this.selected && this.selected.id) {
+          var selected = this.$.canvas.querySelector('#' + this.selected.id);
+        }
+        this.selected = selected || this.$.designElement;
+      },      
+      publishElement: function(source) {
+        this.$.publisher.publishElement(source);
+      },
+      dumpPreviewSource: function(source) {
+        var n = this.$.designElement.elementAttributes.name;
+        source = source + '\n<' + n + '></' + n + '>';
+        return source;
+      },
+      previewElement: function(source) {
+        this.$.preview.open(this.dumpPreviewSource(source));
+      },
+      previewElementSource: function(source) {
+        this.$.preview.openSource(this.dumpPreviewSource(source));
+      },
+      clearElement: function() {
+        Platform.flush();
+        this.applySource(this.$.designElement.defaultSource);
+      }
+    });
+    
+    var editorElements = ['input', 'select', 'textarea'];
+    function nodeIsEditor(node) {
+      return node.isEditor || (editorElements.indexOf(node.localName) >= 0);
+    }
+  })();  
+  </script>
+</polymer-element>

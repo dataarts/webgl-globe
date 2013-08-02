@@ -1,0 +1,120 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-preview" attributes="htmlContent">
+  <script>
+    Polymer('tk-preview', {
+      htmlContent: '',
+      writeToDoc: function(doc) {
+        doc.open('text/html', '');
+        doc.write(this.outputPreviewHTML());
+        doc.close();
+      },
+      writeSourceToDoc: function(doc) {
+        doc.open('text/html', '');
+        doc.write(this.outputSourceHTML());
+        doc.close();
+      },
+      outputSourceHTML: function() {
+        var html = '<!DOCTYPE html>\n';
+        html += '<head>\n';
+        html += '<title>Sandbox Source Preview</title>\n'
+        html += '<base href="' + document.baseURI + '">\n';
+        // include base scripts
+        // style
+        html += '<style>\n';
+        html += '  body {\n';
+        html += '    margin: 0; height: 100%; background: black;\n';
+        html += '    -webkit-tap-highlight-color: rgba(0,0,0,0);\n';
+        html += '  }\n';
+        html += '</style>\n';
+        html += '<script src="https://google-code-prettify.googlecode.com/' +
+          'svn/loader/run_prettify.js?skin=sunburst"></s' + 'cript>';
+        html += '</head>\n<body>';
+        html += '<pre class="prettyprint" ' +
+          'style="font-size: 16px; margin: 0; border-radius: 0;">';
+        // include content
+        html += this.outputPreviewHTML().replace(/\</g, '&lt;')
+          .replace(/\>/g, '&gt;');
+        html += '\n</pre>';
+        html += '</body>\n</html>';
+        return html;
+      },
+      outputPreviewHTML: function() {
+        // put base href in head
+        var h = '<base href="' + document.baseURI + '">\n';
+        return this.makeOutputHTML(h, this.htmlContent);
+      },
+      makeOutputLink: function() {
+        var dataUrl = 'data:text/html;base64,';
+        return dataUrl + btoa(this.outputSource());
+      },
+      makeOutputHTML: function(head, body) {
+        var html = '<!DOCTYPE html>\n';
+        html += '<head>\n';
+        html += '<title>Sandbox Preview</title>\n'
+        html += head || '';
+        // include base scripts
+        html += '<script src="../../polymer/polymer.min.js"></s' + 'cript>\n';
+        html += '<link rel="import" href="lib/components.html">\n';
+        // style
+        html += '<style>\n';
+        html += '  body {\n';
+        html += '    font-size: 14px;\n';
+        html += '    font-family: "Helvetica Neue", "Roboto", "Arial", sans-serif;\n';
+        html += '    -webkit-tap-highlight-color: rgba(0,0,0,0);\n';
+        html += '  }\n';
+        html += '</style>\n';
+        html += '</head>\n<body>\n';
+        // include content
+        html += body || '';
+        html += '\n</body>\n</html>';
+        return html;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-preview-iframe" extends="tk-preview">
+  <template>
+    <iframe id="output" style="width: 100%; height: 100%;"></iframe>
+  </template>
+  <script>
+    Polymer('tk-preview-iframe', {
+      htmlContentChanged: function() {
+        this.$.output.src = '';
+        this.asyncMethod(function() {
+          this.writeToDoc(this.$.output.contentDocument);
+        });
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="tk-preview-window" extends="tk-preview">
+  <script>
+  (function() {
+    var previewWindow;
+    Polymer('tk-preview-window', {
+      prepareWindow: function() {
+        if (previewWindow) {
+          previewWindow.close();
+        }
+        previewWindow = window.open('', '', null, false);
+      },
+      open: function(source) {
+        this.htmlContent = source;
+        this.prepareWindow();
+        this.writeToDoc(previewWindow.document);
+      },
+      openSource: function(source) {
+        this.htmlContent = source;
+        this.prepareWindow();
+        this.writeSourceToDoc(previewWindow.document);
+      }
+    });
+  })();
+  </script>
+</polymer-element>

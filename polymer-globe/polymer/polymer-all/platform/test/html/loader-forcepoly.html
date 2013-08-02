@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <script src="../../tools/test/htmltest.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <!-- force ShadowDOM polyfill -->
+    <script src="../../platform.js" shadow></script>
+  </head>
+  <body>
+    <script>
+      chai.assert(window.Platform, 'Platform scope missing');
+      chai.assert.equal(Platform.flags.shadow, 'polyfill', 'improper "shadow" flag');
+      chai.assert(window.ShadowDOMPolyfill, 'ShadowDOMPolyfill missing');
+      done();
+    </script>
+  </body>
+</html>

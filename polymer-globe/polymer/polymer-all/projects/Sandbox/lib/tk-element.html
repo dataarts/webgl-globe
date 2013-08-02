@@ -1,0 +1,174 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-element">
+  <script>
+  (function() {
+    var DEFAULT_PUBLISH_NAME = 'my-element';
+    Polymer('tk-element', {
+      elementAttributes: {
+        name: DEFAULT_PUBLISH_NAME
+      },
+      defaultSource: '<polymer-element name="' + DEFAULT_PUBLISH_NAME + '">' +
+        '<template></template>' +
+        '<script>Polymer(\'' + DEFAULT_PUBLISH_NAME + '\', {});' +
+        '</s' + 'cript>' +
+      '</polymer-element>',
+      update: function() {
+        // TODO(sorvell): manage dynamic updates
+        // events, node references
+        this.marshalNodeReferences(this);
+      },
+      applyPropertyBinding: function(target, name, path) {
+        if (name === 'textContent') {
+          if (path) {
+            target.textContent = ' ';
+            target = target.firstChild;
+          } else {
+            target.firstChild.unbind(name);
+          }
+        } else {
+          target.unbind(name);
+          target.removeAttribute(name);
+        }
+        if (path) {
+          target.bind(name, this, path);
+        }
+      },
+      applySource: function(source) {
+        this.elementAttributes = parseElementAttributes(source);
+        var html = tagInnerHTMLFromSource(source, 'template');
+        var script = tagInnerHTMLFromSource(source, 'script').trim();
+        script = script.replace(/Polymer\('(.*)'/, 'Polymer(\'' + this.localName
+            + '\'');
+        // re-define design-element with user source
+        registerFromScript(this.localName, script);
+        var de = document.createElement(this.localName);
+        de.id = this.id;
+        de.elementAttributes = this.elementAttributes;
+        addAndBindHTML(de, html);
+        // replace self in parent
+        var parent = this.parentNode;
+        parent.removeChild(this);
+        parent.appendChild(de);
+        // asynchronously, update styling
+        requestAnimationFrame(function() {
+          applyStyle(de);
+          de.childrenAdded();
+          de.fire('source-applied', de);
+        }.bind(this));
+        return de;
+      },
+      childrenAdded: function() {
+        Array.prototype.filter.call(this.children, function(c) {
+            return !isBlackListed(c);
+          }).forEach(this.childAdded.bind(this));
+      },
+      childAdded: function(node) {
+        if (!node.id) {
+          node.id = Platform.makeUniqueId(this, node.localName
+            .replace(/^g-/, '').replace(/-/g, '_'));
+        }
+        if (!node.style.position) {
+          node.style.position = 'absolute';
+          node.style.left = node.style.top = '0px';
+        }
+      }
+    });
+
+    var publisher;
+    document.addEventListener('WebComponentsReady', function() {
+      publisher = document.createElement('tk-publisher');
+    });
+    
+    function registerFromScript(name, script) {
+      var eltSource = '<polymer-element name="' + name + 
+        '" extends="tk-element">' + '<script>' + script + '</s' + 
+        'cript></polymer-element>';
+      publisher.register(eltSource);
+    }
+    
+    function addAndBindHTML(node, html) {
+      //node.innerHTML = html;
+      // let Template do make an instance so we get bindings  
+      var template = document.createElement('template');
+      template.innerHTML = html;
+      node.appendChild(template.createInstance(node));;
+    }
+    
+    // make a uniqueId in a ShadowDOM polyfill safe way.
+    Platform.makeUniqueId = function(node, id, suffix) {
+      var uId = id + (suffix || '');
+      var query = window.ShadowDOMPolyfill ? node.impl.querySelector :
+        node.querySelector;
+      var scope = window.ShadowDOMPolyfill ? document.body : node;
+      return query.call(scope, '#' + uId) ?
+        Platform.makeUniqueId(node, id, suffix ? ++suffix : 1) :
+        uId;
+    }
+        
+    // round-tripping *from* source
+    function parseElementAttributes(source) {
+      var attributes = {};
+      var match = source.match('<polymer-element([^>]*)>');
+      if (match) {
+        var parts = match[1].split(' ');
+        parts.forEach(function(p) {
+          var pair = p.trim().split('=');
+          if (pair.length == 2) {
+            var name = pair[0].trim(), value = pair[1].trim().slice(1, -1);
+            attributes[name] = value;
+          }
+        });
+      }
+      return attributes;
+    }
+
+    function applyStyle(node) {
+      var style = node.querySelector('style');
+      if (style && style.sheet) {
+        applyIdCssRules(style.sheet.cssRules, node, style.sheet);
+      }
+    }
+    
+    function applyIdCssRules(rules, root, sheet) {
+      for (var i=0, rule; i < rules.length; i++) {
+        rule = rules[i];
+        if (rule.selectorText.match(/^#[^, ]*$/) && rule.style) {
+          var node = root.querySelector(rule.selectorText);
+          if (node) {
+            node.style.cssText = rule.style.cssText;
+          }
+        } else if (rule.cssRules) {
+          applyIdCssRules(rules.cssRules, root, sheet);
+        }
+      }
+    }
+    
+    var elementBlackList = ['style'];
+    function isBlackListed(node) {
+      return (elementBlackList.indexOf(node.localName) >= 0);
+    }
+    
+    function tagInnerHTMLFromSource(source, tag) {
+      var matches = source.match(regExpForTag(tag));
+      if (matches) {
+        return matches[1];
+      }
+      return '';
+    }
+
+    function regExpForTag(tag) {
+      return new RegExp('<' + tag + '>([\\S\\s]*)<\/' + tag + '>');
+    }
+  })();
+  </script>  
+</polymer-element>
+
+<polymer-element name="design-element" extends="tk-element">
+  <script>
+    Polymer('design-element');
+  </script>
+</polymer-element>

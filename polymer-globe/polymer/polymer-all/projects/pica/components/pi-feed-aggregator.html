@@ -1,0 +1,160 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<link rel="import" href="pi-gfeeds.html"/>
+<polymer-element name="pi-feed-aggregator" attributes="feed count entries loading">
+  <template>
+    <pi-gfeeds feed="{{feedUrl}}" count="{{feedCount}}" results="{{feedResults}}"></pi-gfeeds>
+  </template>
+  <script>
+    (function() {
+      var GET_FAVICON_URL = 'http://s2.googleusercontent.com/s2/favicons?alt=feed&domain_url=';
+      
+      function timeSince(date) {
+        var s = Math.floor(((new Date()) - date) / 1000);
+        var t = Math.floor(s / 31536000);
+        if (t > 1) {
+          return t + 'y';
+        }
+        t = Math.floor(s / 2592000);
+        if (t > 1) {
+          return t + 'M';
+        }
+        t = Math.floor(s / 86400);
+        if (t >= 1) {
+          return t + 'd';
+        }
+        t = Math.floor(s / 3600);
+        if (t >= 1) {
+          return t + 'h';
+        }
+        t = Math.floor(s / 60);
+        if (t > 1) {
+          return t + 'm';
+        }
+        return Math.floor(s) + 's';
+      };
+      
+      var DUMMY_TEXT = [
+        'Forma temperiemque cornua sidera dissociata cornua recessit innabilis ligavit: solidumque coeptis nullus caelum sponte phoebe di regat mentisque tanta austro capacius amphitrite sui quin postquam semina fossae liquidum umor galeae coeptis caligine liberioris quin liquidum matutinis invasit posset: flexi glomeravit radiis certis invasit oppida postquam onerosior inclusum dominari opifex terris pace finxit quam aquae nunc sine altae auroram quam habentem homo totidemque scythiam in pondus ensis tegit caecoque poena lapidosos humanas coeperunt poena aetas totidem nec natura aethera locavit caelumque distinxit animalibus phoebe cingebant moderantum porrexerat terrae possedit sua sole diu summaque obliquis melioris orbem',
+        'Quae zephyro praecipites vos frigida membra foret gentes ne librata liquidas lacusque animus liquidum ne orba opifex circumdare scythiam tuba militis chaos: sidera regio utramque quia effervescere proximus arce illic diversa homo ille aethere ventos qui principio coeperunt di colebat et nebulas adsiduis glomeravit lanient otia usu habitandae glomeravit librata cepit possedit metusque habentia sed mundi aetas sublime oppida consistere dixere dixere aequalis evolvit mixta animus sibi duae circumfluus litem egens metusque modo otia tumescere occiduo dispositam nix ut caeca innabilis conversa sponte flamina lucis lumina tegit pulsant adhuc zephyro recessit quoque tanto regio tegi terrarum extendi aeris pondus manebat summaque',
+        'Coercuit iunctarum vix sic aberant spisso imagine litem cetera nubes ambitae tanta usu circumfuso fulminibus umentia rectumque iuga pluviaque meis semina regat ne campoque meis coeperunt nix cura iunctarum ligavit: secant ventos seductaque permisit sic iunctarum locoque his coeptis tum terras animalia recepta aethera cornua invasit tollere videre tonitrua humanas otia tuba alta dissociata sanctius adsiduis inclusum caesa ita onus sine pluviaque litem manebat fixo extendi ubi inposuit cum sublime membra undas orba forma deducite aethera turba coercuit retinebat obliquis bracchia nisi mentisque origine peregrinum manebat',
+        'Obstabatque cingebant nitidis rapidisque cepit moderantum discordia habentia frigore solidumque fert inter caecoque sine coeperunt corpore quarum fluminaque coercuit vultus animal austro quem os sectamque animus origo solidumque quoque melioris adspirate recepta utramque rapidisque caelumque orba unus pluviaque erant mutastis gravitate illic quisque alta calidis speciem mixtam ante contraria duae',
+        'Ut aer semina aequalis egens videre tum deus pluviaque quae tellure ad orbe habentia solidumque consistere pluvialibus neu ripis emicuit foret hanc abscidit et fulgura bracchia sorbentur caelo cuncta liberioris finxit tum obliquis terris deerat inter caecoque piscibus fidem otia caesa usu induit radiis supplex exemit neu cinxit nova facientes'
+      ];
+  
+      Polymer('pi-feed-aggregator', {
+        count: 24,
+        useCache: true,
+        feedResults: null,
+        ready: function() {
+          this.resetCache();
+          this.contentNode = document.createElement('div');
+        },
+        reload: function() {
+          this.forceLoad = true;
+          this.feedChanged();
+        },
+        resetCache: function() {
+          this.feedResultsCache = {};
+        },
+        feedChanged: function() {
+          if (this.feed) {
+            this._entries = [];
+            this.feeds = this.feed.slice(0);
+            this.feedCount = Math.ceil(this.count / this.feeds.length);
+            this.fetch();
+          } else {
+            this.entries = null;
+          }
+        },
+        fetch: function() {
+          if (this.feeds && this.feeds.length) {
+            // processing feeds one by one
+            var f = this.feeds.shift().feed;
+            if (!this.forceLoad && this.useCache && this.feedResultsCache[f]) {
+              this.gotFeedResults(this.feedResultsCache[f]);
+            } else {
+              // retrive feed data using pi-gfeeds (google Feed API)
+              this.loading = true;
+              this.feedUrl = f;
+            }
+          } else {
+            // done processing all feeds
+            this.fetchCompleted();
+          }
+        },
+        fetchCompleted: function() {
+          this.entries = this._entries.sort(this.dateSortDesc.bind(this));
+          this.forceLoad = false;
+          this.feedUrl = null;
+          this.loading = false;
+          this.fire('response', {entries: this.entries});
+        },
+        gotFeedResults: function(results) {
+          if (results && results.feedUrl) {
+            this.feedResultsCache[results.feedUrl] = results;
+            var entries = this.processFeedResults(results);
+            this._entries.push.apply(this._entries, entries);
+          }
+          // next feed
+          this.fetch();
+        },
+        feedResultsChanged: function() {
+          if (this.feedResults) {
+            this.gotFeedResults(this.feedResults);
+          }
+        },
+        dateSortDesc: function(inEntry1, inEntry2) {
+          var d1 = inEntry1._date || new Date(inEntry1.publishedDate);
+          var d2 = inEntry2._date || new Date(inEntry2.publishedDate);
+          if (d1 > d2) {
+            return -1;
+          } else if (d1 < d2) {
+            return 1;
+          }
+          return 0;
+        },
+        processFeedResults: function(results) {
+          var n = this.contentNode;
+          var entries = results.entries;
+          entries.forEach(function(entry) {
+            // feed source
+            entry.source = results.title;
+            entry.sourceLink = results.link;
+            entry.feedUrl = results.feedUrl;
+            // scrape image url
+            if (!entry.imgSrc && entry.content) {
+              var m$ = entry.content.match(/<img[^>]+src="([^">]+)"/);
+              entry.imgSrc = m$ && m$[1];
+            }
+            entry.imageShowing = !!entry.imgSrc;
+            // unescape html content
+            if (!entry.desc && entry.contentSnippet) {
+              n.innerHTML = entry.contentSnippet;
+              n.innerHTML = n.textContent;
+              entry.desc = n.textContent.trim();
+            }
+            // favicon
+            if (entry.sourceLink) {
+              entry.sourceIcon = GET_FAVICON_URL + entry.sourceLink;
+            }
+            // time since
+            if (entry.publishedDate) {
+              var d = entry._date || new Date(entry.publishedDate);
+              entry._date = d;
+              entry.since = timeSince(d);
+            }
+            // dummy text used for filling white spaces (for demo only)
+            entry.dummyText = DUMMY_TEXT[Math.floor(Math.random() * DUMMY_TEXT.length)];
+          });
+          return entries;
+        }
+      });
+    })();
+  </script>
+</polymer-element>

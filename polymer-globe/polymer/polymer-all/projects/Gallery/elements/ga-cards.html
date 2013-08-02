@@ -1,0 +1,27 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="ga-cards" attributes="items selected">
+  <template>
+    <link rel="stylesheet" href="css/ga-cards.css">
+    <template repeat="{{items}}">
+      <div class="card">
+        <div class="inner" touch-action="none" on-tap="selectCard">
+          <div class="image" style="background-image: url({{imageUrl}});"></div>
+          <div class="title">{{id}}</div>
+          <div class="author">by {{author}}</div>
+        </div>
+      </div>
+    </template>
+  </template>
+  <script>
+    Polymer('ga-cards', {
+      selectCard: function(event, detail, sender) {
+        this.selected = sender.templateInstance.model;
+        this.fire('select-card');
+      }
+    });
+  </script>
+</polymer-element>

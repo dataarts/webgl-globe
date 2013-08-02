@@ -1,0 +1,113 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-tree" attributes="sourceElement selected">
+  <template>
+    <style>
+      #title {
+        background-color: #E0E0E0;
+        border-bottom: 1px solid silver;
+        padding: 12px;
+        font-size: 16px;
+      }
+      #interior {
+        border: 1px solid silver;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        cursor: pointer;
+      }
+      #caption {
+        color: blue;
+      }
+      id {
+        font-style: italic;
+        color: #804C00;
+      }
+      #tree {
+        display: inline-block;
+        padding: 8px;
+      }
+      #tree div {
+        padding: 4px;
+        white-space: nowrap;
+      }
+      .selected {
+        background: rgba(72, 154, 254, 0.20);
+      }
+    </style>
+    <div id="interior" touch-action="auto" on-tap="tap">
+      <div id="title">Elements</div>
+      <div id="tree">
+        <template repeat="{{components}}">
+          <div class="{{selected}}" style="padding-left: {{indent}}px"><span>{{name}}<id>{{id}}</id><span id="caption">{{text}}</span></span></div>
+        </template>
+      </div>
+    </div>
+  </template>
+  <script>
+  (function() {
+    Polymer('tk-tree', {
+      components: null,
+      update: function() {
+        var selected = this.selected;
+        var tabsize = 32;
+        var components = this.components = [];
+        function subtree(root, indent) {
+          var e = root.firstElementChild;
+          while (e) {
+            if (elementBlackList.indexOf(e.localName) < 0) {
+              var text = e.children.length == 0 ? e.textContent.trim() : '';
+              if (text) {
+                if (text.length > 12) {
+                  text = text.slice(0, 12) + "...";
+                }
+                text = ' "' + text + '"';
+              }
+              components.push({
+                indent: indent,
+                name: e.localName,
+                element: e,
+                id: e.id ? ' #' + e.id + '': '',
+                text: text,
+                selected: (e == selected) ? 'selected' : ''
+              });
+              if (!(e.meta && e.meta.hideSubtree)) {
+                subtree(e, indent + tabsize);
+              }
+            }
+            e = e.nextElementSibling;
+          }
+        }
+        subtree(this.sourceElement, 4);
+      },
+      findDistributedTarget: function(target, nodes) {
+        // find first ancestor of target (including itself) that
+        // is in inNodes, if any
+        while (target && target != this) {
+          var i = Array.prototype.indexOf.call(nodes, target);
+          if (i >= 0) {
+            return i;
+          }
+          target = target.parentNode;
+        }
+      },
+      tap: function(e) {
+        var nodes = this.$.tree.children;
+        var selected = nodes[this.findDistributedTarget(e.target, nodes)];
+        if (selected) {
+          this.selected = selected.templateInstance.model.element;
+        }
+      }
+    });
+    
+    var elementBlackList = ['style'];
+  })();
+  </script>
+</polymer-element>

@@ -1,0 +1,44 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+<link rel="import" href="../../../polymer-elements/polymer-jsonp/polymer-jsonp.html">
+
+<polymer-element name="polymer-ui-stock-data" attributes="symbol name data color">
+  <template>
+    <polymer-jsonp id="jsonp" response="{{rawData}}" url="https://clients1.google.com/finance/info?q={{symbol}}&client=ob&infotype=infoonebox&callback="
+    ></polymer-jsonp>
+  </template>
+  <script>
+    (function() {
+      PolymerStockData = function(symbol, color) {
+        var usd = document.createElement('polymer-ui-stock-data');
+        usd.symbol = symbol;
+        usd.color = color;
+        return usd;
+      };
+      Polymer('polymer-ui-stock-data', {
+        name: '',
+        symbol: '',
+        color: '',
+        data: null,
+        symbolChanged: function() {
+          this.name = this.symbol.replace('.', '');
+          this.data = null;
+          // make sure MDV updates at the end of the microtask
+          Platform.flush();
+          // go async to let MDV update the JSONP url
+          this.asyncMethod('update');
+        },
+        update: function() {
+          this.$.jsonp.go();
+        },
+        rawDataChanged: function() {
+          this.data = this.rawData[0];
+        }
+      });
+    })();
+  </script>
+</polymer-element>

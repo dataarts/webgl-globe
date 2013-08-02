@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<html>
+<head>
+  <title>items view</title>
+  <script src="https://www.google.com/jsapi"></script>
+  <script src="../../../polymer/polymer.js"></script>
+  <link rel="import" href="../components/pi-feed-aggregator.html"/>
+  <link rel="import" href="../components/pi-items-view.html"/>
+  <style>
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, 'open sans', sans-serif;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <pi-feed-aggregator></pi-feed-aggregator>
+  <pi-items-view layout="quilt"></pi-items-view>
+  
+  <script>
+    document.addEventListener('WebComponentsReady', function() {
+      var fa = document.querySelector('pi-feed-aggregator');
+      var itemsView = document.querySelector('pi-items-view');
+      fa.addEventListener("response", 
+        function(inEvent) {
+          itemsView.items  = inEvent.detail.entries;
+        }
+      );
+      fa.count = 200;
+      fa.feed = [
+        {feed: 'http://www.theverge.com/rss/index.xml'},
+        {feed: 'http://feeds.engadget.com/weblogsinc/engadget'}
+      ];
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>Memory Game</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="../../polymer/polymer.js"></script>
+    <script src="game.js"></script>
+
+    <polymer-element name="g-card" attributes="tile">
+        <link rel="stylesheet" href="card.css">
+      <template>
+          <div class="card {{ flipped: tile.flipped }}">
+            <img class="back" src="img/{{ tile.title }}.png">
+            <img class="front" src="img/back.png">
+          </div>
+      </template>
+      <script>
+        Polymer('g-card', {
+        });
+      </script>
+    </polymer-element>
+
+    <polymer-element name="match-game">
+      <template>
+        <style>
+          div {
+            font-size: 30px;
+          }
+        </style>
+        <div>Pairs left to match: {{ game.unmatchedPairs }}</div>
+        <div>Matching: {{ game.firstPick.title }}</div>
+          <table>
+            <tr template repeat="{{ row in game.grid }}">
+              <td template repeat="{{ tile in row }}">
+                <g-card on-click="flip" tile="{{ tile }}"></g-card>
+              </td>
+            </tr>
+          </table>
+        <div class="message">{{ game.message }}</div>
+      </template>
+      <script>
+        Polymer('match-game', {
+          ready: function() {
+            this.game = new Game(['8-ball', 'kronos', 'baked-potato',
+                                  'dinosaur', 'rocket', 'skinny-unicorn',
+                                  'that-guy', 'zeppelin']);
+          },
+          flip: function(e, detail, target) {
+            this.game.flipTile(target.templateInstance.model.tile);
+          }
+        });
+      </script>
+    </polymer-element>
+
+  </head>
+
+  <body>
+    <match-game></match-game>
+  </body>
+</html>

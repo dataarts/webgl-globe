@@ -1,0 +1,206 @@
+/*
+Copyright 2013 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+.kratuLogo {
+  text-align: center;
+  font-family: verdana;
+  font-weight: bold;
+  font-size: 30px;
+  border-radius: 30px;
+  background: #aaf;
+  border:10px solid;
+  border-color:#66f #33e #33e #66f;
+  height:40px;
+  width:40px;
+  box-shadow: 1px 1px 5px #339;
+  cursor: pointer;
+  font-style: italic;
+  margin:10px;
+}
+.kratuLogo a {
+  text-decoration: none;
+  color:#fff;
+  font-style: italic;
+  font-family: verdana;
+  text-align: center;
+}
+.kratuLogo span {
+  display: block;
+  font-size: 3px;
+  margin-top: -6px;
+  color:#fff;
+}
+.kratuLogo .tiny {
+  font-size: 12px;
+  border-radius: 10px;
+  border-width: 3px;
+  height: 15px;
+  width: 15px;
+  box-shadow: 1px 1px 1px #339;
+}
+.kratuLogo .tiny span {
+  font-size: 1px;
+  margin-top: -2px;
+}
+.kratuLogo .small {
+  font-size: 15px;
+  border-radius: 15px;
+  border-width: 5px;
+  height: 20px;
+  width: 20px;
+  box-shadow: 1px 1px 1px #339;
+}
+.kratuLogo .small span {
+  font-size: 1px;
+  margin-top: -2px;
+}
+.kratuLogo .large {
+  font-size: 120px;
+  border-radius: 120px;
+  border-width: 40px;
+  height: 160px;
+  width: 160px;
+  box-shadow: 3px 3px 10px #339;
+}
+.kratuLogo .large span {
+  font-size: 12px;
+  margin-top: -24px;
+}
+.kratuReportTable {
+  clear:both;
+  border-collapse:collapse;
+  margin-top:5px;
+  border:10px solid white;
+  box-shadow: 0 0 7px #999;
+  empty-cells:show;
+}
+.kratuEntityRow:hover {
+  opacity: 0.8;
+}
+.kratuReportTable svg text {
+  fill:white;
+  -moz-user-select: none;
+  -ms-user-select:none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.kratuReportTable th, .kratuReportTable td {
+  border:1px solid #eee;
+  color: #fff;
+  padding:3px;
+  white-space:nowrap;
+  background: #fff;
+  vertical-align: middle;
+}
+.kratuReportTable th {
+  text-shadow:1px 1px 1px #555;
+  cursor:pointer;
+  background-color: #38c;
+}
+
+.kratuReportTable .kratuNeutralScore {
+  color:#aaa;
+}
+
+.kratuReportTable th.disabled {
+  background-color: #bbb;
+}
+.kratuReportTable td.disabled {
+  background-color: #eee;
+  color:#bbb;
+}
+
+.kratuAverage td, .kratuSum td {
+  font-size: 12px;
+  font-weight: bold;
+}
+.kratuSum td {
+  background-color: #38c;
+}
+
+.kratuSum td.disabled {
+  background-color: #5ad;
+}
+
+.kratuCellTypeFloatingPoint {
+  text-align: right;
+}
+.kratuCellTypeNaN {
+  color:red;
+  text-align: center;
+}
+.kratuCellTypePercentage {
+  text-align: right;
+}
+.kratuCellTypeMoney {
+  text-align: right;
+  white-space: nowrap;
+}
+.kratuCellTypeSingleDecimal {
+  text-align: right;
+}
+.kratuCellTypeInteger {
+  text-align: right;
+}
+.kratuCellTypeString {
+  text-align: left;
+}
+.kratuSignalAdjustments {
+  position: fixed;
+  right:0;
+  top:0;
+  width:600px;
+  height:440px;
+  background:white;
+  padding:20px;
+  margin:10px;
+  border:10px solid #49D;
+  border-radius: 10px;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  box-shadow: 0 0 7px #666;
+
+}
+.kratuSignalAdjustments header {
+  padding-bottom:10px;
+}
+.kratuSignalAdjustments button {
+  clear:both;
+  margin-left:45% ;
+  display:block;
+}
+.kratuSignalChart {
+  padding:0;
+  clear:both;
+  width:600px;
+  height:300px;
+}
+
+.sliderContainer {
+  float:left;
+  margin:5px; 
+}
+.sliderContainer span {
+  font-weight:bold;
+  float:right;
+}
+.sliderContainer input {
+  display:block;
+}

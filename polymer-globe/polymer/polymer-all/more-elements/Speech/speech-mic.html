@@ -1,0 +1,91 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<polymer-element name="speech-mic">
+  <template>
+    <style>
+      @host {
+        * {
+          display: inline-block;
+        }
+      }
+      
+      #mic {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: url(images/mic.png) center no-repeat;
+        cursor: pointer;
+      }
+      
+      #mic[recognizing=true] {
+        background-color: red;
+        -webkit-animation: zoom 0.75s linear infinite;
+      }
+      
+      @-webkit-keyframes zoom {
+        0% {-webkit-transform: scale(0.75);}
+        100% {-webkit-transform: scale(1);}
+      }
+    </style>
+    <div id="mic" recognizing="{{recognizing}}" on-click="toggleRecognition"></div>
+  </template>
+  <script>
+    Polymer('speech-mic', {
+      publish: {
+        language: 'en-US',
+        transcript: '',
+        completeTranscript: ''
+      },
+      stop: function() {
+        this.recognition && this.recognition.stop();
+      },
+      ready: function() {
+        if (window.webkitSpeechRecognition) {
+          this.recognition = new webkitSpeechRecognition();
+          this.recognition.continuous = true;
+          this.recognition.interimResults = true;
+          this.recognition.lang = this.language;
+          
+          this.recognition.onstart = this.start.bind(this);
+          this.recognition.onresult = this.result.bind(this);
+          this.recognition.onerror = this.error.bind(this);
+          this.recognition.onend = this.end.bind(this);
+        } else {
+          this.$.mic.hidden = true;
+        }
+      },
+      toggleRecognition: function() {
+        if (this.recognizing) {
+          this.recognition.stop();
+        } else {
+          this.recognition.start();
+        }
+      },
+      start: function(e) {
+        this.recognizing = true;
+      },
+      result: function(e) {
+        var t, ft = '', ct = '';
+        for (var i = 0, r; r = e.results[i]; i++) {
+          t = r[0] && r[0].transcript || '';
+          ft = r.isFinal && t;
+          ct += t;
+        }
+        this.transcript = t;
+        this.completeTranscript = ct;
+        this.fire('result', {results: e.results, transcript: t, 
+          finalTranscript: ft, completeTranscript: ct});
+      },
+      error: function(e) {
+      },
+      end: function(e) {
+        this.recognizing = false;
+      }
+    });
+  </script>
+</polymer-element>

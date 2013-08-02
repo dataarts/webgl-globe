@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<html>
+<head>
+  <title>gfeeds</title>
+  <script src="https://www.google.com/jsapi"></script>
+  <script src="../../../polymer/polymer.js"></script>
+  <link rel="import" href="../components/pi-gfeeds.html"/>
+</head>
+<body>
+  <pi-gfeeds></pi-gfeeds>
+  <template repeat="{{entries}}">
+    <div>{{title}}</div>
+  </template>
+  
+  <script>
+    document.addEventListener('WebComponentsReady', function() {
+      var gfeeds = document.querySelector('pi-gfeeds');
+      gfeeds.addEventListener("response", 
+        function(event) {
+          var model = {entries: event.detail.feed.entries};
+          document.querySelector('template').model = model;
+        }
+      );
+      gfeeds.feed = 'http://www.theverge.com/rss/index.xml';
+    });
+  </script>
+</body>
+</html>

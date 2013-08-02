@@ -1,0 +1,29 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="ga-detail" attributes="item">
+  <template>
+    <link rel="stylesheet" href="css/ga-detail.css">
+    <div class="main" touch-action="pan-y">
+      <div class="inner">
+        <div class="title">{{item.id}} <span class="label">({{item.label}})</span></div>
+        <div class="author">by {{item.author}} on {{item.publishedDate}}</div>
+        <div class="image" style="background-image: url({{item.imageUrl}});"></div>
+        <div class="buttons">
+          <a href="{{item.sourceUrl}}" target="_blank" showing?="{{item.sourceUrl}}">Source</a>
+          <a href="{{item.demoUrl}}" target="_blank" showing?="{{item.demoUrl}}">Demo</a>
+        </div>
+        <div id="description" class="description"></div>
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer('ga-detail', {
+      itemChanged: function() {
+        this.$.description.innerHTML = this.item.description;
+      }
+    });
+  </script>
+</polymer-element>

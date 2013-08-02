@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <title>polymer-selection</title>
+    <script src="../../../polymer/polymer.js"></script>
+    <script src="../../../polymer/tools/test/htmltest.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <link rel="import" href="../../polymer-selector/polymer-selection.html">
+  </head>
+  <body>
+
+    <polymer-selection></polymer-selection>
+    
+    <script>
+      var assert = chai.assert;
+      document.addEventListener('WebComponentsReady', function() {
+        var s = document.querySelector('polymer-selection');
+        s.addEventListener("polymer-select", function(event) {
+          assert.isTrue(event.detail.isSelected);
+          assert.equal(event.detail.item, '(item)');
+          done();
+        });
+        s.select('(item)');
+      });
+    </script>
+  </body>
+</html>

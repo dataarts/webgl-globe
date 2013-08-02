@@ -1,0 +1,171 @@
+<!--
+Copyright 2012 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Polymer::Bootstrap</title>
+  <!-- Bootstrap -->
+  <link href="../bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+  <!-- Polymer -->
+  <script src="../../../polymer/platform/platform.js"></script>
+</head>
+<body>
+  <bp-navbar>
+    <bp-btn-navbar>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </bp-btn-navbar>
+    <bp-brand href="#">Project name</bp-brand>
+    <bp-nav-collapse>
+      <bp-navbar-text-right>
+        Logged in as <bp-navbar-link>Username</bp-navbar-link>
+      </bp-navbar-text-right>
+      <!-- styling inside bp-nav requires <li><a> -->
+      <bp-nav selected="0">
+        <li><a href="#">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </bp-nav>
+    </bp-nav-collapse>
+  </bp-navbar
+  
+  <!-- Components -->
+  <link rel="components" src="../../../toolkit-ui/elements/g-component.html">
+  <link rel="components" src="../../../toolkit-ui/elements/g-selector.html">
+  
+  <element name="bp-navbar">
+    <template>
+      <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+          <div class="container-fluid">
+            <content></content>
+          </div>
+        </div>
+      </div>
+    </template>
+  </element>
+  <!-- -->
+  <element name="bp-btn-navbar" extends="a">
+    <template>
+      <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+          <div class="container-fluid">
+            <content></content>
+          </div>
+        </div>
+      </div>
+    </template>
+    <script>
+      this.component && this.component({
+        ready: function() {
+          this.node.classList.add('btn', 'btn-navbar');
+          this.node.setAttribute('data-toggle', 'collapse');
+          this.node.setAttribute('data-target', '.nav-collapse');
+        }
+      });
+    </script>
+  </element>
+  <!-- -->
+  <element name="bp-icon-bar">
+    <script>
+      this.component && this.component({
+        ready: function() {
+          this.node.classList.add('icon-bar');
+        }
+      });
+    </script>
+  </element>
+  <!-- -->
+  <element name="bp-brand" extends="a">
+    <script>
+      this.component && this.component({
+        ready: function() {
+          this.node.classList.add('brand');
+        }
+      });
+    </script>
+  </element>
+  <!-- -->
+  <element name="bp-nav-collapse" extends="p">
+    <script>
+      this.component && this.component({
+        ready: function() {
+          this.node.classList.add('nav-collapse', 'collapse');
+        }
+      });
+    </script>
+  </element>
+  <!-- -->
+  <element name="bp-navbar-text-right" extends="p">
+    <script>
+      this.component && this.component({
+        ready: function() {
+          this.node.classList.add('navbar-text', 'pull-right');
+        }
+      });
+    </script>
+  </element>
+  <!-- -->
+  <element name="bp-navbar-link" extends="a">
+    <script>
+      this.component && this.component({
+        ready: function() {
+          this.node.classList.add('navbar-link');
+        }
+      });
+    </script>
+  </element>
+  <!-- -->
+  <element name="bp-nav" extends="g-selector">
+    <template>
+      <shadow></shadow>
+    </template>
+    <script>
+      this.component && this.component({
+        selectedClass: 'active',
+        ready: function() {
+          this.$super();
+          this.node.classList.add('nav');
+        }
+      });
+    </script>
+  </element>
+  <!-- -->
+  <!--
+  <element name="bp-nav-item" extends="li">
+    <template>
+      <a id="anchor" href="#"><content></content></a>
+    </template>
+    <script>
+      this.component && this.component({
+        ready: function() {
+           this.nameChanged();
+        },
+        nameChanged: function() {
+          this.$.anchor.setAttribute("href", this.name);
+        }
+      });
+    </script>
+  </element>
+  <element name="bp-ni" extends="a">
+    <template>
+      <content></content>
+    </template>
+    <script>
+      this.component && this.component({
+        ready: function() {
+           this.nameChanged();
+        },
+        nameChanged: function() {
+          this.node.setAttribute("href", this.name);
+        }
+      });
+    </script>
+  </element>
+  -->
+  
+</body></html>

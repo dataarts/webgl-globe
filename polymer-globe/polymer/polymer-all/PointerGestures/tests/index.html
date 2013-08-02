@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PointerGesture tests</title>
+  <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+  <script src="../node_modules/chai/chai.js"></script>
+  <script src="../node_modules/chai-spies/chai-spies.js"></script>
+  <script src="../node_modules/mocha/mocha.js"></script>
+  <script src="../pointergestures.js"></script>
+</head>
+<body>
+  <div id="mocha"></div>
+  <script src="setup.js"></script>
+  <script>
+    mocha.setup({
+      ui: 'tdd',
+      slow: 1000
+    });
+  </script>
+  <!-- tests -->
+  <script src="tap.js"></script>
+  <!-- run -->
+  <script>
+    mocha.run();
+  </script>
+</body>
+</html>

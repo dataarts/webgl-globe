@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Buildbot: Polymer</title>
+    <link rel="import" href="tk-buildbot.html">
+    <script src="../../polymer/polymer.min.js"></script>
+  </head>
+  <body>
+    <buildbot-polymer></buildbot-polymer>
+    <polymer-element name="buildbot-polymer">
+      <template>
+        <template repeat="{{builders}}">
+          <p><tk-buildbot builder="{{name}}" inactive="{{inactive}}"></tk-buildbot></p>
+        </template>
+      </template>
+      <script>
+        Polymer('buildbot-polymer', {
+          publish: {
+            builders: [],
+            platforms: ['Mac', 'Linux', 'Win'],
+            projects: [
+              'polymer',
+              'platform',
+              'CustomElements',
+              'mdv',
+              'PointerGestures',
+              'ShadowDOM',
+              'HTMLImports'
+            ]
+          },
+          ready: function() {
+            this.generateBuilders();
+          },
+          generateBuilders: function() {
+            var platforms = this.platforms;
+            var builders = [];
+            this.projects.forEach(function(project) {
+              platforms.forEach(function(platform) {
+                builders.push({
+                  name: project + ' ' + platform,
+                  inactive: platform === 'Win'
+                });
+              });
+            });
+            this.builders = builders;
+          }
+        });
+      </script>
+    </polymer-element>
+  </body>
+</html>

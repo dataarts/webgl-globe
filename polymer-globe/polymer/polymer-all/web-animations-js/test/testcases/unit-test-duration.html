@@ -1,0 +1,92 @@
+<!--
+Copyright 2013 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE html>
+<div id="anim"></div>
+
+<script src="../bootstrap.js"></script>
+<script>
+"use strict";
+
+var anim = new Animation(document.getElementById("anim"), {left: "100px"},
+    {iterationCount: 3.0});
+var parGroup = new ParGroup();
+var seqGroup = new SeqGroup();
+
+// Should use intrinsic iterationDuration if Timing.iterationDuration is undefined.
+// Animation
+test(function() {assert_equals(anim.iterationDuration,  0.0)},
+     "Animation iterationDuration should use intrinsic value");
+anim.specified.iterationDuration = 1.0;
+test(function() {assert_equals(anim.iterationDuration,  1.0)},
+     "Animation iterationDuration should use specified value");
+// ParGroup
+test(function() {assert_equals(parGroup.iterationDuration,  0.0)},
+     "ParGroup iterationDuration should use intrinsic value");
+parGroup.append(anim);
+test(function() {assert_equals(parGroup.iterationDuration,  3.0)},
+     "ParGroup iterationDuration should be derived from child");
+parGroup.specified.iterationDuration = 2.0;
+test(function() {assert_equals(parGroup.iterationDuration,  2.0)},
+     "ParGroup iterationDuration should use specified value");
+// SeqGroup
+test(function() {assert_equals(seqGroup.iterationDuration,  0.0)},
+     "SeqGroup iterationDuration should use intrinsic value");
+seqGroup.append(anim);
+test(function() {assert_equals(seqGroup.iterationDuration,  3.0)},
+     "SeqGroup iterationDuration should be derived from child");
+seqGroup.specified.iterationDuration = 4.0;
+test(function() {assert_equals(seqGroup.iterationDuration,  4.0)},
+     "SeqGroup iterationDuration should use specified value");
+
+// TimedItem.iterationDuration should override TimedItem.specified.iterationDuration until explicitly
+// set to undefined.
+// Animation
+anim.specified.iterationDuration = 5.0;
+test(function() {assert_equals(anim.iterationDuration,  5.0)},
+     "Animation failed to update iterationDuration");
+anim.specified.iterationDuration = 6.0;
+test(function() {assert_equals(anim.iterationDuration,  6.0)},
+     "Animation failed to override Timing.iterationDuration");
+anim.specified.iterationDuration = 7.0;
+test(function() {assert_equals(anim.iterationDuration,  7.0)},
+     "Animation Timing.iterationDuration should be overriden with 7.0");
+anim.specified.iterationDuration = null;
+test(function() {assert_equals(anim.iterationDuration, 0)},
+     "Animation Timing.iterationDuration should be overriden with 0");
+// ParGroup
+parGroup.append(anim);
+parGroup.specified.iterationDuration = 8.0;
+test(function() {assert_equals(parGroup.iterationDuration,  8.0)},
+     "ParGroup Failed to update iterationDuration");
+parGroup.specified.iterationDuration = 10.0;
+test(function() {assert_equals(parGroup.iterationDuration,  10.0)},
+     "ParGroup Timing.iterationDuration should be overriden with 10.0");
+// SeqGroup
+seqGroup.append(anim);
+seqGroup.specified.iterationDuration = 11.0;
+test(function() {assert_equals(seqGroup.iterationDuration,  11.0)},
+     "SeqGroup Failed to update iterationDuration");
+seqGroup.specified.iterationDuration = 13.0;
+test(function() {assert_equals(seqGroup.iterationDuration,  13.0)},
+     "SeqGroup Timing.iterationDuration should be overriden with 13.0");
+
+// TimedItem.activeDuration should always reflect TimedItem.iterationDuration.
+anim.specified.iterationDuration = 14.0;
+test(function() {assert_equals(anim.activeDuration,  42.0)},
+     "activeDuration incorrect");
+
+</script>

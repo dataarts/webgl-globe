@@ -1,0 +1,16 @@
+{
+  "name": "HTMLImports",
+  "description": "Polyfill for W3C HTMLImports Specification",
+  "version": "0.0.1",
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*",
+    "grunt": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-yuidoc": "~0.4.0",
+    "grunt-karma": "~0.5.0",
+    "karma-mocha": "*",
+    "karma-script-launcher": "*",
+    "karma-crbot-reporter": "*"
+  }
+}

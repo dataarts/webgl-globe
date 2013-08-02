@@ -1,0 +1,12 @@
+{
+  "name": "demo",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "bower": "0.7.0",
+    "grunt": "~0.4.0",
+    "grunt-smush-components": "~0.1.1",
+    "grunt-contrib-concat": "~0.1.2",
+    "grunt-contrib-jshint": "~0.3.0"
+  }
+}

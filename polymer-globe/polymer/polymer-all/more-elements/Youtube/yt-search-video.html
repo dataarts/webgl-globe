@@ -1,0 +1,48 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="import" href="yt-video.html">
+<link rel="import" href="yt-search.html">
+<polymer-element name="yt-search-video" attributes="ImFeelingLucky muted index maxResults">
+  <template>
+    <style>
+      @host {
+        * {
+          background: url(images/logo.png) no-repeat center;
+          display: block;
+        }
+      }
+    </style>
+    <yt-search id="search" maxResults="{{maxResults}}" list="{{list}}"></yt-search>
+    <yt-video id="video" videoEntry="{{video}}" muted="{{muted}}"></yt-video>
+  </template>
+  <script>
+    Polymer('yt-search-video', {
+      ImFeelingLucky: '',
+      muted: false,
+      index: 0,
+      maxResults: 50,
+      list: null,
+      ImFeelingLuckyChanged: function() {
+        if (this.isValidQuery()) {
+          this.$.search.query = this.ImFeelingLucky;
+        } else {
+          this.$.video.clearVideo();
+        }
+      },
+      isValidQuery: function() {
+        return this.ImFeelingLucky && typeof this.ImFeelingLucky === 'string';
+      },
+      listChanged: function() {
+        this.indexChanged();
+      },
+      indexChanged: function() {
+        if (this.isValidQuery()) {
+          this.video = this.list && this.list[this.index];
+        }
+      }
+    });
+  </script>
+</polymer-element>

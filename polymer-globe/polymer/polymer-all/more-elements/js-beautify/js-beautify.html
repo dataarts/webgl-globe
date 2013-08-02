@@ -1,0 +1,24 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<script src="js-beautify/beautify.js"></script>
+<script src="js-beautify/beautify-html.js"></script>
+<polymer-element name="js-beautify" attributes="html">
+  <script>
+    Polymer('js-beautify', {
+      html: '',
+      options: null,
+      ready: function() {
+        this.html = this.innerHTML;
+      },
+      htmlChanged: function() {
+        this.innerHTML = html_beautify(this.html, this.options)
+          .replace(/\</g, '&lt;')
+          .replace(/\>/g, '&gt;')
+          ;
+      }
+    });
+  </script>  
+</polymer-element>

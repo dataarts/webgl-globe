@@ -1,0 +1,32 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+
+<script src="humane.min.js"></script>
+
+<link rel="stylesheet" href="themes/bigbox.css">
+<link rel="stylesheet" href="themes/boldlight.css">
+<link rel="stylesheet" href="themes/jackedup.css">
+<link rel="stylesheet" href="themes/libnotify.css">
+<link rel="stylesheet" href="themes/original.css">
+
+<polymer-element name="humane-js">
+  <template>
+  </template>
+  <script>
+    Polymer('humane-js', {
+      test: false,
+      theme: 'jackedup',
+      // many more features not expressed here
+      log: function() {
+        humane.baseCls = 'humane-' + this.theme;
+        humane.log(this.textContent);
+      },
+      testChanged: function() {
+        this.log();
+      }
+    });
+  </script>
+</polymer-element>

@@ -1,0 +1,100 @@
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+#panels {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  min-height: 0;
+  -webkit-user-select: none;
+}
+
+#panels > * {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.5);
+  background: white;
+}
+
+#videoPanel {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-flex-flow: column;
+  flex-direction: column;
+}
+
+#listPanel {
+  width: 360px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-flex-flow: column;
+  flex-direction: column;
+  background: #333 url(../images/ribbon_bg.png) repeat-y;
+  font-size: 14px;
+  color: white;
+}
+
+#listPanel.narrow-layout {
+  left: 0;
+  right: 60px;
+  width: auto;
+}
+
+#morePanel {
+  right: 0;
+  left: auto;
+  width: 200px;
+  padding: 20px;
+  color: #EBEBEB;
+  background: #333;
+}
+
+.list {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  display: block;
+  /*
+  TODO(sorvell): styling changes due to tabIndex=-1 on panels
+  must isolate. Use max-height to avoid scrolling being compeltely broken.
+  */
+  max-height: 100%;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+input {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  -webkit-appearance: none;
+  background: whitesmoke;
+  opacity: 0.8;
+  font-size: 18px;
+  padding: 0 16px;
+  border: none;
+  outline: 0;
+  margin: 0;
+}
+
+.item {
+  height: 60px;
+  line-height: 60px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-left: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.item.selected {
+  background-color: #777;
+}

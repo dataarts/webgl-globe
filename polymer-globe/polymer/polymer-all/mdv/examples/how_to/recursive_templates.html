@@ -1,0 +1,131 @@
+<script src="../../mdv.js"></script>
+
+<h1>Recursive Template</h1>
+<ul>
+<template repeat="{{ items }}" id="t">
+  <li>{{name}}
+    <ul>
+      <template ref="t" repeat="{{ children }}"></template>
+    </ul>
+  </li>
+</template>
+</ul>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('t').model = {
+    'items': [
+      {
+        'name': 'Africa',
+        'children': [
+          {
+            'name': 'Egypt'
+          },
+          {
+            'name': 'Kenya',
+            'children': [
+              {
+                'name': 'Nairobi'
+              },
+              {
+                'name': 'Mombasa'
+              }
+            ]
+          },
+          {
+            'name': 'Sudan',
+            'children': {
+              'name': 'Khartoum'
+            }
+          }
+        ]
+      },
+      {
+        'name': 'Asia',
+        'children': [
+          {
+            'name': 'China'
+          },
+          {
+            'name': 'India'
+          },
+          {
+            'name': 'Russia'
+          },
+          {
+            'name': 'Mongolia'
+          }
+        ]
+      },
+      {
+        'name': 'Australia',
+        'children': {
+          'name': 'Commonwealth of Australia'
+        }
+      },
+      {
+        'name': 'Europe',
+        'children': [
+          {
+            'name': 'Germany'
+          },
+          {
+            'name': 'France'
+          },
+          {
+            'name': 'Spain'
+          },
+          {
+            'name': 'Italy'
+          }
+        ]
+      },
+      {
+        'name': 'North America',
+        'children': [
+          {
+            'name': 'Mexico',
+            'children': [
+              {
+                'name': 'Mexico City'
+              },
+              {
+                'name': 'Guadalajara'
+              }
+            ]
+          },
+          {
+            'name': 'Canada',
+            'children': [
+              {
+                'name': 'Ottawa'
+              },
+              {
+                'name': 'Toronto'
+              }
+            ]
+          },
+          {
+            'name': 'United States of America'
+          }
+        ]
+      },
+      {
+        'name': 'South America',
+        'children': [
+          {
+            'name': 'Brazil'
+          },
+          {
+            'name': 'Argentina'
+          }
+        ]
+      }
+    ]
+  };
+
+  // Needed to detect model changes if Object.observe
+  // is not available in the JS VM.
+  Platform.performMicrotaskCheckpoint();
+});
+</script>

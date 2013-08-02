@@ -1,0 +1,311 @@
+<tk-meta id="div" label="Caption" isContainer>
+  <template>
+    <div style="border: 1px dotted silver; padding: 6px;">A Caption</div>
+  </template>
+  <property name="textContent" kind="speech"></property>
+</tk-meta>
+
+<tk-meta id="g-toolbar" label="Toolbar" isContainer>
+  <template>
+    <g-toolbar style="right: 0px; left: 0px;">
+      <g-icon-button src="images/star_full.svg" active="true"></g-icon-button>
+      <div class="flex">Toolbar</div>
+      <g-toolbar responsive="true">
+        <g-menu-button responsive="true" src="images/add.png" selected="0">
+          <g-menu-item src="images/comment.png">Post a Comment</g-menu-item>
+          <g-menu-item src="images/hangout.png">Share Link</g-menu-item>
+          <g-menu-item src="images/mail.png">Email Link</g-menu-item>
+          <g-menu-item src="images/favorite.png">Add to Favorites</g-menu-item>
+        </g-menu-button>
+        <g-icon-button src="images/favorite.png"></g-icon-button>
+      </g-toolbar>
+      <g-icon-button src="images/hangout.png"></g-icon-button>
+    </g-toolbar>
+  </template>
+</tk-meta>
+
+<tk-meta id="tk-toolbar" label="Themed Toolbar" isContainer>
+  <template>
+    <tk-toolbar theme="toolbar-bg-0" style="height: 60px; right: 0px; left: 0px;"></tk-toolbar>
+  </template>
+  <property name="theme" kind="select" options=" ,toolbar-bg-0,toolbar-bg-1,toolbar-bg-2,toolbar-bg-3,toolbar-bg-4"></property>
+</tk-meta>
+
+<tk-meta id="g-icon-button" label="Icon Button">
+  <template>
+    <g-icon-button src="images/mail.png"></g-icon-button>
+  </template>
+  <property name="src" kind="select" options="images/mail.png,images/add.png,images/comment.png,images/menu.png"></property>
+</tk-meta>
+
+<tk-meta id="g-tabs" label="Tabs" isContainer>
+  <template>
+    <g-tabs selected="0">
+      <span>One</span>
+      <span>Two</span>
+      <span>Three</span>
+      <span>Four</span>
+    </g-tabs>
+  </template>
+</tk-meta>
+
+<tk-meta id="g-ratings" label="Ratings"></tk-meta>
+
+<tk-meta id="g-togglebutton" label="Toggle Button"></tk-meta>
+
+<tk-meta id="g-menu" label="Menu" isContainer>
+  <template>
+    <g-menu selected="0" style="background-color: #fff;">
+      <g-menu-item src="images/comment.png">Post a Comment</g-menu-item>
+      <g-menu-item src="images/hangout.png">Share Link</g-menu-item>
+      <g-menu-item src="images/mail.png">Email Link</g-menu-item>
+      <g-menu-item src="images/favorite.png">Add to Favorites</g-menu-item>
+    </g-menu>
+  </template>
+</tk-meta>
+
+<tk-meta id="tk-blink" label="Blink">
+  <template>
+    <tk-blink></tk-blink>
+  </template>
+  <property name="animationName" hidden="true"></property>
+  <property name="targetLabel" hidden="true"></property>
+  <property name="targetSelector" kind="target-select"></property>
+</tk-meta>
+
+<tk-meta id="tk-bounce" label="Bounce">
+  <template>
+    <tk-bounce></tk-bounce>
+  </template>
+  <property name="animationName" hidden="true"></property>
+  <property name="targetLabel" hidden="true"></property>
+  <property name="targetSelector" kind="target-select"></property>
+</tk-meta>
+
+<tk-meta id="tk-flip" label="Flip">
+  <template>
+    <tk-flip></tk-flip>
+  </template>
+  <property name="animationName" hidden="true"></property>
+  <property name="targetLabel" hidden="true"></property>
+  <property name="targetSelector" kind="target-select"></property>
+</tk-meta>
+
+<tk-meta id="tk-shake" label="Shake">
+  <template>
+    <tk-shake></tk-shake>
+  </template>
+  <property name="animationName" hidden="true"></property>
+  <property name="targetLabel" hidden="true"></property>
+  <property name="targetSelector" kind="target-select"></property>
+  <property name="type" hidden="true"></property>
+</tk-meta>
+
+<tk-meta id="animation-group" label="Animation Group" isContainer>
+  <template>
+    <animation-group style="border: 1px dotted silver; padding: 8px">
+      <tk-bounce targetSelector="#toolbar"></tk-bounce>
+      <tk-flip targetSelector="#menu"></tk-flip>
+      <tk-shake targetSelector="#x_stock"></tk-shake>
+    </animation-group>
+  </template>
+  <property name="type" kind="select" options="par,seq"></property>
+  <property name="targetSelector" hidden="true"></property>
+</tk-meta>
+
+<tk-meta id="pdf-js" label="PDF Reader">
+  <template>
+    <pdf-js src="chaucer.pdf"></pdf-js>
+  </template>
+</tk-meta>
+
+<tk-meta id="polymer-ui-stock" label="Market">
+  <template>
+    <polymer-ui-stock style="color: rgba(250, 250, 250, 0.8); Xbackground-color: #777; width: 320px; height: 320px; border: 2px solid rgba(32, 32, 32, 0.6);"></polymer-ui-stock>
+  </template>
+</tk-meta>
+
+<tk-meta id="polymer-ui-clock" label="Clock">
+  <template>
+    <polymer-ui-clock style="color: rgba(250, 250, 250, 0.8); Xbackground-color: #777; width: 320px; height: 320px; border: 2px solid rgba(32, 32, 32, 0.6);"></polymer-ui-clock>
+  </template>
+</tk-meta>
+
+<tk-meta id="polymer-ui-weather" label="Weather">
+  <template>
+    <polymer-ui-weather style="color: rgba(250, 250, 250, 0.8); Xbackground-color: #777; width: 320px; height: 320px; border: 2px solid rgba(32, 32, 32, 0.6);"></polymer-ui-weather>
+  </template>
+</tk-meta>
+
+<tk-meta id="chart-js" label="Chart.js">
+  <property name="kind" kind="select" options="Bar,Line,Radar,Pie,PolarArea,Doughnut"></property>
+  <property name="color" kind="color"></property>
+  <property name="data" kind="string"></property>
+</tk-meta>
+
+<tk-meta id="yt-search-video" label="Youtube">
+  <template>
+    <yt-search-video ImFeelingLucky="" muted="true" style="width: 400px; height: 300px;"></yt-search-video>
+  </template>
+</tk-meta>
+
+<tk-meta id="input" label="Speech Input">
+  <template>
+    <input x-webkit-speech style="height: 20px; padding: 4px;" />
+  </template>
+  <property name="value"></property>
+</tk-meta>
+
+<tk-meta id="speech-transcript" label="Speech Transcript">
+  <template>
+    <speech-transcript style="width: 300px; height: 140px; font-size: 24px; overflow: auto; padding: 4px; background: white; border: 1px solid #ddd;"></speech-transcript>
+  </template>
+</tk-meta>
+
+<tk-meta id="ajaxorg-ace" label="Ace Editor">
+  <template>
+    <ajaxorg-ace style="border: 1px dotted silver; width: 300px; height: 200px;"></ajaxorg-ace>
+  </template>
+</tk-meta>
+
+<tk-meta id="section" label="Panel" isContainer>
+  <template>
+    <section style="background-color: whitesmoke; border: 1px solid silver; min-width: 300px; min-height: 300px;"></section>
+  </template>
+</tk-meta>
+
+<tk-meta id="tk-color-editor" label="Color Editor">
+  <template>
+    <tk-color-editor style="width: 200px;"></tk-color-editor>
+  </template>
+</tk-meta>
+
+<tk-meta id="tk-range-editor" label="Range Editor">
+  <template>
+    <tk-range-editor style="width: 200px;"></tk-range-editor>
+  </template>
+</tk-meta>
+
+<!-- <tk-meta id="content" label="Insertion Point">
+  <template>
+    <content><content>
+  </template>
+  <property name="select"></property>
+</tk-meta> -->
+
+<tk-meta id="x-stock" label="Stock">
+  <template>
+    <x-stock symbol="GOOG" style="background-color: #fff"></x-stock>
+  </template>
+</tk-meta>
+
+<tk-meta id="wu-weather" label="Weather Underground">
+  <template>
+    <wu-weather style="background-color: #fff"></wu-weather>
+  </template>
+</tk-meta>
+
+<tk-meta id="x-coolclock" label="CoolClock"></tk-meta>
+
+<tk-meta id="g-ajax" label="Ajax">
+  <template>
+    <g-ajax style="border: 1px dotted silver; padding: 8px;">Ajax</g-ajax>
+  </template>
+  <property name="handleAs" kind="select" options="json,text,xml"></property>
+</tk-meta>
+
+<tk-meta id="tk-app" label="Sandbox App">
+  <template>
+    <tk-app style="width: 900px; height: 600px;" startMode="normal"></tk-app>
+  </template>
+</tk-meta>
+
+<tk-meta id="humane-js" label="Notification">
+  <template>
+    <humane-js onclick="log()" style="border: 2px dotted gray; background-color: whitesmoke; padding: 12px;">Notification</humane-js>
+  </template>
+  <property name="theme" kind="select" options="jackedup,bigbox,boldlight,libnotify,original"></property>
+  <property name="textContent" kind="text"></property>
+</tk-meta>
+
+<tk-meta id="smoothie-chart" label="Smoothie Chart"></tk-meta>
+
+<tk-meta id="marked-js" label="Markdown Renderer">
+  <template>
+    <marked-js text="## Markdown is Awesome\n\n* List\n* Of\n* Items\n\nExample:\n        exampleCode();\n\n__Nifty__ is a _word_."></marked-js>
+  </template>
+  <property name="text" kind="text"></property>
+</tk-meta>
+
+<tk-meta id="pixi-js" label="Pixi-js">
+  <template>
+    <pixi-js style="width: 300px; height: 200px; border: 2px solid orange;"></pixi-js>
+  </template>
+</tk-meta>
+
+<tk-meta id="run-pixi-run" label="Run Pixi Run">
+  <template>
+    <iframe style="width: 400px; height: 300px;" src="http://www.goodboydigital.com/runpixierun/"></iframe>
+  </template>
+</tk-meta>
+
+<!-- <tk-meta id="pi-app" label="Pica">
+  <template>
+    <pi-app></pi-app>
+  </template>
+  <template id="imports">
+    <link rel="import" href="../../projects/pica/components/pi-app.html">
+  </template>
+</tk-meta> -->
+
+<tk-meta id="design-element" isHidden>
+  <property name="textContent" hidden="true"></property>
+  <property name="id" hidden="true"></property>
+  <property name="defaultSource" hidden="true"></property>
+</tk-meta>
+
+<!-- x-tags -->
+
+<tk-meta id="x-switch" label="X-Switch" hideSubtree="true">
+  <template>
+    <x-switch onText="✔" offText=" "></x-switch>
+  </template>
+  <property name="checked"></property>
+  <property name="onText"></property>
+  <property name="offText"></property>
+</tk-meta>
+
+<tk-meta id="x-spinner" label="X-Spinner" hideSubtree="true">
+  <template>
+    <x-spinner label="Wait..."></x-spinner>
+  </template>
+</tk-meta>
+
+<tk-meta id="x-toggle-group" label="X-Toggle Checks">
+  <template>
+    <x-toggle-group>
+      <x-toggle label="Alpha" group="group1" checked></x-toggle>
+      <x-toggle label="Beta" group="group1"></x-toggle>
+      <x-toggle label="Gamma" group="group1"></x-toggle>
+      <x-toggle label="Delta" group="group1"></x-toggle>
+      <x-toggle label="Epsilon" group="group1"></x-toggle>
+    </x-toggle-group>
+  </template>
+</tk-meta>
+
+<tk-meta id="form" label="X-Toggle Radios">
+  <template>
+    <form>
+      <x-toggle label="One" name="test2" checked></x-toggle>
+      <x-toggle label="Two" name="test2"></x-toggle>
+      <x-toggle label="Three" name="test2"></x-toggle>
+    </form>  
+  </template>
+  <property name="checked" type="boolean"></property>
+</tk-meta>
+
+<tk-meta id="x-toggle" isHidden hideSubtree="true">
+  <property name="checked" type="boolean"></property>
+  <property name="name"></property>
+  <property name="label"></property>
+</tk-meta>

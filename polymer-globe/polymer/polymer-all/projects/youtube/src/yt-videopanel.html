@@ -1,0 +1,42 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<link rel="import" href="../../../toolkit-ui/elements/g-toolbar.html">
+<link rel="import" href="../../../more-elements/Youtube/yt-video.html"/>
+<polymer-element name="yt-videopanel" attributes="video">
+  <template>
+    <style>
+    	.title {
+    	  text-align: center;
+    	}
+
+    	yt-video {
+    	  display: block;
+        position: relative;
+    	  -webkit-box-flex: 1;
+    	  -webkit-flex: 1;
+        flex: 1;
+    	  min-height: 0;
+    	}
+    </style>
+    <g-toolbar>
+      <content select=".left"></content>
+      <div class="flex title">
+        <template bind="{{}}" if="{{video}}">
+          {{video.title.$t}}
+        </template>
+      </div>
+      <content select="*"></content>
+    </g-toolbar>
+    <yt-video videoEntry="{{video}}"></yt-video>
+  </template>
+  <script>
+    Polymer('yt-videopanel', {
+      video: null
+    });
+  </script>
+</polymer-element>

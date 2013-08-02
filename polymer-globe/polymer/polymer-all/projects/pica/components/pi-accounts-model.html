@@ -1,0 +1,126 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<polymer-element name="pi-accounts-model" attributes="topics categories stocks">
+  <script>
+    (function() {
+      var DEFAULT_TOPICS = [
+        {title: 'Technology', feed: [
+          {title: 'The Verge', feed: 'http://www.theverge.com/rss/index.xml'},
+          {title: 'Engadget', feed: 'http://feeds.engadget.com/weblogsinc/engadget'}]},
+        {title: 'Sports', feed: [
+          {title: 'Deadspin', feed: 'http://feeds.gawker.com/deadspin/full'}]},
+        {title: 'Music', feed: [
+          {title: 'Indie Shuffle', feed: 'http://feeds.feedburner.com/indieshuffle'},
+          {title: 'Create Digital Music', feed: 'http://createdigitalmusic.com/feed/'}]},
+        {title: 'Art', feed: [
+          {title: 'Wooster Collective', feed: 'http://feeds.feedburner.com/wooster'},
+          {title: 'Doodlers Anonymous', feed: 'http://feeds.feedburner.com/DoodlersAnonymous'},
+          {title: 'but does it float', feed: 'http://feeds2.feedburner.com/ButDoesItFloat?format=xml'}]},
+        {title: 'Fashion', feed: [
+          {title: 'Hybebeast', feed: 'http://feeds.feedburner.com/hypebeast/feed'}]},
+        {title: 'Architecture', feed: [
+          {title: 'Dezeen', feed: 'http://feeds.feedburner.com/dezeen'},
+          {title: 'Design Milk Architecutre', feed: 'http://feeds.feedburner.com/DesignMilkArchitecture'}]},
+        {title: 'Design', feed: [
+          {title: 'Design Milk', feed: 'http://feeds.feedburner.com/design-milk'},
+          {title: 'Yummy Fresh grain', feed: 'http://feeds.feedburner.com/GrainEdit'},
+          {title: 'Designspiration', feed: 'http://feeds.feedburner.com/dspn'}]},
+        {title: 'Food', feed: [
+          {title: 'The Kitchn', feed: 'http://feeds.thekitchn.com/apartmenttherapy/thekitchn'},
+          {title: 'Scanwiches', feed: 'http://scanwiches.com/rss'}]}
+      ];
+      
+      var DEFAULT_CATEGORIES = ['Technology', 'Sports', 'Music', 'Art', 'Fashion', 'Architecture', 'Design', 'Food'];
+      
+      var DEFAULT_STOCKS = ['GOOG', 'AAPL'];
+      
+      var ACCOUNTS_STORAGE_NAME = 'pica-accounts-model-1';
+      
+      Polymer('pi-accounts-model', {
+        ready: function() {
+          this.load();
+        },
+        addTopic: function(topic) {
+          this.addItem(this.topics, topic);
+          this.updateTopics();
+        },
+        removeTopic: function(topic) {
+          this.removeItem(this.topics, topic);
+          this.updateTopics();
+        },
+        addFeed: function(feed) {
+          for (var i=0, t; t = this.topics[i]; i++) {
+            if (t.title === feed.category) {
+              t.feed.push({title: feed.title, feed: feed.feed});
+              this.save();
+              return;
+            }
+          }
+          this.addTopic({title: feed.category,
+            feed: [{title: feed.title, feed: feed.feed}]});
+        },
+        removeFeed: function(feed) {
+          this.topics.forEach(function(t) {
+            if (t.feed) {
+              this.removeItem(t.feed, feed);
+            }
+          }.bind(this));
+        },
+        addCategory: function(category) {
+          this.addItem(this.categories, category);
+        },
+        removeCategory: function(category) {
+          this.removeItem(this.categories, category);
+        },
+        addStock: function(stock) {
+          this.addItem(this.stocks, stock);
+        },
+        removeStock: function(stock) {
+          this.removeItem(this.stocks, stock);
+        },
+        reset: function() {
+          this.topics = DEFAULT_TOPICS.slice(0);
+          this.categories = DEFAULT_CATEGORIES.slice(0);
+          this.stocks = DEFAULT_STOCKS.slice(0);
+          this.save();
+          this.load();
+        },
+        addItem: function(items, item) {
+          items.push(item);
+          this.save();
+        },
+        removeItem: function(items, item) {
+          var i = items.indexOf(item);
+          if (i >= 0) {
+            items.splice(i, 1);
+          }
+          this.save();
+        },
+        load: function() {
+          var s = window.localStorage.getItem(ACCOUNTS_STORAGE_NAME);
+          if (s) {
+            var a = JSON.parse(s);
+            this.topics = a.topics;
+            this.categories = a.categories;
+            this.stocks = a.stocks;
+          } else {
+            this.reset();
+          }
+        },
+        save: function() {
+          window.localStorage.setItem(ACCOUNTS_STORAGE_NAME, JSON.stringify({
+            topics: this.topics, categories: this.categories, stocks: this.stocks}));
+        },
+        updateTopics: function() {
+          // force to mutate topics to trigger property changed (e.g. itemsChanged in pi-items-view)
+          this.topics = this.topics.slice(0);
+        }
+      });
+    })();
+  </script>
+</polymer-element>

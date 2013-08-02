@@ -1,0 +1,56 @@
+﻿
+<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>Theming</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- load polymer -->
+    <script src="../../../polymer/polymer.js"></script>
+    <!-- -->
+    <link rel="import" href="simple-app.html">
+    <!-- -->
+    <link rel="stylesheet" href="../../../polymer-ui-elements/basic.css">
+    <style>
+      .turf-bg {
+        background-image: url('https://ssl.gstatic.com/ui/v1/icons/mail/themes/turf/bg3_1920x1200.jpg');
+        color: white;
+      }
+      
+      .cherry-bg {
+        background-image: url('https://mail.google.com/mail/u/0/images/2/5/cherry/bg-main.png');
+      }
+    </style>
+  </head>
+  <body class="polymer-ui-body-text">
+    <!-- 
+    <simple-app class="polymer-ui-fit" theme="polymer-ui-dark-theme"></simple-app>
+    <simple-app class="polymer-ui-fit" theme="polymer-ui-light-theme"></simple-app>
+    <simple-app class="polymer-ui-fit turf-theme" theme="polymer-ui-light-icon"></simple-app>
+    <simple-app class="polymer-ui-fit cherry-theme" theme="polymer-ui-dark-icon"></simple-app>
+    -->
+    
+    <template bind>
+      <simple-app class="polymer-ui-fit {{bg}}" theme="{{theme}}"></simple-app>
+    </template>
+    
+    <script>
+      var themes = {
+        dark: {theme: 'polymer-ui-dark-theme'},
+        light: {theme: 'polymer-ui-light-theme'},
+        turf: {theme: 'polymer-ui-light-icon', bg: 'turf-bg'},
+        cherry: {theme: 'polymer-ui-dark-icon', bg: 'cherry-bg'}
+      };
+      
+      document.addEventListener('WebComponentsReady', function() {
+        document.querySelector('template').model = 
+            themes[Polymer.flags.theme] || themes.dark;
+      });
+    </script>
+  </body>
+</html>

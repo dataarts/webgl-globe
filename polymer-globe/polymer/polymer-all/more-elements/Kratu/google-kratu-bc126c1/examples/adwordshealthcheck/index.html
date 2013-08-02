@@ -1,0 +1,74 @@
+<!doctype html>
+<!--
+Copyright 2013 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Kratu AdWords Health Analysis Sample</title>
+    <link rel="stylesheet" href="../../css/kratu.css">
+    <link rel="stylesheet" href="../../css/examples.css">
+    <script src='../../js/kratu.js'></script>
+    <script src='../../js/dataproviders/json.js'></script>
+    <script type="text/javascript">
+      /** Render a Kratu report showcasing the AdWords HealtCheck Example */
+      window.onload = function() {
+        'use strict';
+        var kratu = new Kratu();
+        var reportElm = document.getElementById('kratuReport');
+
+        kratu.setRenderElement(reportElm);
+
+        var jsonProvider = new KratuJsonProvider({forceReload: true});
+        jsonProvider.load('./aw_reportdefinition.json', setReport);
+
+        function setReport(report) {
+          kratu.setReportDefinition(report, loadData);
+        }
+        function loadData() {
+          jsonProvider.load('./aw_data.json', renderData);
+        }
+        function renderData(data) {
+          kratu.setEntities(data);
+          kratu.renderReport(addExportLinks);
+        }
+        function addExportLinks() {
+          window.URL = window.webkitURL || window.URL;
+          var blob = new Blob([kratu.getReportAs('csv')], {type: 'text/csv'});
+
+          var downloadLink = document.createElement('a');
+          downloadLink.innerText = 'Download CSV';
+          downloadLink.download = 'Report.csv';
+          downloadLink.classList.add('downloadLink');
+          downloadLink.href = window.URL.createObjectURL(blob);
+          downloadLink.dataset.downloadurl = [
+            'text/csv',
+            downloadLink.download,
+            downloadLink.href
+          ].join(':');
+
+          reportElm.appendChild(downloadLink);
+        }
+      };
+  </script>
+  <style type="text/css">
+  </style>
+  </head>
+  <body>
+    <div class="kratuLogo small"><a href="">k</a><span>powered by</span></div>
+    <h1>Kratu AdWords Health Check Sample</h1>
+    <div id="kratuReport"></div>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<link rel="import" href="../../../polymer-elements/polymer-page/polymer-page.html">
+<link rel="import" href="../../../polymer-elements/polymer-layout/polymer-layout.html">
+<link rel="import" href="../../../polymer-elements/polymer-layout/polymer-slide.html">
+
+<polymer-element name="sample-encapsulated">
+  <template>
+    <link rel="stylesheet" href="../../../polymer-ui-elements/basic.css">
+    <link rel="stylesheet" href="sample-encapsulated.css">
+    <polymer-layout></polymer-layout>
+
+    <section class="sidebar">
+      <polymer-slide id="slide" closed></polymer-slide>
+      <polymer-layout vertical></polymer-layout>
+
+      <section class="logo polymer-ui-dark-bg">
+        <content select="#logo"></content>
+      </section>
+      
+      <section fit>
+        <content select="#menu"></content>
+      </section>
+    </section>
+
+    <section fit>
+      <polymer-layout vertical></polymer-layout>
+
+      <section>
+        <content select="#toolbar"></content>
+      </section>
+
+      <section fit class="main polymer-ui-light-bg">
+        <content select="#main"></content>
+      </section>
+
+      <footer class="polymer-ui-light-bg">
+        <img src="polymer.svg"> Polymer
+      </footer>
+    </section>
+  </template>
+  <script>
+    Polymer('sample-encapsulated', {
+      toggle: function() {
+        this.$.slide.toggle();
+      }
+    });
+  </script>
+</polymer-element>

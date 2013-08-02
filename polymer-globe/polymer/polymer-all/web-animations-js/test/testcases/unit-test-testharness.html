@@ -1,0 +1,74 @@
+<!--
+Copyright 2013 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!DOCTYPE html>
+<script src="../bootstrap.js"></script>
+<script>
+"use strict";
+
+test(function() {
+  var element = document.createElement('span');
+  assert_styles(element, {},
+      'assert_styles should support an element with no parent');
+
+  document.body.appendChild(element);
+  var childCount = document.body.children.length;
+  assert_styles(element, {left: 'auto'});
+  assert_equals(childCount, document.body.children.length,
+      'assert_styles should not leave additional elements in the dom');
+}, 'assert_styles reference_element');
+
+test(function() {
+  try {
+    assert_styles(null, {});
+  } catch (e) {
+    assert_equals(e.message, "Expected Array, NodeList or Element but got null");
+    return;
+  }
+  assert_unreached();
+}, 'assert_styles invalid arguments');
+
+test(function() {
+  var element = document.createElement('span');
+  document.body.appendChild(element);
+  element.style.left = '-100px';
+  try {
+    assert_styles(element, {left: '100px'});
+  } catch(e) {
+    return;
+  }
+  assert_true(false);
+}, 'assert_styles should handle negative specified values');
+
+test(function() {
+  var element = document.createElement('span');
+  document.body.appendChild(element);
+  element.style.left = '100px';
+  try {
+    assert_styles(element, {left: '-100px'});
+  } catch(e) {
+    return;
+  }
+  assert_true(false);
+}, 'assert_styles should handle negative expected values');
+
+test(function() {
+  var element = document.createElement('span');
+  document.body.appendChild(element);
+  element.style.left = '-100px';
+  assert_styles(element, {left: '-100px'});
+}, 'assert_styles should handle negative values');
+
+</script>

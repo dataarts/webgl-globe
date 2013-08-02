@@ -1,0 +1,564 @@
+<!--
+Copyright 2012 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!DOCTYPE html>
+<style>
+
+#status-box {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  background: white;
+  border: 1px solid black;
+  padding-right: 5px;
+}
+
+h1 {
+  display: inline;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td {
+  border: 1px solid black;
+}
+
+iframe {
+  width: 800px;
+  height: 600px;
+}
+
+tbody {
+  color: gray;
+}
+
+/* Fail styles */
+tbody.fail {
+  color: red;
+}
+
+li.fail {
+  color: red;
+}
+
+
+/* Pass styles */
+tbody.pass {
+  color: green;
+}
+
+li.pass {
+  color: green;
+}
+
+/* No-test styles */
+tbody.no-tests {
+  color: #ff8a00;
+}
+
+
+</style>
+<script src="testcases.js"></script>
+
+<div id=status-box>
+<h1 id=status>Pending</h1>
+Loading: <span id=loading></span>
+Unstarted: <span id=unstarted></span>
+Running: <span id=running></span>
+Posting: <span id=posting></span>
+Finished: <span id=finished></span>
+</div>
+
+<table id="results"></table>
+
+<script>
+'use strict';
+
+(function() {
+window.finished = false;
+
+var results = [];
+
+if (/coverage/.test(window.location.hash)) {
+  // Trigger coverage runs for child tests.
+  window.__coverage__ = {};
+  // Share resources loaded by child tests to avoid instrumenting the same
+  // source file multiple times.
+  window.__resources__ = {original: {}};
+}
+
+
+/**
+ * Get the most accurate version of time possible.
+ *
+ * @return {number} Time as this very moment.
+ */
+function now() {
+  return performance.now();
+}
+
+/**
+ * Creates HTML elements in a table for a test.
+ *
+ * +-----------+------+-------+
+ * | Test Name | Link | Count |
+ * +-----------+------+-------+
+ * | Log of test run.         |
+ * +--------------------------+
+ * | iFrame containing test   |
+ * +--------------------------+
+ *
+ * @param {String} testName Name of the test suite being run.
+ * @param {String} testURL The url of the test suite.
+ * @return {Element} tbody containing newly created table rows.
+ */
+function createTestRows(testName, testURL) {
+  var tablegroup = document.createElement('tbody');
+  tablegroup.id = testName.replace('.', '-');
+
+  var basicInfoRow = document.createElement('tr');
+  basicInfoRow.className = 'info-row';
+  tablegroup.appendChild(basicInfoRow);
+  var iframeRow = document.createElement('tr');
+  tablegroup.appendChild(iframeRow);
+  var logRow = document.createElement('tr');
+  tablegroup.appendChild(logRow);
+
+  // Name
+  var header = document.createElement('h1');
+  header.textContent = testName;
+
+  var headerCell = document.createElement('td');
+  headerCell.appendChild(header);
+  basicInfoRow.appendChild(headerCell);
+
+  // Link
+  var link = document.createElement('a');
+  link.textContent = testName;
+  link.href = testURL;
+
+  var linkCell = document.createElement('td');
+  linkCell.appendChild(link);
+  basicInfoRow.appendChild(linkCell);
+
+  // Test count
+  var countCell = document.createElement('td');
+  countCell.className = 'count';
+  basicInfoRow.appendChild(countCell);
+
+  // Timing info
+  var timingCell = document.createElement('td');
+  timingCell.className = 'timing';
+  basicInfoRow.appendChild(timingCell);
+
+  // iframe containing a preview of object
+  var iframe = document.createElement('iframe');
+  iframe.src = testURL + '#message';
+
+  var iframeCell = document.createElement('td');
+  iframeCell.colSpan = '4';
+  iframeCell.appendChild(iframe);
+  iframeRow.appendChild(iframeCell);
+
+  // table row containing the complete test log
+  var logCell = document.createElement('td');
+  logCell.className = 'log';
+  logCell.colSpan = '4';
+  logRow.appendChild(logCell);
+
+  basicInfoRow.onclick = function() {
+    if (logRow.style.display == 'none') {
+      logRow.style.display = 'table-row';
+      iframeRow.style.display = 'table-row';
+    } else {
+      logRow.style.display = 'none';
+      iframeRow.style.display = 'none';
+    }
+  };
+  basicInfoRow.click();
+  return tablegroup;
+}
+
+/**
+ * Called when a test is started.
+ * @param {Element} test dom object representing the test. id will contain the
+ *    test name.
+ */
+function testStarted(test) {
+  test.start = now();
+}
+
+/**
+ * Called when a test is finished.
+ * @param {object} test dom object representing the test. id will contain the
+ *    test name.
+ */
+function testFinished(test) {
+  test.finished = now();
+  test.querySelector('.timing').textContent = (test.finished - test.start).toFixed(2) + 'ms';
+}
+
+/* @type {?number} */ var intervalId = null;
+
+/**
+ * Checks all the tests are in the unstarted state and then kicks of running
+ * the tests.
+ */
+function runTestsIfLoaded() {
+  if (loadingTests.length != 0)
+    return;
+
+  intervalId = window.setInterval(runTests, 10);
+}
+
+/**
+ * Checks all the tests are in the finished state and then marks the whole test
+ * as finished and stops the periodic javascript functions.
+ */
+function haveAllTestsFinished() {
+  if (finishedTests.length != tests.length)
+    return;
+
+  window.clearInterval(intervalId);
+  window.finished = true;
+  if (window.__coverage__) {
+    generateCoverageReport();
+  }
+}
+
+function generateCoverageReport() {
+  // TODO: generate a pretty report, prompt to save the JSON, post it somewhere
+  for (var file in window.__coverage__) {
+    var results = window.__coverage__[file];
+    var hits = 0;
+    var statements = 0;
+    for (var stmt in results.s) {
+      statements++;
+      if (results.s[stmt] > 0) {
+        hits++;
+      }
+    }
+    var percent = (100 * hits / statements).toFixed(2);
+    console.log(file + ' statement coverage ' +
+        percent + '% (' + hits + '/' + statements + ')');
+  }
+}
+
+
+/**
+ * These lists show track which state a test is in. An individual test should
+ * only ever be in one of the lists. You use the changeTestState() function to
+ * move from one state to another.
+ *
+ * Tests start off in the loading state, the move downwards until ending up in
+ * the finished state.
+ */
+/* @type {Array.<Element>} */ var loadingTests = [];
+/* @type {Array.<Element>} */ var unstartedTests = [];
+/* @type {Array.<Element>} */ var runningTests = [];
+/* @type {Array.<Element>} */ var postingTests = [];
+/* @type {Array.<Element>} */ var finishedTests = [];
+
+/**
+ * Enum for state values.
+ * @enum {number}
+ */
+var States = {
+  LOADING: 1,    /* Test which is being loaded. */
+  UNSTARTED: 2,  /* Test which have yet to start. */
+  RUNNING: 3,    /* Test that is currently running. */
+  POSTING: 4,    /* Test that is currently posting results to server. */
+  FINISHED: 5,   /* Test which has completed. */
+  TIMEOUT: 6,    /* Test which has timed out rather then completed. */
+};
+
+/**
+ * Changes the state of the given test to the given state.
+ * This function doesn't check that the state transition actually make sense.
+ *
+ * @param {Element} test DOM object representing the test. The id will contain
+ *     the test name.
+ * @param {States} The new state to transition too.
+ */
+function changeTestState(test, newState) {
+  var i = null;
+
+  // Remove the test object form all the queues.
+  i = loadingTests.indexOf(test);
+  if (i >= 0) {
+    loadingTests.splice(i, 1);
+  }
+  i = unstartedTests.indexOf(test);
+  if (i >= 0) {
+    unstartedTests.splice(i, 1);
+  }
+  i = runningTests.indexOf(test);
+  if (i >= 0) {
+    runningTests.splice(i, 1);
+    testFinished(test);
+  }
+  i = postingTests.indexOf(test);
+  if (i >= 0) {
+    postingTests.splice(i, 1);
+  }
+
+  switch(newState) {
+  case States.LOADING:
+    loadingTests.unshift(test);
+    runTestsIfLoaded();
+    break;
+  case States.UNSTARTED:
+    unstartedTests.unshift(test);
+    break;
+  case States.RUNNING:
+    testStarted(test);
+    runningTests.unshift(test);
+    break;
+  case States.POSTING:
+    postingTests.unshift(test);
+    break;
+  case States.FINISHED:
+  case States.TIMEOUT:
+    finishedTests.unshift(test);
+    break;
+  }
+
+  function testSort(a, b) {
+    return a.id.localeCompare(b.id);
+  }
+
+  // Sort the lists just to be nice and provide a reliable execution order.
+  loadingTests.sort(testSort);
+  unstartedTests.sort(testSort);
+  runningTests.sort(testSort);
+  postingTests.sort(testSort);
+}
+
+/**
+ * Elements for reporting the overall status.
+ */
+/* @type {Element} */ var statusElement = document.querySelector('#status');
+/* @type {Element} */ var loadingElement = document.querySelector('#loading');
+/* @type {Element} */ var unstartedElement = document.querySelector('#unstarted');
+/* @type {Element} */ var runningElement = document.querySelector('#running');
+/* @type {Element} */ var postingElement = document.querySelector('#posting');
+/* @type {Element} */ var finishedElement = document.querySelector('#finished');
+
+/* @type {?number} */ var statusIntervalId = null;
+
+/**
+ * Update the status dialog with information about the current status.
+ */
+function updateStatus() {
+  loadingElement.textContent = loadingTests.length;
+  unstartedElement.textContent = unstartedTests.length;
+  runningElement.textContent = runningTests.length;
+  postingElement.textContent = postingTests.length;
+  finishedElement.textContent = finishedTests.length;
+
+  if (loadingElement.length > 0) {
+    statusElement.textContent = 'Loading';
+  } else if (runningTests.length > 0) {
+    statusElement.textContent = 'Running';
+  } else if (postingTests.length > 0) {
+    statusElement.textContent = 'Posting results';
+  } else if (finishedTests.length == tests.length) {
+    statusElement.textContent = 'Finished';
+    window.clearInterval(statusIntervalId);
+  }
+
+  haveAllTestsFinished();
+}
+
+
+/**
+ * Create the iframes for each test.
+ */
+window.onload = function createTestRunners() {
+  statusIntervalId = window.setInterval(updateStatus, 10);
+
+  // Filter the tests
+  var filter = window.location.href.split('?')[1];
+  if (filter) {
+    filter = new RegExp(filter);
+    tests = tests.filter(function(v) {
+        return filter.exec(v);
+      });
+  }
+
+  for (var i = 0; i < tests.length; i++) {
+    var testName = tests[i];
+    var testURL = 'testcases/' + testName;
+
+    var test = createTestRows(testName, testURL);
+    changeTestState(test, States.LOADING);
+
+    document.querySelector('#results').appendChild(test);
+    test.querySelector('iframe').contentWindow.onload = function() {
+      changeTestState(this, States.UNSTARTED);
+      runTestsIfLoaded();
+    }.bind(test);
+
+  }
+};
+
+var maxParallel = 1;
+
+/**
+ * Start as many unstarted tests as possible, wait for results and then post
+ * them.
+ */
+function runTests() {
+  // Start as many unstarted tests as possible
+  while (unstartedTests.length > 0 && runningTests.length < maxParallel) {
+    // Move from unstarted to running state
+    var test = unstartedTests[0];
+    changeTestState(test, States.RUNNING);
+
+    var testWindow = test.querySelector('iframe').contentWindow;
+    var msg = {'type': 'start', 'url': testWindow.location.href + ''};
+    testWindow.postMessage(msg, '*');
+  }
+
+  for (var i in runningTests) {
+    var running = runningTests[i];
+    if (now() - running.start > 5000) {
+      // Test has timed out or stuck in some way...
+      changeTestState(running, States.TIMEOUT);
+    }
+  }
+}
+
+var shouldPostResults = true;
+
+/* @type {Object.<string, Object>} */ var testResults = {};
+/**
+ * Callback that occurs when the test has finished running.
+ */
+window.addEventListener(
+  'message',
+  function(evt) {
+    var testname = evt.source.location.pathname.split('/').pop().replace('.', '-');
+    var test = document.getElementById(testname);
+
+    // We only respond to complete as postMessage doesn't guarantee order so
+    // result messages can come in after the complete message.
+    if (evt.data['type'] != 'complete')
+       return;
+
+    var result = processResults(test, evt.data['tests']);
+    if (result && shouldPostResults) {
+      // Move from running to posting state
+      changeTestState(test, States.POSTING);
+
+      var data = new FormData();
+      data.append('data', JSON.stringify(result));
+
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function (e) {
+        if (e.target.status >= 400) {
+          shouldPostResults = false;
+        }
+        // Move from running to finished state
+        changeTestState(this, States.FINISHED);
+      }.bind(test);
+      xhr.open('POST', 'test-results-post.html', true);
+      xhr.send(data);
+    } else {
+      // Move directly to finished state
+      changeTestState(test, States.FINISHED);
+    }
+
+  },
+  false);
+
+
+/**
+ * Processes the test's results and put the information into the test object.
+ *
+ * @param {Element} test DOM object representing the test.
+ * @param {Array.<Object>} results List of testharness.js result objects.
+ */
+function processResults(test, results) {
+  function trueOffsetTop(element) {
+    var t = 0;
+    if (element.offsetParent) {
+      do {
+        t += element.offsetTop;
+      } while (element = element.offsetParent);
+    return [t];
+    }
+  }
+
+  var logElement = test.querySelector('.log');
+
+  var newResultsDiv = document.createElement('ul');
+  for (var x in results) {
+    var output = document.createElement('li');
+    output.innerHTML += results[x].name + ' ';
+
+    var grade = 'fail';
+    if (results[x].status == 0) {
+      grade = 'pass';
+    }
+    output.className = grade;
+
+    output.innerHTML += grade + ' ';
+    if (results[x].message != null) {
+      output.innerHTML += results[x].message;
+    }
+    newResultsDiv.appendChild(output);
+  }
+  logElement.appendChild(newResultsDiv);
+
+  if (results.length > 0) {
+    var testResult = {
+      type: 'result',
+      testName: test.id,
+      results: results,
+    };
+
+    var passed = results.filter(function(result) {
+      return result.status == 0;
+    }).length;
+    var failed = results.length - passed;
+
+    if (!failed) {
+      test.className = 'pass';
+    } else {
+      test.className = 'fail';
+
+      // Open up the window of the failed result
+      test.querySelector('.info-row').click();
+      // Scroll to it.
+      window.scroll(0, trueOffsetTop(test));
+    }
+
+    var count = test.querySelector('.count');
+    count.textContent = passed + ' of ' + results.length + ' passed';
+
+    var log = test.querySelector('.log');
+    return testResult;
+  } else {
+    test.className = 'no-tests';
+  }
+}
+
+})();
+
+
+</script>

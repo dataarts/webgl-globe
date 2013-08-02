@@ -1,0 +1,1 @@
+This is a Polymer port/implementation of https://github.com/IgorMinar/Memory-Game.

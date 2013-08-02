@@ -1,0 +1,24 @@
+#menu {
+  height: 100%;
+}
+
+#main {
+  padding: 8px;
+  font-size: 16px;
+  overflow-y: auto !important;
+}
+
+#main, #menu {
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+}
+
+a, a:active, a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  width: 32px;
+  vertical-align: middle;
+}

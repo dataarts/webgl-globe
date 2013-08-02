@@ -1,0 +1,16 @@
+{
+  "signalDefinitionUrl":"./spaceships_signaldefinition.js",
+  "signals": [
+    {"key":"name", "name" : "Name"},
+    {"key":"model", "name" : "Model"},
+    {"key":"imageUrl", "name" : "Image"},
+    {"key":"cost", "name" : "Cost", "weight":100},
+    {"key":"resellValueDrop", "name" : "Resell Value Drop", "weight" : 80, "lMax" : 20, "lMin" : 50},
+    {"key":"engineSize", "name" : "Engine Size", "weight" : 10},
+    {"key":"propulsionType", "name" : "Propulsion Type", "weight" : 100, "lMin" : 0, "lMax" : 100},
+    {"key":"hyperdrive", "name" : "Hyperdrive", "weight" : 40, "hMin" : 0, "hMax" : 1},
+    {"key":"kesselRunRecord", "name" : "Kessel Run Record", "weight":20},
+    {"key":"freightCapacity", "name" : "Freight Capacity", "weight":30},
+    {"key":"passengerCapacity", "name" : "Passenger Capacity", "weight":40}
+    ]
+}

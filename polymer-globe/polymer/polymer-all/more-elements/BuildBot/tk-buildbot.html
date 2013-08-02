@@ -1,0 +1,146 @@
+<link rel="import" href="../../toolkit-ui/elements/g-ajax.html">
+<polymer-element name="tk-buildbot">
+  <template>
+    <style>
+      * {
+        font-family: 'Helvetica Neue', Helvetica, sans-serif;
+      }
+      .status.inactive,
+      .result.inactive {
+        background-color: #b1b1b1;
+      }
+      .result.failed {
+        background-color: #d84437;
+      }
+      .result.passed {
+        background-color: #00a95c;
+      }
+      .badge {
+        display: inline;
+        color: #7f7f7f;
+        text-transform: uppercase;
+        font-size: 10px;
+        border: 1px solid #7f7f7f;
+        border-radius: 2px;
+        padding: 3px 1px 3px 2px;
+        width: auto;
+      }
+      .badge .result {
+        color: white;
+        padding: 2px 10px;
+      }
+      .details {
+        display: none;
+      }
+      .details.visible {
+        display: block;
+      }
+      .details a {
+        font-size: 12px;
+      }
+      ul {
+        list-style-type: none;
+      }
+      li {
+        margin: 10px;
+      }
+      .label.status,
+      .label.result {
+        color: white;
+        font-size: 11px;
+        text-align: center;
+        border-radius: 3px;
+        padding: 3px 10px;
+      }
+      .label.status {
+        display: inline-block;
+        margin-left: 5px;
+      }
+      .label.result {
+        float: left;
+        margin-right: 5px;
+      }
+    </style>
+    <g-ajax id="bbot" handleAs="json" on-response="response"></g-ajax>
+    <div class="badge" on-click="toggleDetails">
+      <span class="builder">{{builder}}</span>
+      <span class="result {{result.resultStr}}">{{result.resultStr}}</span>
+    </div>
+    <div id="details" class="details">
+      <h3>
+        {{builder}}
+        <template bind="{{inactive}}" if="{{inactive}}">
+          <div class="label status inactive">inactive</div>
+        </template>
+        <a href="{{url}}/builders/{{builder}}/builds/{{result.number}}" target="_blank">(latest test)</a>
+        <a href="{{url}}" target="_blank">(main page)</a>
+      </h3>
+      <ul>
+        <template repeat={{browsers}}>
+          <li>
+            <div class="label result {{result}}">{{result}}</div>
+            {{browser}}
+          </li>
+        </template>
+      </ul>
+    </div>
+  </template>
+  <script>
+    Polymer('tk-buildbot', {
+      publish: {
+        details: false,
+        builder: null,
+        inactive: false,
+        browsers: null
+      },
+      url: 'http://build.chromium.org/p/client.polymer',
+      detailsChanged: function() {
+        this.$.details.classList.toggle('visible', this.details);
+      },
+      builderChanged: function() {
+        if (this.inactive) {
+          return;
+        }
+        if (this.builder) {
+          this.$.bbot.url = this.url + '/json/builders/' + this.builder + '/builds/-1';
+          this.$.bbot.go();
+        }
+      },
+      inactiveChanged: function() {
+        if (this.inactive) {
+          this.result = {
+            resultStr: 'inactive'
+          };
+        }
+      },
+      response: function(inEvent, inResponse) {
+        console.log(inResponse);
+        this.result = inResponse.response;
+        this.result.resultStr = this.result.results ? 'failed' : 'passed';
+        var steps = inResponse.response.steps;
+        var foundTest = false;
+        var browsers = [];
+        for (var i = 0, s; s = steps[i]; i++) {
+          if (foundTest) {
+            // FIXME munge the data because I'm not sure how to access
+            // array elements from mdv...
+            browsers.push({
+              'browser': s.text,
+              'result': s.results[0] ? 'failed' : 'passed'
+            });
+          }
+          if (s.name == 'test') {
+            foundTest = true;
+          }
+        }
+        this.browsers = browsers;
+      },
+      toggleDetails: function() {
+        if (this.inactive) {
+          return;
+        }
+        this.details = !this.details;
+      }
+    });
+  </script>
+</polymer-element>

@@ -1,0 +1,53 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<polymer-element name="pi-story" attributes="story">
+  <template>
+    <link rel="stylesheet" href="css/pi-story.css" />
+    <div class="main" touch-action="pan-y">
+      <div class="body">
+        <div class="title">{{story.title}}</div>
+        <div class="author">by {{story.author}} on {{story.publishedLocaleDate}}</div>
+        <div id="content" class="content"></div>
+      </div>
+    </div>
+    <div class="source-bar">
+      <div class="source-icon" style="background-image: url({{story.sourceIcon}});"></div>
+      <div class="source-title">{{story.source}}
+        <span class="source-time">{{story.since}}</span>
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer('pi-story', {
+      content: '',
+      ready: function() {
+        if (!this.hasAttribute('tabindex')) {
+          this.tabIndex = -1;
+        }
+      },
+      storyChanged: function() {
+        var c = this.story && this.story.content;
+        if (c) {
+          this.content = c;
+          if (!this.story.publishedLocaleDate) {
+            var d = new Date(this.story.publishedDate);
+            this.story.publishedLocaleDate = d.toLocaleString();
+          }
+        }
+      },
+      contentChanged: function() {
+        var content = this.content || '';
+        if (content) {
+          content = content.replace(/(<iframe.*?>.*?<\/iframe>)/g, '');
+          content = content.replace(/<a/g, '<a target="' + this.targetWindow + '" ');
+        }
+        this.$.content.innerHTML = content;
+      }
+    });
+  </script>
+</polymer-element>

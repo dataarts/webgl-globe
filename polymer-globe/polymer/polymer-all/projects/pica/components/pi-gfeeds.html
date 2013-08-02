@@ -1,0 +1,82 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<polymer-element name="pi-gfeeds" attributes="feed query results loading count">
+  <script>
+    (function() {
+      var feedsAreReady = false;
+      var pendingFeeds = [];
+      
+      var feedsReady = function() {
+        feedsAreReady = true;
+        pendingFeeds.forEach(function(cb) {
+          cb();
+        });
+        pendingFeeds = null;
+      };
+      
+      var XGFeeds = {
+        require: function(inCb) {
+          if (feedsAreReady) {
+            inCb();
+          } else {
+            pendingFeeds.push(inCb);
+          }
+        }
+      };
+      
+      google.load('feeds', '1', {callback: feedsReady.bind(this)});
+      
+      Polymer('pi-gfeeds', {
+        count: 24,
+        feedChanged: function() {
+          if (this.feed) {
+            this.loading = true;
+            // call fetchFeeds async to make sure any binding to count property is resolved
+            // before fetchFeeds is called
+            XGFeeds.require(this.asyncMethod.bind(this, 'fetchFeeds'));
+          } else {
+            this.results = null;
+          }
+        },
+        fetchFeeds: function() {
+          var feed = new google.feeds.Feed(this.feed);
+          feed.includeHistoricalEntries(); // tell the API we want to have old entries too
+          feed.setNumEntries(this.count); // we want this maximum number of entries, if they exist
+          feed.load(this.fetchFeedsDone.bind(this));
+        },
+        fetchFeedsDone: function(results) {
+          this.loading = false;
+          if (results.error) {
+            this.results = {};
+            this.fire('error', {status: results.status});
+          } else {
+            this.results = results.feed;
+            this.fire('response', {feed: results.feed});
+          }
+        },
+        queryChanged: function() {
+          if (this.query) {
+            this.loading = true;
+            XGFeeds.require(this.asyncMethod.bind(this, 'findFeeds'));
+          }
+        },
+        findFeeds: function() {
+          google.feeds.findFeeds(this.query, this.findFeedsDone.bind(this));
+        },
+        findFeedsDone: function(results) {
+          this.loading = false;
+          if (results.error) {
+            this.fire('queryerror', {status: results.status});
+          } else {
+            this.fire('queryresponse', {entries: results.entries});
+          }
+        }
+      });
+    })();
+  </script>
+</polymer-element>

@@ -1,0 +1,98 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<polymer-element name="tk-meta" attributes="label isContainer isHidden list shouldPrepend hideSubtree">
+  <script>
+  (function() {  
+    var metaData = {}, metaArray = [];
+    Polymer('tk-meta', {
+      id: '',
+      isContainer: false,
+      isHidden: false,
+      properties: null,
+      shouldPrepend: false,
+      hideSubtree: false,
+      ready: function() {
+        this.idChanged();
+        this.updateProperties();
+      },
+      inserted: function() {
+        this.updateProperties();
+      },
+      idChanged: function(inOld) {
+        if (this.id && this.id !== 'meta') {
+          this.unregister(this, inOld);
+          metaData[this.id] = this;
+          if (this.shouldPrepend) {
+            metaArray.unshift(this);
+          } else {
+            metaArray.push(this);
+          }
+        }
+      },
+      unregister: function(meta, id) {
+        delete metaData[id || meta.id];
+        var i = metaArray.indexOf(meta);
+        if (i >= 0) {
+          metaArray.splice(i, 1);
+        }
+      },
+      get list() {
+        return metaArray;
+      },
+      get archetype() {
+        return this.querySelector('template');
+      },
+      byId: function(id) {
+        return metaData[id];
+      },
+      updateProperties: function() {
+        var props = {};
+        var ps = this.querySelectorAll('property');
+        ps && Array.prototype.forEach.call(ps, function(p) {
+          var o = {};
+          Array.prototype.forEach.call(p.attributes, function(a) {
+            var v = a.value;
+            v = v.indexOf(',') > 0 ? v.split(',') : v;
+            o[a.name] = v;
+          });
+          props[o.name] = o;
+        });
+        this.properties = props;
+      },
+      createElement: function() {
+        this.loadImports();
+        if (this.archetype) {
+          var node = this.archetype.createInstance().querySelector('*');
+        } else {
+          node = document.createElement(this.id);
+        }
+        this.ensureMeta(node);
+        return node;
+      },
+      ensureMeta: function(node) {
+        node.meta = this.byId(node.localName);
+        Array.prototype.forEach.call(node.children, function(n) {
+          this.ensureMeta(n);
+        }, this);
+      },
+      loadImports: function() {
+        var t = this.querySelector('#imports');
+        if (t) {
+          var links = t.content.querySelectorAll('link');
+          Array.prototype.forEach.call(links, function(link) {
+            if (!link.content) {
+              // FIXME(ffu): HTMLImports should provide an API to parse link directly
+              HTMLImports.importer.load(t.content, function() {
+                CustomElements.parser.parse(link.content);
+              });
+            }
+          });
+        }
+      }
+    });
+  })();
+  </script>
+</polymer-element>

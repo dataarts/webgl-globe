@@ -1,0 +1,23 @@
+[
+    "src/sidetable.js",
+    "src/wrappers.js",
+    "src/wrappers/events.js",
+    "src/wrappers/NodeList.js",
+    "src/wrappers/Node.js",
+    "src/querySelector.js",
+    "src/wrappers/node-interfaces.js",
+    "src/wrappers/CharacterData.js",
+    "src/wrappers/Element.js",
+    "src/wrappers/HTMLElement.js",
+    "src/wrappers/HTMLContentElement.js",
+    "src/wrappers/HTMLShadowElement.js",
+    "src/wrappers/HTMLTemplateElement.js",
+    "src/wrappers/HTMLUnknownElement.js",
+    "src/wrappers/generic.js",
+    "src/wrappers/ShadowRoot.js",
+    "src/ShadowRenderer.js",
+    "src/wrappers/Document.js",
+    "src/wrappers/Window.js",
+    "src/wrappers/MutationObserver.js",
+    "src/wrappers/override-constructors.js"
+]

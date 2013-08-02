@@ -1,0 +1,55 @@
+<!--
+/*
+ * Copyright 2013 The Polymer Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+-->
+<link rel="import" href="../../../toolkit-ui/elements/g-app.html">
+<link rel="import" href="../../../toolkit-ui/elements/g-panels.html">
+<link rel="import" href="../../../toolkit-ui/elements/g-icon-button.html">
+<link rel="import" href="../../../toolkit-ui/elements/g-toolbar.html">
+<link rel="import" href="../../../toolkit-ui/elements/g-ajax.html">
+<link rel="import" href="../../../toolkit-ui/elements/g-selector.html">
+<link rel="import" href="../../../more-elements/Youtube/yt-search.html"/>
+<link rel="import" href="../../../more-elements/Speech/speech-mic.html"/>
+<link rel="import" href="yt-videopanel.html">
+<polymer-element name="yt-app" extends="g-app">
+  <template>
+    <link rel="stylesheet" href="css/yt-app.css">
+    <yt-search id="search" query="{{query}}"
+         list="{{list}}">
+    </yt-search>
+    <g-panels id="panels" transition="flow">
+      <section id="listPanel">
+        <g-toolbar>
+          <input value="{{query}}" autofocus></input>
+          <speech-mic transcript="{{query}}"></speech-mic>
+        </g-toolbar>
+        <g-selector class="list" on-activate="listToggle" selectedModel="{{selectedModel}}">
+          <template repeat="{{list}}">
+            <div class="item">{{title.$t}}</div>
+          </template>
+        </g-selector>
+      </section>
+      <yt-videopanel id="videoPanel" video="{{selectedModel}}">
+        <g-icon-button class="left" touch-action="none" src="images/menu.png" on-tap="listToggle"></g-icon-button>
+        <g-icon-button src="images/grid.png" touch-action="none" on-tap="moreToggle"></g-icon-button>
+      </yt-videopanel>
+      <section id="morePanel" class="right" touch-action="none" on-tap="moreToggle">
+        More Stuff!
+      </section>
+    </g-panels>
+  </template>
+  <script>
+    Polymer('yt-app', {
+      query: 'chrome commercial',
+      listToggle: function() {
+        this.$.panels.toggleBetween('listPanel', 'videoPanel');
+      },
+      moreToggle: function() {
+        this.$.panels.toggleBetween('morePanel', 'videoPanel');
+      }
+    });
+  </script>
+</polymer-element>

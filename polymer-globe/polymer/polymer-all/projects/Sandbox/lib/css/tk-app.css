@@ -1,0 +1,87 @@
+/*
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+*/
+
+@host {
+  * {
+    font-size: 14px;
+    font-family: 'Helvetica Neue', 'Roboto', 'Arial', sans-serif;
+    overflow: hidden;
+    background-color: whitesmoke;
+  }
+}
+
+/*
+input, select {
+  font-size: 14px;
+  font-family: 'Comic Sans MS', 'Helvetica Neue', 'Roboto', 'Arial', sans-serif;
+  font-style: italic;
+}
+*/
+
+input[type=checkbox] {
+  /* no love for sizing */
+}
+
+#main {
+  position: absolute;
+  top: 61px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+#designer, #source {
+  position: absolute;
+  top: 0;
+  right: 350px;
+  bottom: 0;
+  left: 0;
+  -webkit-transition: right 0.4s;
+  transition: right 0.4s;
+}
+
+#tools {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 350px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  -webkit-transition: right 0.4s;
+  transition: right 0.4s;
+  z-index: 6;
+  box-shadow: -5px 0 8px rgba(0, 0, 0, 0.16);
+}
+
+.tk-app-maximized #designer, .tk-app-maximized #source {
+  right: 0px;
+}
+
+.tk-app-maximized #tools {
+  right: -350px;
+  box-shadow: none;
+}
+
+.selected-panel {
+  z-index: 5;
+}
+
+#innerToolbar[responsive=true] {
+  z-index: 10;
+}
+
+#modeSelector {
+  display: inline-block;
+  border-right: 1px solid rgba(0, 0, 0, 0.16);
+  padding-right: 10px;
+  margin: 0 10px;
+}
+
+#modeSelector > * {
+  margin: 0 10px;
+}

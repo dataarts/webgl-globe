@@ -1,0 +1,85 @@
+<!-- Copyright 2013 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <script src='http://closure-library.googlecode.com/svn/trunk/closure/goog/base.js'></script>
+    <script type="text/javascript">
+      goog.require('goog.testing.jsunit');
+    </script>
+    <script src='../js/dataproviders/csv.js'></script>
+    <script type='text/javascript'>
+      var testCSV =
+          'Year,Make,Model,Description,Price\n' +
+          '1997,Ford,E350,"ac, abs, moon",3000.00\n' +
+          ',,,,"",\n' +
+          '0123,Mongo,"""","ASCI",5000.00\n' +
+          '1999,Chevy,"""Venture ""Extended\n' +
+          '\n' +
+          '\n' +
+          'Edition""","",4900.00\n' +
+          '0123,Mongo,"""""","DESC",5000.00\n' +
+          '1999,Chevy,"Venture ""Extended Edition, Very Large""",' +
+              '"",5000.00\n' +
+          '0123,Mongo,"""""","",5000.00\n' +
+          '1996,Jeep,Grand Cherokee,"MUST SELL!\n' +
+          'air, moon roof, loaded",4799.00\n';
+
+      var columnNames = ['Year', 'Make', 'Model', 'Description', 'Price'];
+
+      var commonTestCSV_ = function(data) {
+        assertTrue('Could not parse all records', data.length === 8);
+
+        for (var ci = 0; ci < columnNames.length; ci++) {
+          assertTrue('Could not find column name ' + columnNames[ci],
+            data[0][columnNames[ci]] !== undefined);
+        }
+        for (var key in data[1]) {
+          assertTrue('Empty string record had non-empty column ' +
+              key + ' with value "' + data[1][key] + '"',
+              data[1][key] === '');
+        }
+        assertEquals(data[0].Model, 'E350');
+        assertEquals(data[5].Model, 'Venture "Extended Edition, Very Large"');
+      };
+
+      // Test all-in-one-go-parsing (return recordxs, no callbacks)
+      function testParsing() {
+        var csvProvider = new KratuCSVProvider();
+        var csvData = csvProvider.parse(testCSV);
+        commonTestCSV_(csvData);
+      }
+
+      // Test stream parsing of the CSV
+      // Callback(record) for each record found,
+      // callback(null) when no more records found
+      function testStreamParsing() {
+        var csvProvider = new KratuCSVProvider();
+        var csvData = [];
+        csvProvider.parse(testCSV, function(record) {
+          if (record !== null) {
+            csvData.push(record);
+          }
+          else { // No more records, assemble and test
+            commonTestCSV_(csvData);
+          }
+        });
+      }
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../../mdv.js"></script>
+  </head>
+  <body>
+    <h1>Bind To Attributes</h1>
+
+    <ul>
+    <template id="colors" repeat="{{ colors }}">
+      <li style="color: {{ color }}">The style attribute of this list item is bound</li>
+    </template>
+    </ul>
+
+    <button id="rotateText">Rotate</button>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var t = document.getElementById('colors');
+      t.model = {
+        colors: [
+          { color: 'red' },
+          { color: 'blue' },
+          { color: 'green' },
+          { color: 'pink' }
+        ]
+      };
+      // Needed to detect model changes if Object.observe
+      // is not available in the JS VM.
+      Platform.performMicrotaskCheckpoint();
+
+      var b = document.getElementById('rotateText');
+      b.addEventListener('click', function() {
+        t.model.colors.push(t.model.colors.shift());
+
+        Platform.performMicrotaskCheckpoint();
+      });
+    });
+    </script>
+  </body>
+</html>
