@@ -13,13 +13,15 @@
 
 var DAT = DAT || {};
 
-DAT.Globe = function(container, colorFn) {
-
-  colorFn = colorFn || function(x) {
+DAT.Globe = function(container, opts) {
+  opts = opts || {};
+  
+  var colorFn = opts.colorFn || function(x) {
     var c = new THREE.Color();
     c.setHSL( ( 0.6 - ( x * 0.5 ) ), 1.0, 0.5 );
     return c;
   };
+  var imgDir = opts.imgDir || '/globe/';
 
   var Shaders = {
     'earth' : {
@@ -70,8 +72,6 @@ DAT.Globe = function(container, colorFn) {
   var mesh, atmosphere, point;
 
   var overRenderer;
-
-  var imgDir = '/globe/';
 
   var curZoomSpeed = 0;
   var zoomSpeed = 50;
