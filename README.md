@@ -51,7 +51,7 @@ xhr.onreadystatechange = function() {
 
         // Tell the globe about your JSON data
         for ( var i = 0; i < data.length; i ++ ) {
-            globe.addData( data[i][1], 'magnitude', data[i][0] );
+            globe.addData( data[i][1], {format: 'magnitude', name: data[i][0]} );
         }
 
         // Create the geometry
