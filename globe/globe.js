@@ -264,7 +264,9 @@ DAT.Globe = function(container, opts) {
       point.geometry.faces[i].color = color;
 
     }
-    point.matrixAutoUpdate && point.updateMatrix();
+    if(point.matrixAutoUpdate){
+      point.updateMatrix();
+    }
     subgeo.merge(point.geometry, point.matrix);
   }
 
