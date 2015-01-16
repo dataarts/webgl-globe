@@ -166,7 +166,7 @@ DAT.Globe = function(container, opts) {
   }
 
   addData = function(data, opts) {
-    var lat, lng, size, color, i, step, colorFnWrapper;
+    var lat, lng, size, color, i, step, colorFnWrapper, subgeo;
 
     opts.animated = opts.animated || false;
     this.is_animated = opts.animated;
@@ -199,8 +199,14 @@ DAT.Globe = function(container, opts) {
         this._morphTargetId += 1;
       }
       opts.name = opts.name || 'morphTarget'+this._morphTargetId;
+      subgeo = new THREE.Geometry();
+    } else if (this._baseGeometry === undefined) {
+      subgeo = new THREE.Geometry();
+      this._baseGeometry = subgeo;
+    } else {
+      subgeo = this._baseGeometry;
     }
-    var subgeo = new THREE.Geometry();
+
     for (i = 0; i < data.length; i += step) {
       lat = data[i];
       lng = data[i + 1];
@@ -211,8 +217,6 @@ DAT.Globe = function(container, opts) {
     }
     if (opts.animated) {
       this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
-    } else {
-      this._baseGeometry = subgeo;
     }
 
   };
