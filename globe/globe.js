@@ -165,7 +165,7 @@ DAT.Globe = function(container, opts) {
     }, false);
   }
 
-  addData = function(data, opts) {
+  function addData(data, opts) {
     var lat, lng, size, color, i, step, colorFnWrapper;
 
     opts.animated = opts.animated || false;
