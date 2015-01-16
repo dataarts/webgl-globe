@@ -125,7 +125,7 @@
       0xe6b23a, 0x7ed3f7][label]);
   });
 
-  xhr = new XMLHttpRequest();
+  var xhr = new XMLHttpRequest();
   xhr.open('GET', '/globe-search/search.json', true);
   xhr.onreadystatechange = function(e) {
     if (xhr.readyState === 4) {
