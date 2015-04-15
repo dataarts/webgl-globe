@@ -6,7 +6,7 @@ Check out the examples at http://www.chromeexperiments.com/globe, and if you cre
 
 ----
 
-**The WebGL Globe** supports data in `JSON` format, a sample of which you can find [here](http://code.google.com/p/webgl-globe/source/browse/globe/population909500.json). `webgl-globe` makes heavy use of the [Three.js library](https://github.com/mrdoob/three.js/).
+**The WebGL Globe** supports data in `JSON` format, a sample of which you can find [here](https://github.com/dataarts/webgl-globe/blob/master/globe/population909500.json). `webgl-globe` makes heavy use of the [Three.js library](https://github.com/mrdoob/three.js/).
 
 # Data Format
 
