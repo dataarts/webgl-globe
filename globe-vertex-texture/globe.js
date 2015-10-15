@@ -1,6 +1,6 @@
 /**
  * dat.globe Javascript WebGL Globe Toolkit
- * http://dataarts.github.com/dat.globe
+ * https://github.com/dataarts/webgl-globe
  *
  * Copyright 2011 Data Arts Team, Google Creative Lab
  *
