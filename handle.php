@@ -13,7 +13,8 @@ $ret = "";
 foreach($arr as $v){
 	if($v != ''){
 		$latlng = explode(",", $v);
-		$ret .= ','.$latlng[0].','. $latlng[1]. ',0.1';
+		//$ret .= ','.$latlng[0].','. $latlng[1]. ',0.1';
+		$ret .= $latlng[1].'<br/>';
 	}
 }
 
