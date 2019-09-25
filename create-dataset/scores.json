@@ -1,0 +1,33 @@
+[{
+        "category": "A",
+        "countries": [{
+                "country": "BR",
+                "score": 0.55
+            },
+            {
+                "country": "CA",
+                "score": 0.25
+            },
+            {
+                "country": "US",
+                "score": 0.15
+            }
+        ]
+    },
+    {
+        "category": "B",
+        "countries": [{
+                "country": "JP",
+                "score": 0.55
+            },
+            {
+                "country": "FR",
+                "score": 0.25
+            },
+            {
+                "country": "KR",
+                "score": 0.15
+            }
+        ]
+    }
+]
