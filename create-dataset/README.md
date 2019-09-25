@@ -71,7 +71,7 @@ And you'll see a new file called `data.json` in this folder. This file is your d
 
 Is pretty easy, just open your terminal in this folder and type this command:
 ```
-  python generate-dots.py
+  python generate-dots.py default_dot=false
 ```
 And you'll see a new file called `data.json` in this folder. This file is your dataset pre-configured, just copy it, paste it to your graphic folder and remind to call it on `index.html` with this tag:
 ```
